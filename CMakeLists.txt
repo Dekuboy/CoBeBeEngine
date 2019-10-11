@@ -1,8 +1,14 @@
 cmake_minimum_required(VERSION 2.6)
 project(COBEBE)
 
+include_directories(
+	src
+)
+
 add_library(cobebe
-	src/cobebe/dummy.cpp
+	src/cobebe/Core.h
+	src/cobebe/Core.cpp
+	src/cobebe/Cobebe.h
 )
 
 target_link_libraries(cobebe 
