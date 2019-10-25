@@ -8,6 +8,7 @@ include_directories(
 add_library(cobebe
 	src/cobebe/Core.h
 	src/cobebe/Core.cpp
+	src/cobebe/NonCopyable.h
 	src/cobebe/Entity.h
 	src/cobebe/Entity.cpp
 	src/cobebe/Component.h
@@ -18,6 +19,12 @@ add_library(cobebe
 	src/cobebe/Keyboard.cpp
 	src/cobebe/Mouse.h
 	src/cobebe/Mouse.cpp
+	src/cobebe/Exception.h
+	src/cobebe/Exception.cpp
+
+	src/cobebe/TriangleRenderer.h
+	src/cobebe/TriangleRenderer.cpp
+
 	src/cobebe/Cobebe.h
 )
 
