@@ -1,0 +1,25 @@
+#ifndef STD_SR1_NONCOPYABLE
+#define STD_SR1_NONCOPYABLE
+
+namespace std
+{
+
+namespace sr1
+{
+
+class noncopyable
+{
+private:
+  noncopyable(const noncopyable&);
+  noncopyable& operator=(const noncopyable&);
+
+public:
+  noncopyable() {}
+
+};
+
+}
+
+}
+
+#endif

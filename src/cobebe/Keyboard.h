@@ -1,6 +1,9 @@
 #include <vector>
 
-class Keyboard
+namespace cobebe
 {
+	class Keyboard
+	{
 
-};
+	};
+}

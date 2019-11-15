@@ -5,6 +5,22 @@ include_directories(
 	src
 )
 
+add_library(rend
+  src/rend/Exception.cpp
+  src/rend/Context.cpp
+  src/rend/Texture.cpp
+  src/rend/RenderTexture.cpp
+  src/rend/Shader.cpp
+  src/rend/Buffer.cpp
+  src/rend/Mesh.cpp
+  src/rend/Util.cpp
+)
+if(MSVC)
+  target_link_libraries(rend glew32 opengl32)
+else()
+  target_link_libraries(rend GLEW GL)
+endif()
+
 add_library(cobebe
 	src/cobebe/Core.h
 	src/cobebe/Core.cpp
@@ -21,6 +37,8 @@ add_library(cobebe
 	src/cobebe/Mouse.cpp
 	src/cobebe/Exception.h
 	src/cobebe/Exception.cpp
+	src/cobebe/Renderer.h
+	src/cobebe/Renderer.cpp
 
 	src/cobebe/TriangleRenderer.h
 	src/cobebe/TriangleRenderer.cpp
@@ -29,7 +47,7 @@ add_library(cobebe
 )
 
 target_link_libraries(cobebe 
-	SDL2 opengl32 glew32
+	SDL2 rend
 )
 
 add_executable(dungeon

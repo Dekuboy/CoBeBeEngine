@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
-class TriangleRenderer : public Component
+class TriangleRenderer : public cobebe::Component
 {
 public:
 	~TriangleRenderer();

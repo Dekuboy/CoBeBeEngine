@@ -2,31 +2,34 @@
 #include <list>
 #include "NonCopyable.h"
 
-class Environment;
-class Entity;
-class Keyboard;
-class Mouse;
-
-class Core : private NonCopyable
+namespace cobebe
 {
-public:
-	Core();
-	~Core();
+	class Environment;
+	class Entity;
+	class Keyboard;
+	class Mouse;
 
-	static const std::shared_ptr<Core> initialise();
+	class Core : private NonCopyable
+	{
+	public:
+		Core();
+		~Core();
 
-	void run();
+		static const std::shared_ptr<Core> initialise();
 
-	void stop();
-	
-	std::shared_ptr<Entity> addEntity();
+		void run();
 
-private:
+		void stop();
 
-	std::list<std::shared_ptr<Entity>> m_entities;
-	std::shared_ptr<Environment> m_environment;
-	std::shared_ptr<Keyboard> m_keyboard;
-	std::shared_ptr<Mouse> m_mouse;
+		std::shared_ptr<Entity> addEntity();
 
-	bool running;
-};
+	private:
+
+		std::list<std::shared_ptr<Entity>> m_entities;
+		std::shared_ptr<Environment> m_environment;
+		std::shared_ptr<Keyboard> m_keyboard;
+		std::shared_ptr<Mouse> m_mouse;
+
+		bool running;
+	};
+}

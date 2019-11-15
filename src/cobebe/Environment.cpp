@@ -1,6 +1,9 @@
 #include "Environment.h"
 
-float Environment::getDeltaTime()
+namespace cobebe
 {
-	return deltaTime;
+	float Environment::getDeltaTime()
+	{
+		return deltaTime;
+	}
 }

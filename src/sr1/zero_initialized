@@ -1,0 +1,91 @@
+#ifndef STD_SR1_ZERO_INITIALIZED
+#define STD_SR1_ZERO_INITIALIZED
+
+namespace std
+{
+
+namespace sr1
+{
+
+template<class T>
+struct zero_initialized
+{
+  zero_initialized() : m_data(0) { }
+  zero_initialized(const T& t) : m_data(t) { }
+
+  T& operator=(const T& t)
+  {
+    m_data = t;
+
+    return m_data;
+  }
+
+  /*
+   * Allow use of contained data for most operations.
+   */
+  operator T&()
+  {
+    return m_data;
+  }
+
+  /*
+   * Allow use of contained data for most operations including ensuring
+   * const correctness.
+   */
+  operator const T&() const
+  {
+    return m_data;
+  }
+
+/*
+  T& operator->()
+  {
+    return m_data;
+  }
+
+  const T& operator->() const
+  {
+    return m_data;
+  }
+*/
+
+private:
+#ifdef STD_SR1_DEBUG
+  template <typename U>
+  friend class shared_ptr;
+
+  template <typename U>
+  friend class weak_ptr;
+
+  template <typename U>
+  friend class shared_ptr_lock_ref;
+
+  template <typename U>
+  friend class shared_ptr_lock;
+
+  template <typename U>
+  friend class shared_ptr_lock_ptr;
+
+  template <typename U>
+  friend class vector;
+#endif
+
+  T m_data;
+
+  T& data()
+  {
+    return m_data;
+  }
+
+  const T& data() const
+  {
+    return m_data;
+  }
+
+};
+
+}
+
+}
+
+#endif

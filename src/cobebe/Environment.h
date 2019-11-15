@@ -1,9 +1,13 @@
-class Environment
+
+namespace cobebe
 {
-private:
-	float deltaTime;
+	class Environment
+	{
+	private:
+		float deltaTime;
 
-public:
-	float getDeltaTime();
+	public:
+		float getDeltaTime();
 
-};
+	};
+}

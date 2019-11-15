@@ -1,32 +1,35 @@
 #include "Component.h"
 #include "Entity.h"
 
-std::shared_ptr<Entity> Component::getEntity()
+namespace cobebe
 {
-	return m_entity.lock();
-}
+	std::shared_ptr<Entity> Component::getEntity()
+	{
+		return m_entity.lock();
+	}
 
-std::shared_ptr<Core> Component::getCore()
-{
-	return m_entity.lock()->getCore();
-}
+	std::shared_ptr<Core> Component::getCore()
+	{
+		return m_entity.lock()->getCore();
+	}
 
-void Component::onInit()
-{
+	void Component::onInit()
+	{
 
-}
+	}
 
-void Component::onBegin()
-{
+	void Component::onBegin()
+	{
 
-}
+	}
 
-void Component::onTick()
-{
+	void Component::onTick()
+	{
 
-}
+	}
 
-void Component::onDisplay()
-{
+	void Component::onDisplay()
+	{
 
+	}
 }

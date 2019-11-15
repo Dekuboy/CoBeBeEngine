@@ -3,8 +3,8 @@
 
 int main()
 {
-	std::shared_ptr<Core> App = Core::initialise();
-	std::shared_ptr<Entity> entity = App->addEntity();
+	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
+	std::shared_ptr<cobebe::Entity> entity = App->addEntity();
 	entity->addComponent<TriangleRenderer>();
 	App->run();
 
