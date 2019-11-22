@@ -1,5 +1,7 @@
 #include <memory>
 #include <list>
+#include <SDL2/SDL.h>
+#include <rend/rend.h>
 #include "NonCopyable.h"
 
 namespace cobebe
@@ -8,6 +10,7 @@ namespace cobebe
 	class Entity;
 	class Keyboard;
 	class Mouse;
+	class Resources;
 
 	class Core : private NonCopyable
 	{
@@ -25,6 +28,8 @@ namespace cobebe
 
 	private:
 
+		SDL_Window *m_window;
+		std::shared_ptr<rend::Context> m_context;
 		std::list<std::shared_ptr<Entity>> m_entities;
 		std::shared_ptr<Environment> m_environment;
 		std::shared_ptr<Keyboard> m_keyboard;

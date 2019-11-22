@@ -1,10 +1,13 @@
 #ifndef _ENTITY_COMPONENT
 #define _ENTITY_COMPONENT
 #include <memory>
+#include <rend/rend.h>
 #include "NonCopyable.h"
 
 namespace cobebe
 {
+	using rend::Exception;
+
 	class Core;
 	class Entity;
 	class Keyboard;

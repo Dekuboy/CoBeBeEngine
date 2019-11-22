@@ -5,19 +5,21 @@
 
 namespace cobebe
 {
+	class Mesh;
+	class Material;
+
 	class Renderer : public Component
 	{
 	public:
-		Renderer();
-		~Renderer();
 		void onInit();
-	private:
-		void onDisplay();
+		void setMesh(std::weak_ptr<Mesh> _mesh);
+		std::shared_ptr<Mesh> getMesh();
+		std::shared_ptr<Material> getMaterial();
 
-		GLuint m_programId;
-		GLuint m_vaoId;
-		SDL_Window *m_window;
-		std::shared_ptr<rend::Context> m_context;
-		std::shared_ptr<rend::Shader> m_shader;
+	private:
+		std::weak_ptr<Mesh> m_mesh;
+		std::shared_ptr<Material> m_material;
+
+		void onDisplay();
 	};
 }

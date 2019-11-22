@@ -25,20 +25,26 @@ add_library(cobebe
 	src/cobebe/Core.h
 	src/cobebe/Core.cpp
 	src/cobebe/NonCopyable.h
+
 	src/cobebe/Entity.h
 	src/cobebe/Entity.cpp
 	src/cobebe/Component.h
 	src/cobebe/Component.cpp
+
 	src/cobebe/Environment.h
 	src/cobebe/Environment.cpp
 	src/cobebe/Keyboard.h
 	src/cobebe/Keyboard.cpp
 	src/cobebe/Mouse.h
 	src/cobebe/Mouse.cpp
+
 	src/cobebe/Exception.h
 	src/cobebe/Exception.cpp
+
 	src/cobebe/Renderer.h
 	src/cobebe/Renderer.cpp
+	src/cobebe/Resources.h
+	src/cobebe/Resources.cpp
 
 	src/cobebe/TriangleRenderer.h
 	src/cobebe/TriangleRenderer.cpp

@@ -6,4 +6,14 @@ namespace cobebe
 	{
 		return deltaTime;
 	}
+
+	unsigned int Environment::getWidth()
+	{
+		return m_width;
+	}
+
+	unsigned int Environment::getHeight()
+	{
+		return m_height;
+	}
 }
