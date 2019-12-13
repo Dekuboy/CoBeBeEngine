@@ -1,5 +1,6 @@
 #include "Core.h"
 #include "Entity.h"
+#include "Transform.h"
 #include <SDL2/SDL.h>
 
 namespace cobebe
@@ -17,6 +18,7 @@ namespace cobebe
 	const std::shared_ptr<Core> Core::initialise()
 	{
 		std::shared_ptr<Core> temp = std::make_shared<Core>();
+		temp->m_self = temp;
 		return temp;
 	}
 
@@ -57,6 +59,7 @@ namespace cobebe
 	std::shared_ptr<Entity> Core::addEntity()
 	{
 		std::shared_ptr<Entity> tempEntity = std::make_shared<Entity>();
+		tempEntity->m_core = m_self;
 		m_entities.push_back(tempEntity);
 		return tempEntity;
 	}

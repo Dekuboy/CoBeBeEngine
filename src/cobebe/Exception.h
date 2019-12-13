@@ -1,3 +1,5 @@
+#ifndef _COBEBE_EXCEPTION
+#define _COBEBE_EXCEPTION
 #include <exception>
 #include <string>
 
@@ -12,3 +14,5 @@ private:
 	std::string m_message;
 
 };
+
+#endif

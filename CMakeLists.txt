@@ -5,46 +5,56 @@ include_directories(
 	src
 )
 
-add_library(rend
-  src/rend/Exception.cpp
-  src/rend/Context.cpp
-  src/rend/Texture.cpp
-  src/rend/RenderTexture.cpp
-  src/rend/Shader.cpp
-  src/rend/Buffer.cpp
-  src/rend/Mesh.cpp
-  src/rend/Util.cpp
+add_library(glwrap
+  src/glwrap/Context.h
+  src/glwrap/Context.cpp
+  src/glwrap/DepthBuffer.h
+  src/glwrap/DepthBuffer.cpp
+  src/glwrap/RenderTexture.h
+  src/glwrap/RenderTexture.cpp
+  src/glwrap/ShaderProgram.h
+  src/glwrap/ShaderProgram.cpp
+  src/glwrap/Texture.h
+  src/glwrap/Texture.cpp
+  src/glwrap/VertexArray.h
+  src/glwrap/VertexArray.cpp
+  src/glwrap/VertexBuffer.h
+  src/glwrap/VertexBuffer.cpp
+  src/glwrap/stb_image.h
 )
 if(MSVC)
-  target_link_libraries(rend glew32 opengl32)
+  target_link_libraries(glwrap glew32 opengl32)
 else()
-  target_link_libraries(rend GLEW GL)
+  target_link_libraries(glwrap GLEW GL)
 endif()
 
 add_library(cobebe
-	src/cobebe/Core.h
-	src/cobebe/Core.cpp
+	src/cobebe/Core/Core.h
+	src/cobebe/Core/Core.cpp
+
 	src/cobebe/NonCopyable.h
-
-	src/cobebe/Entity.h
-	src/cobebe/Entity.cpp
-	src/cobebe/Component.h
-	src/cobebe/Component.cpp
-
-	src/cobebe/Environment.h
-	src/cobebe/Environment.cpp
-	src/cobebe/Keyboard.h
-	src/cobebe/Keyboard.cpp
-	src/cobebe/Mouse.h
-	src/cobebe/Mouse.cpp
-
 	src/cobebe/Exception.h
 	src/cobebe/Exception.cpp
 
-	src/cobebe/Renderer.h
-	src/cobebe/Renderer.cpp
-	src/cobebe/Resources.h
-	src/cobebe/Resources.cpp
+	src/cobebe/Core/Entity.h
+	src/cobebe/Core/Entity.cpp
+	src/cobebe/Core/Component.h
+	src/cobebe/Core/Component.cpp
+
+	src/cobebe/Core/Transform.h
+	src/cobebe/Core/Transform.cpp
+
+	src/cobebe/Core/Environment.h
+	src/cobebe/Core/Environment.cpp
+	src/cobebe/Core/Keyboard.h
+	src/cobebe/Core/Keyboard.cpp
+	src/cobebe/Core/Mouse.h
+	src/cobebe/Core/Mouse.cpp
+
+	src/cobebe/Resources/Resources.h
+	src/cobebe/Resources/Resources.cpp
+	src/cobebe/Renderer/Renderer.h
+	src/cobebe/Renderer/Renderer.cpp
 
 	src/cobebe/TriangleRenderer.h
 	src/cobebe/TriangleRenderer.cpp
@@ -53,7 +63,7 @@ add_library(cobebe
 )
 
 target_link_libraries(cobebe 
-	SDL2 rend
+	SDL2 glwrap
 )
 
 add_executable(dungeon

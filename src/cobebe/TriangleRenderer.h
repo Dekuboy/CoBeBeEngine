@@ -1,4 +1,4 @@
-#include "Component.h"
+#include <cobebe/Core/Component.h>
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 
