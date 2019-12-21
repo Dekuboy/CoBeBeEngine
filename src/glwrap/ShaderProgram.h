@@ -31,7 +31,7 @@ namespace glwrap
 
 	public:
 		ShaderProgram();
-		ShaderProgram(std::string vert, std::string frag);
+		ShaderProgram(std::string _path);
 
 		void draw();
 		void draw(std::shared_ptr<RenderTexture> renderTexture);

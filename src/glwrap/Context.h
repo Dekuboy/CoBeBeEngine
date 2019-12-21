@@ -12,16 +12,17 @@ namespace glwrap
 
 	class Context
 	{
-		static std::shared_ptr<Context> initialize();
-
-		std::shared_ptr<Texture> createTexture(std::string path);
-		std::shared_ptr<ShaderProgram> createShader(std::string vert, std::string frag);
-		std::shared_ptr<VertexBuffer> createBuffer();
-		std::shared_ptr<VertexArray> createMesh(std::string path);
-		std::shared_ptr<RenderTexture> createRenderTexture(int width, int height);
-		std::shared_ptr<DepthBuffer> createDepthBuffer(int width, int height);
-
 	private:
 		std::weak_ptr<Context> m_self;
+
+	public:
+		static std::shared_ptr<Context> initialise();
+
+		std::shared_ptr<Texture> createTexture(std::string _path);
+		std::shared_ptr<ShaderProgram> createShader(std::string _path);
+		std::shared_ptr<VertexBuffer> createBuffer();
+		std::shared_ptr<VertexArray> createMesh(std::string _path);
+		std::shared_ptr<RenderTexture> createRenderTexture(int _width, int _height);
+		std::shared_ptr<DepthBuffer> createDepthBuffer(int _width, int _height);
 	};
 }

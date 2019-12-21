@@ -8,7 +8,7 @@ int main()
 	entity->addComponent<TriangleRenderer>();
 	App->run();
 
-	std::cout << "Could Be Better now with Stuff" << std::endl;
-	system("PAUSE");
+	std::string temp = FileManager::loadWin("shaders\\phong.frag");
+
 	return 0;
 }

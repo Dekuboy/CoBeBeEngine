@@ -2,6 +2,7 @@
 #include <list>
 #include <SDL2/SDL.h>
 #include <cobebe/NonCopyable.h>
+#include <glwrap/glwrap.h>
 
 namespace cobebe
 {
@@ -30,7 +31,7 @@ namespace cobebe
 		std::weak_ptr<Core> m_self;
 
 		SDL_Window *m_window;
-		//std::shared_ptr<Context> m_context;
+		std::shared_ptr<glwrap::Context> m_context;
 		std::list<std::shared_ptr<Entity>> m_entities;
 		std::weak_ptr<Camera> m_currentCamera;
 		std::shared_ptr<Environment> m_environment;

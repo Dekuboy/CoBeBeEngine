@@ -8,7 +8,7 @@
 
 namespace glwrap
 {
-	std::shared_ptr<Context> Context::initialize()
+	std::shared_ptr<Context> Context::initialise()
 	{
 		std::shared_ptr<Context> rtn = std::make_shared<Context>();
 
@@ -22,16 +22,16 @@ namespace glwrap
 		return rtn;
 	}
 
-	std::shared_ptr<Texture> Context::createTexture(std::string path)
+	std::shared_ptr<Texture> Context::createTexture(std::string _path)
 	{
-		std::shared_ptr<Texture> rtn = std::make_shared<Texture>(path);
+		std::shared_ptr<Texture> rtn = std::make_shared<Texture>(_path);
 		rtn->m_context = m_self;
 		return rtn;
 	}
 
-	std::shared_ptr<ShaderProgram> Context::createShader(std::string vert, std::string frag)
+	std::shared_ptr<ShaderProgram> Context::createShader(std::string _path)
 	{
-		std::shared_ptr<ShaderProgram> rtn = std::make_shared<ShaderProgram>(vert, frag);
+		std::shared_ptr<ShaderProgram> rtn = std::make_shared<ShaderProgram>(_path);
 		rtn->m_context = m_self;
 		return rtn;
 	}
@@ -43,23 +43,23 @@ namespace glwrap
 		return rtn;
 	}
 
-	std::shared_ptr<VertexArray> Context::createMesh(std::string path)
+	std::shared_ptr<VertexArray> Context::createMesh(std::string _path)
 	{
-		std::shared_ptr<VertexArray> rtn = std::make_shared<VertexArray>(path);
+		std::shared_ptr<VertexArray> rtn = std::make_shared<VertexArray>(_path);
 		rtn->m_context = m_self;
 		return rtn;
 	}
 
-	std::shared_ptr<RenderTexture> Context::createRenderTexture(int width, int height)
+	std::shared_ptr<RenderTexture> Context::createRenderTexture(int _width, int _height)
 	{
-		std::shared_ptr<RenderTexture> rtn = std::make_shared<RenderTexture>(width, height);
+		std::shared_ptr<RenderTexture> rtn = std::make_shared<RenderTexture>(_width, _height);
 		rtn->m_context = m_self;
 		return rtn;
 	}
 
-	std::shared_ptr<DepthBuffer> Context::createDepthBuffer(int width, int height)
+	std::shared_ptr<DepthBuffer> Context::createDepthBuffer(int _width, int _height)
 	{
-		std::shared_ptr<DepthBuffer> rtn = std::make_shared<DepthBuffer>(width, height);
+		std::shared_ptr<DepthBuffer> rtn = std::make_shared<DepthBuffer>(_width, _height);
 		rtn->m_context = m_self;
 		return rtn;
 	}

@@ -1,5 +1,6 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
+#include "FileManager.h"
 
 #include <fstream>
 #include <iostream>
@@ -72,7 +73,7 @@ namespace glwrap
 		}
 
 		m_buffers.resize(10);
-		std::ifstream file(path.c_str());
+		std::ifstream file(FileManager::returnPath(path).c_str());
 
 		if (!file.is_open())
 		{

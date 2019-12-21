@@ -4,10 +4,12 @@
 #include <memory>
 #include <list>
 #include <cobebe/NonCopyable.h>
+#include <glwrap/glwrap.h>
 
 namespace cobebe
 {
 	class Renderer;
+	class Material;
 
 	class Asset
 	{
@@ -42,7 +44,7 @@ namespace cobebe
 
 	private:
 		friend class Renderer;
-		//std::shared_ptr<rend::Mesh> m_internal;
+		std::shared_ptr<glwrap::VertexArray> m_internal;
 
 	};
 
@@ -56,7 +58,7 @@ namespace cobebe
 
 	private:
 		friend class Material;
-		//std::shared_ptr<rend::Texture> m_internal;
+		std::shared_ptr<glwrap::Texture> m_internal;
 
 	};
 
@@ -70,7 +72,7 @@ namespace cobebe
 
 	private:
 		friend class Material;
-		//std::shared_ptr<rend::Shader> m_internal;
+		std::shared_ptr<glwrap::ShaderProgram> m_internal;
 
 	};
 }

@@ -4,6 +4,7 @@
 #include "Texture.h"
 #include "RenderTexture.h"
 #include "DepthBuffer.h"
+#include "FileManager.h"
 
 #include <glm/ext.hpp>
 
@@ -48,39 +49,11 @@ namespace glwrap
 		std::string vertShader;
 		std::string fragShader;
 
-		std::ifstream file("../shaders/simple.vert");
+		std::string src = FileManager::loadWin("\\shaders\\phong.shad");
 
-		if (!file.is_open())
-		{
-			throw std::exception();
-		}
-		else
-		{
-			while (!file.eof())
-			{
-				std::string line;
-				std::getline(file, line);
-				vertShader += line + "\n";
-			}
-		}
-		file.close();
+		vertShader = "#version 120\n#define VERTEX\n" + src;
 
-		file.open("../shaders/simple.frag");
-
-		if (!file.is_open())
-		{
-			throw std::exception();
-		}
-		else
-		{
-			while (!file.eof())
-			{
-				std::string line;
-				std::getline(file, line);
-				fragShader += line + "\n";
-			}
-		}
-		file.close();
+		fragShader = "#version 120\n#define FRAGMENT\n" + src;
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();
@@ -112,8 +85,10 @@ namespace glwrap
 		// Ensure the VAO "Position" attribute stream gets set as the first position
 		// during the link.
 		glBindAttribLocation(m_id, 0, "in_Position");
-
 		glBindAttribLocation(m_id, 1, "in_Color");
+		glBindAttribLocation(m_id, 2, "in_TexCoord");
+		glBindAttribLocation(m_id, 3, "in_Normal");
+
 
 		// Perform the link and check for failure
 		glLinkProgram(m_id);
@@ -130,44 +105,16 @@ namespace glwrap
 		glDeleteShader(fragmentShaderId);
 	}
 
-	ShaderProgram::ShaderProgram(std::string vert, std::string frag)
+	ShaderProgram::ShaderProgram(std::string _path)
 	{
 		std::string vertShader;
 		std::string fragShader;
 
-		std::ifstream file(vert);
+		std::string src = FileManager::loadWin(_path);
 
-		if (!file.is_open())
-		{
-			throw std::exception();
-		}
-		else
-		{
-			while (!file.eof())
-			{
-				std::string line;
-				std::getline(file, line);
-				vertShader += line + "\n";
-			}
-		}
-		file.close();
+		vertShader = "#version 120\n#define VERTEX\n" + src;
 
-		file.open(frag);
-
-		if (!file.is_open())
-		{
-			throw std::exception();
-		}
-		else
-		{
-			while (!file.eof())
-			{
-				std::string line;
-				std::getline(file, line);
-				fragShader += line + "\n";
-			}
-		}
-		file.close();
+		fragShader = "#version 120\n#define FRAGMENT\n" + src;
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();

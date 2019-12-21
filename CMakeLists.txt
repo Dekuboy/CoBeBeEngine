@@ -6,26 +6,29 @@ include_directories(
 )
 
 add_library(glwrap
-  src/glwrap/Context.h
-  src/glwrap/Context.cpp
-  src/glwrap/DepthBuffer.h
-  src/glwrap/DepthBuffer.cpp
-  src/glwrap/RenderTexture.h
-  src/glwrap/RenderTexture.cpp
-  src/glwrap/ShaderProgram.h
-  src/glwrap/ShaderProgram.cpp
-  src/glwrap/Texture.h
-  src/glwrap/Texture.cpp
-  src/glwrap/VertexArray.h
-  src/glwrap/VertexArray.cpp
-  src/glwrap/VertexBuffer.h
-  src/glwrap/VertexBuffer.cpp
-  src/glwrap/stb_image.h
+	src/glwrap/glwrap.h
+	src/glwrap/FileManager.h
+	src/glwrap/FileManager.cpp
+	src/glwrap/Context.h
+	src/glwrap/Context.cpp
+	src/glwrap/DepthBuffer.h
+	src/glwrap/DepthBuffer.cpp
+	src/glwrap/RenderTexture.h
+	src/glwrap/RenderTexture.cpp
+	src/glwrap/ShaderProgram.h
+	src/glwrap/ShaderProgram.cpp
+	src/glwrap/Texture.h
+	src/glwrap/Texture.cpp
+	src/glwrap/VertexArray.h
+	src/glwrap/VertexArray.cpp
+	src/glwrap/VertexBuffer.h
+	src/glwrap/VertexBuffer.cpp
+	src/glwrap/stb_image.h
 )
 if(MSVC)
-  target_link_libraries(glwrap glew32 opengl32)
+	target_link_libraries(glwrap glew32 opengl32)
 else()
-  target_link_libraries(glwrap GLEW GL)
+	target_link_libraries(glwrap GLEW GL)
 endif()
 
 add_library(cobebe

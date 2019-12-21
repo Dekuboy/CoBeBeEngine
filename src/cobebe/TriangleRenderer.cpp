@@ -1,16 +1,8 @@
 #include "TriangleRenderer.h"
 #include "Exception.h"
 
-TriangleRenderer::~TriangleRenderer()
-{
-	SDL_DestroyWindow(window);
-	SDL_Quit();
-}
-
 void TriangleRenderer::onInit()
 {
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
 
 	const GLfloat positions[] = {
 	  0.0f, 0.5f, 0.0f,
@@ -44,25 +36,6 @@ void TriangleRenderer::onInit()
 		"  gl_FragColor = ex_Color;" \
 		"}" \
 		"";
-
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
-	{
-		throw Exception("Vid");
-	}
-
-	window = SDL_CreateWindow("Lab 4 - Architecture",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
-	if (!SDL_GL_CreateContext(window))
-	{
-		throw Exception("Window");
-	}
-
-	if (glewInit() != GLEW_OK)
-	{
-		throw Exception("Glew");
-	}
 
 	GLuint positionsVboId = 0;
 
@@ -185,5 +158,4 @@ void TriangleRenderer::onDisplay()
 	glBindVertexArray(0);
 	glUseProgram(0);
 
-	SDL_GL_SwapWindow(window);
 }

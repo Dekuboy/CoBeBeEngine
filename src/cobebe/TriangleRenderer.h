@@ -5,13 +5,11 @@
 class TriangleRenderer : public cobebe::Component
 {
 public:
-	~TriangleRenderer();
 	void onInit();
 
 private:
 	GLuint m_programId;
 	GLuint m_vaoId;
-	SDL_Window *window;
 
 	void onDisplay();
 };

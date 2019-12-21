@@ -12,12 +12,33 @@ namespace cobebe
 
 	Core::~Core()
 	{
-
+		SDL_DestroyWindow(m_window);
+		SDL_Quit();
 	}
 
 	const std::shared_ptr<Core> Core::initialise()
 	{
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+
 		std::shared_ptr<Core> temp = std::make_shared<Core>();
+
+		if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		{
+			throw Exception("Vid");
+		}
+
+		temp->m_window = SDL_CreateWindow("CoBeBe Window",
+			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+			WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+
+		if (!SDL_GL_CreateContext(temp->m_window))
+		{
+			throw Exception("Window");
+		}
+
+		temp->m_context = glwrap::Context::initialise();
+
 		temp->m_self = temp;
 		return temp;
 	}
@@ -38,6 +59,8 @@ namespace cobebe
 			{
 				(*it)->display();
 			}
+
+			SDL_GL_SwapWindow(m_window);
 
 			SDL_Event event = { 0 };
 
