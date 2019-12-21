@@ -8,7 +8,5 @@ int main()
 	entity->addComponent<TriangleRenderer>();
 	App->run();
 
-	std::string temp = FileManager::loadWin("shaders\\phong.frag");
-
 	return 0;
 }
