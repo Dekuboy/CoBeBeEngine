@@ -1,4 +1,4 @@
-#include "Exception.h"
+#include <cobebe/Exception.h>
 #include <iostream>
 
 Exception::Exception(const std::string& message)

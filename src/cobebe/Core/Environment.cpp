@@ -1,18 +1,25 @@
-#include "Environment.h"
+#include <cobebe/Core/Environment.h>
 
 namespace cobebe
 {
-	float Environment::getDeltaTime()
+	Environment::Environment()
 	{
-		return deltaTime;
+		m_deltaTime = 1.0f / 60.0f;
+		m_width = 1080;
+		m_height = 720;
 	}
 
-	unsigned int Environment::getWidth()
+	float Environment::getDeltaTime()
+	{
+		return m_deltaTime;
+	}
+
+	int Environment::getWidth()
 	{
 		return m_width;
 	}
 
-	unsigned int Environment::getHeight()
+	int Environment::getHeight()
 	{
 		return m_height;
 	}

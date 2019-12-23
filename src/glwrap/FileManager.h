@@ -12,4 +12,5 @@ private:
 	static std::string m_fullPath;
 	static std::string m_dirName;
 	static std::string m_folderPath;
+
 };

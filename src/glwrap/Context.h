@@ -12,9 +12,6 @@ namespace glwrap
 
 	class Context
 	{
-	private:
-		std::weak_ptr<Context> m_self;
-
 	public:
 		static std::shared_ptr<Context> initialise();
 
@@ -24,5 +21,9 @@ namespace glwrap
 		std::shared_ptr<VertexArray> createMesh(std::string _path);
 		std::shared_ptr<RenderTexture> createRenderTexture(int _width, int _height);
 		std::shared_ptr<DepthBuffer> createDepthBuffer(int _width, int _height);
+
+	private:
+		std::weak_ptr<Context> m_self;
+
 	};
 }

@@ -1,8 +1,8 @@
-#include "RenderTexture.h"
+#include <glwrap/RenderTexture.h>
 
 namespace glwrap
 {
-	RenderTexture::RenderTexture(int width, int height) : Texture(width, height, false)
+	RenderTexture::RenderTexture(int _width, int _height) : Texture(_width, _height, false)
 	{
 		glGenTextures(1, &m_id);
 		glBindTexture(GL_TEXTURE_2D, m_id);
@@ -27,7 +27,7 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	RenderTexture::RenderTexture(int width, int height, bool _base) : Texture(width, height, false)
+	RenderTexture::RenderTexture(int _width, int _height, bool _base) : Texture(_width, _height, false)
 	{
 
 	}

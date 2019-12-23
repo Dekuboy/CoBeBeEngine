@@ -1,4 +1,4 @@
-#include "VertexBuffer.h"
+#include <glwrap/VertexBuffer.h>
 
 namespace glwrap
 {
@@ -15,44 +15,44 @@ namespace glwrap
 		}
 	}
 
-	void VertexBuffer::add(glm::vec2 value)
+	void VertexBuffer::add(glm::vec2 _value)
 	{
 		if (m_components != 2 && m_components != 0)
 		{
 			throw std::exception();
 		}
 
-		m_data.push_back(value.x);
-		m_data.push_back(value.y);
+		m_data.push_back(_value.x);
+		m_data.push_back(_value.y);
 		m_components = 2;
 		m_dirty = true;
 	}
 
-	void VertexBuffer::add(glm::vec3 value)
+	void VertexBuffer::add(glm::vec3 _value)
 	{
 		if (m_components != 3 && m_components != 0)
 		{
 			throw std::exception();
 		}
 
-		m_data.push_back(value.x);
-		m_data.push_back(value.y);
-		m_data.push_back(value.z);
+		m_data.push_back(_value.x);
+		m_data.push_back(_value.y);
+		m_data.push_back(_value.z);
 		m_components = 3;
 		m_dirty = true;
 	}
 
-	void VertexBuffer::add(glm::vec4 value)
+	void VertexBuffer::add(glm::vec4 _value)
 	{
 		if (m_components != 4 && m_components != 0)
 		{
 			throw std::exception();
 		}
 
-		m_data.push_back(value.x);
-		m_data.push_back(value.y);
-		m_data.push_back(value.z);
-		m_data.push_back(value.w);
+		m_data.push_back(_value.x);
+		m_data.push_back(_value.y);
+		m_data.push_back(_value.z);
+		m_data.push_back(_value.w);
 		m_components = 4;
 		m_dirty = true;
 	}

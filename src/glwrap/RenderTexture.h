@@ -1,21 +1,22 @@
 #ifndef RENDTEXTURE_H
 #define RENDTEXTURE_H
-#include "Texture.h"
+#include <glwrap/Texture.h>
 
 namespace glwrap
 {
 	class RenderTexture : public Texture
 	{
-		friend class DepthBuffer;
-		friend class Context;
-		GLuint m_fbo;
-
 	public:
-		RenderTexture(int width, int height);
-		RenderTexture(int width, int height, bool _base);
+		RenderTexture(int _width, int _height);
+		RenderTexture(int _width, int _height, bool _base);
 
 		GLuint getFbId();
 		virtual void clear();
+
+	private:
+		friend class DepthBuffer;
+		friend class Context;
+		GLuint m_fbo;
 
 	};
 }

@@ -1,44 +1,38 @@
-#include "ShaderProgram.h"
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "Texture.h"
-#include "RenderTexture.h"
-#include "DepthBuffer.h"
-#include "FileManager.h"
+#include <glwrap/glwrap.h>
 
 #include <glm/ext.hpp>
 
 namespace glwrap
 {
-	void printShaderInfoLog(GLuint obj)
+	void printShaderInfoLog(GLuint _obj)
 	{
 		int infologLength = 0;
 		int charsWritten = 0;
 		char *infoLog;
 
-		glGetShaderiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+		glGetShaderiv(_obj, GL_INFO_LOG_LENGTH, &infologLength);
 
 		if (infologLength > 0)
 		{
 			infoLog = (char *)malloc(infologLength);
-			glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
+			glGetShaderInfoLog(_obj, infologLength, &charsWritten, infoLog);
 			printf("%s\n", infoLog);
 			free(infoLog);
 		}
 	}
 
-	void printProgramInfoLog(GLuint obj)
+	void printProgramInfoLog(GLuint _obj)
 	{
 		int infologLength = 0;
 		int charsWritten = 0;
 		char *infoLog;
 
-		glGetProgramiv(obj, GL_INFO_LOG_LENGTH, &infologLength);
+		glGetProgramiv(_obj, GL_INFO_LOG_LENGTH, &infologLength);
 
 		if (infologLength > 0)
 		{
 			infoLog = (char *)malloc(infologLength);
-			glGetProgramInfoLog(obj, infologLength, &charsWritten, infoLog);
+			glGetProgramInfoLog(_obj, infologLength, &charsWritten, infoLog);
 			printf("%s\n", infoLog);
 			free(infoLog);
 		}
@@ -51,9 +45,9 @@ namespace glwrap
 
 		std::string src = FileManager::loadWin("\\shaders\\phong.shad");
 
-		vertShader = "#version 120\n#define VERTEX\n" + src;
+		vertShader = "#version 140\n#define VERTEX\n" + src;
 
-		fragShader = "#version 120\n#define FRAGMENT\n" + src;
+		fragShader = "#version 140\n#define FRAGMENT\n" + src;
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();
@@ -112,9 +106,9 @@ namespace glwrap
 
 		std::string src = FileManager::loadWin(_path);
 
-		vertShader = "#version 120\n#define VERTEX\n" + src;
+		vertShader = "#version 140\n#define VERTEX\n" + src;
 
-		fragShader = "#version 120\n#define FRAGMENT\n" + src;
+		fragShader = "#version 140\n#define FRAGMENT\n" + src;
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();
@@ -194,12 +188,12 @@ namespace glwrap
 		draw(m_simpleShape);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<RenderTexture> renderTexture)
+	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture)
 	{
-		draw(renderTexture, m_simpleShape);
+		draw(_renderTexture, m_simpleShape);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<VertexArray> vertexArray)
+	void ShaderProgram::draw(std::shared_ptr<VertexArray> _vertexArray)
 	{
 		//  glUseProgram(id);
 		//  glBindVertexArray(vertexArray->getId());
@@ -210,7 +204,7 @@ namespace glwrap
 		//  glUseProgram(0);
 		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
 		glUseProgram(m_id);
-		glBindVertexArray(vertexArray->getId());
+		glBindVertexArray(_vertexArray->getId());
 
 		for (size_t i = 0; i < m_samplers.size(); i++)
 		{
@@ -226,7 +220,7 @@ namespace glwrap
 			}
 		}
 
-		glDrawArrays(GL_TRIANGLES, 0, vertexArray->getVertexCount());
+		glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
 		for (size_t i = 0; i < m_samplers.size(); i++)
 		{
@@ -238,19 +232,19 @@ namespace glwrap
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<RenderTexture> renderTexture, std::shared_ptr<VertexArray> vertexArray)
+	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, renderTexture->getFbId());
+		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
 		glm::vec4 lastViewport = m_viewport;
-		m_viewport = glm::vec4(0, 0, renderTexture->getSize().x, renderTexture->getSize().y);
-		draw(vertexArray);
+		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
+		draw(_vertexArray);
 		m_viewport = lastViewport;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void ShaderProgram::setUniform(std::string uniform, glm::vec4 value)
+	void ShaderProgram::setUniform(std::string _uniform, glm::vec4 _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, uniform.c_str());
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
 		if (uniformId == -1)
 		{
@@ -258,13 +252,13 @@ namespace glwrap
 		}
 
 		glUseProgram(m_id);
-		glUniform4f(uniformId, value.x, value.y, value.z, value.w);
+		glUniform4f(uniformId, _value.x, _value.y, _value.z, _value.w);
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::setUniform(std::string uniform, glm::vec3 value)
+	void ShaderProgram::setUniform(std::string _uniform, glm::vec3 _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, uniform.c_str());
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
 		if (uniformId == -1)
 		{
@@ -272,13 +266,13 @@ namespace glwrap
 		}
 
 		glUseProgram(m_id);
-		glUniform3f(uniformId, value.x, value.y, value.z);
+		glUniform3f(uniformId, _value.x, _value.y, _value.z);
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::setUniform(std::string uniform, float value)
+	void ShaderProgram::setUniform(std::string _uniform, float _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, uniform.c_str());
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
 		if (uniformId == -1)
 		{
@@ -286,13 +280,13 @@ namespace glwrap
 		}
 
 		glUseProgram(m_id);
-		glUniform1f(uniformId, value);
+		glUniform1f(uniformId, _value);
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::setUniform(std::string uniform, std::shared_ptr<Texture> texture)
+	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<Texture> _texture)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, uniform.c_str());
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
 		if (uniformId == -1)
 		{
@@ -303,7 +297,7 @@ namespace glwrap
 		{
 			if (m_samplers.at(i).m_id == uniformId)
 			{
-				m_samplers.at(i).m_texture = texture;
+				m_samplers.at(i).m_texture = _texture;
 
 				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
@@ -314,7 +308,7 @@ namespace glwrap
 
 		Sampler s;
 		s.m_id = uniformId;
-		s.m_texture = texture;
+		s.m_texture = _texture;
 		m_samplers.push_back(s);
 
 		glUseProgram(m_id);
@@ -322,9 +316,9 @@ namespace glwrap
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::setUniform(std::string uniform, glm::mat4 value)
+	void ShaderProgram::setUniform(std::string _uniform, glm::mat4 _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, uniform.c_str());
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
 		if (uniformId == -1)
 		{
@@ -332,13 +326,13 @@ namespace glwrap
 		}
 
 		glUseProgram(m_id);
-		glUniformMatrix4fv(uniformId, 1, 0, glm::value_ptr(value));
+		glUniformMatrix4fv(uniformId, 1, 0, glm::value_ptr(_value));
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::setUniform(std::string uniform, std::shared_ptr<DepthBuffer> depth)
+	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthBuffer> _depth)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, uniform.c_str());
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
 		if (uniformId == -1)
 		{
@@ -349,7 +343,7 @@ namespace glwrap
 		{
 			if (m_samplers.at(i).m_id == uniformId)
 			{
-				m_samplers.at(i).m_texture = depth;
+				m_samplers.at(i).m_texture = _depth;
 
 				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
@@ -360,7 +354,7 @@ namespace glwrap
 
 		Sampler s;
 		s.m_id = uniformId;
-		s.m_texture = depth;
+		s.m_texture = _depth;
 		m_samplers.push_back(s);
 
 		glUseProgram(m_id);
@@ -373,8 +367,8 @@ namespace glwrap
 		return m_id;
 	}
 
-	void ShaderProgram::setViewport(glm::vec4 viewport)
+	void ShaderProgram::setViewport(glm::vec4 _viewport)
 	{
-		this->m_viewport = viewport;
+		this->m_viewport = _viewport;
 	}
 }

@@ -1,69 +1,69 @@
-#include "VertexArray.h"
-#include "VertexBuffer.h"
-#include "FileManager.h"
+#include <glwrap/VertexArray.h>
+#include <glwrap/VertexBuffer.h>
+#include <glwrap/FileManager.h>
 
 #include <fstream>
 #include <iostream>
 
 namespace glwrap
 {
-	void VertexArray::splitStringWhitespace(std::string& input, std::vector<std::string>& output)
+	void VertexArray::splitStringWhitespace(std::string& _input, std::vector<std::string>& _output)
 	{
 		std::string curr;
 
-		output.clear();
+		_output.clear();
 
-		for (size_t i = 0; i < input.length(); i++)
+		for (size_t i = 0; i < _input.length(); i++)
 		{
-			if (input.at(i) == ' ' ||
-				input.at(i) == '\r' ||
-				input.at(i) == '\n' ||
-				input.at(i) == '\t')
+			if (_input.at(i) == ' ' ||
+				_input.at(i) == '\r' ||
+				_input.at(i) == '\n' ||
+				_input.at(i) == '\t')
 			{
 				if (curr.length() > 0)
 				{
-					output.push_back(curr);
+					_output.push_back(curr);
 					curr = "";
 				}
 			}
 			else
 			{
-				curr += input.at(i);
+				curr += _input.at(i);
 			}
 		}
 
 		if (curr.length() > 0)
 		{
-			output.push_back(curr);
+			_output.push_back(curr);
 		}
 	}
 
-	void VertexArray::splitString(std::string& input, char splitter, std::vector<std::string>& output)
+	void VertexArray::splitString(std::string& _input, char _splitter, std::vector<std::string>& _output)
 	{
 		std::string curr;
 
-		output.clear();
+		_output.clear();
 
-		for (size_t i = 0; i < input.length(); i++)
+		for (size_t i = 0; i < _input.length(); i++)
 		{
-			if (input.at(i) == splitter)
+			if (_input.at(i) == _splitter)
 			{
-				output.push_back(curr);
+				_output.push_back(curr);
 				curr = "";
 			}
 			else
 			{
-				curr += input.at(i);
+				curr += _input.at(i);
 			}
 		}
 
 		if (curr.length() > 0)
 		{
-			output.push_back(curr);
+			_output.push_back(curr);
 		}
 	}
 
-	VertexArray::VertexArray(std::string path) : m_dirty(false)
+	VertexArray::VertexArray(std::string _path) : m_dirty(false)
 	{
 		glGenVertexArrays(1, &m_id);
 
@@ -73,7 +73,7 @@ namespace glwrap
 		}
 
 		m_buffers.resize(10);
-		std::ifstream file(FileManager::returnPath(path).c_str());
+		std::ifstream file(FileManager::returnPath(_path).c_str());
 
 		if (!file.is_open())
 		{
@@ -183,23 +183,23 @@ namespace glwrap
 		m_buffers.resize(10);
 	}
 
-	void VertexArray::setBuffer(std::string attribute, std::shared_ptr<VertexBuffer> buffer)
+	void VertexArray::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer)
 	{
-		if (attribute == "in_Position")
+		if (_attribute == "in_Position")
 		{
-			m_buffers.at(0) = buffer;
+			m_buffers.at(0) = _buffer;
 		}
-		else if (attribute == "in_Color")
+		else if (_attribute == "in_Color")
 		{
-			m_buffers.at(1) = buffer;
+			m_buffers.at(1) = _buffer;
 		}
-		else if (attribute == "in_TexCoord")
+		else if (_attribute == "in_TexCoord")
 		{
-			m_buffers.at(2) = buffer;
+			m_buffers.at(2) = _buffer;
 		}
-		else if (attribute == "in_Normal")
+		else if (_attribute == "in_Normal")
 		{
-			m_buffers.at(3) = buffer;
+			m_buffers.at(3) = _buffer;
 		}
 		else
 		{

@@ -54,6 +54,9 @@ add_library(cobebe
 	src/cobebe/Core/Mouse.h
 	src/cobebe/Core/Mouse.cpp
 
+	src/cobebe/Core/Camera.h
+	src/cobebe/Core/Camera.cpp
+
 	src/cobebe/Resources/Resources.h
 	src/cobebe/Resources/Resources.cpp
 	src/cobebe/Renderer/Renderer.h

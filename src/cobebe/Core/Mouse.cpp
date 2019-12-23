@@ -1,4 +1,4 @@
-#include "Mouse.h"
+#include <cobebe/Core/Mouse.h>
 
 namespace cobebe
 {

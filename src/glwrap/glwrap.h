@@ -1,11 +1,11 @@
 #ifndef _GLWRAP_
 #define _GLWRAP_
-#include "FileManager.h"
-#include "Context.h"
-#include "VertexBuffer.h"
-#include "VertexArray.h"
-#include "ShaderProgram.h"
-#include "Texture.h"
-#include "RenderTexture.h"
-#include "DepthBuffer.h"
+#include <glwrap/FileManager.h>
+#include <glwrap/Context.h>
+#include <glwrap/VertexBuffer.h>
+#include <glwrap/VertexArray.h>
+#include <glwrap/ShaderProgram.h>
+#include <glwrap/Texture.h>
+#include <glwrap/RenderTexture.h>
+#include <glwrap/DepthBuffer.h>
 #endif

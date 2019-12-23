@@ -1,6 +1,7 @@
-#include "Texture.h"
+#include <glwrap/Texture.h>
+#include <glwrap/FileManager.h>
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include <glwrap/stb_image.h>
 
 
 namespace glwrap
@@ -44,19 +45,19 @@ namespace glwrap
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	Texture::Texture(int width, int height, bool _base)
+	Texture::Texture(int _width, int _height, bool _base)
 	{
-		m_size.x = width;
-		m_size.y = height;
+		m_size.x = _width;
+		m_size.y = _height;
 	}
 
-	Texture::Texture(std::string file)
+	Texture::Texture(std::string _path)
 	{
 		int w = 0;
 		int h = 0;
 		int channels = 0;
 
-		unsigned char *data = stbi_load(file.c_str(), &w, &h, &channels, 4);
+		unsigned char *data = stbi_load(FileManager::returnPath(_path).c_str(), &w, &h, &channels, 4);
 
 		if (!data)
 		{

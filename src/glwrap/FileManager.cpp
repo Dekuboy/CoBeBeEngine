@@ -1,4 +1,4 @@
-#include "FileManager.h"
+#include <glwrap/FileManager.h>
 #include <fstream>
 #include <Windows.h>
 
@@ -22,6 +22,8 @@ void FileManager::init()
 
 std::string FileManager::returnPath(std::string _path)
 {
+	init();
+
 	return m_folderPath + _path;
 }
 

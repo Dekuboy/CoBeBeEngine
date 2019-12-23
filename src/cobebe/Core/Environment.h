@@ -1,16 +1,21 @@
-
+class Core;
 namespace cobebe
 {
 	class Environment
 	{
-	private:
-		float deltaTime;
-		unsigned int m_width;
-		unsigned int m_height;
-
 	public:
+		Environment();
+
 		float getDeltaTime();
-		unsigned int getWidth();
-		unsigned int getHeight();
+		int getWidth();
+		int getHeight();
+
+	private:
+		friend class Core;
+
+		float m_deltaTime;
+		int m_width;
+		int m_height;
+
 	};
 }

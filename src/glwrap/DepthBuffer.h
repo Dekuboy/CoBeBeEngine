@@ -1,15 +1,18 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
-#include "RenderTexture.h"
+#include <glwrap/RenderTexture.h>
 
 namespace glwrap
 {
 	class DepthBuffer : public RenderTexture
 	{
-		friend class Context;
 	public:
-		DepthBuffer(int width, int height);
+		DepthBuffer(int _width, int _height);
 
 		void clear();
+
+	private:
+		friend class Context;
+
 	};
 }

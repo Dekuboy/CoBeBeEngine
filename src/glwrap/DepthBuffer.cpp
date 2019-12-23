@@ -1,8 +1,8 @@
-#include "DepthBuffer.h"
+#include <glwrap/DepthBuffer.h>
 
 namespace glwrap
 {
-	DepthBuffer::DepthBuffer(int width, int height) : RenderTexture(width, height, false)
+	DepthBuffer::DepthBuffer(int _width, int _height) : RenderTexture(_width, _height, false)
 	{
 		glGenFramebuffers(1, &m_fbo);
 

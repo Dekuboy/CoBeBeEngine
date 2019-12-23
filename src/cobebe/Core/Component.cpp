@@ -1,5 +1,5 @@
-#include "Component.h"
-#include "Entity.h"
+#include <cobebe/Core/Component.h>
+#include <cobebe/Core/Entity.h>
 
 namespace cobebe
 {
@@ -18,17 +18,27 @@ namespace cobebe
 
 	}
 
-	void Component::onBegin()
-	{
-
-	}
-
 	void Component::onTick()
 	{
 
 	}
 
+	void Component::onPreDisplay()
+	{
+
+	}
+
 	void Component::onDisplay()
+	{
+
+	}
+
+	void Component::onPostDisplay()
+	{
+
+	}
+
+	void Component::onGUI()
 	{
 
 	}

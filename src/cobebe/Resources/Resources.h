@@ -9,16 +9,17 @@
 namespace cobebe
 {
 	class Renderer;
-	class Material;
 
 	class Asset
 	{
 	public:
-		virtual void onLoad(const std::string& path);
+		virtual void onLoad(const std::string& _path);
 
-	private:
+	protected:
 		friend class Resources;
 		std::string m_path;
+		std::weak_ptr<glwrap::Context> m_context;
+
 	};
 
 
@@ -27,10 +28,32 @@ namespace cobebe
 	{
 	public:
 		template <class T>
-		std::shared_ptr<T> load(std::string _path);
+		std::shared_ptr<T> load(std::string _path)
+		{
+			std::shared_ptr<T> asset;
+
+			for (std::list<std::shared_ptr<Asset>>::iterator it = m_resources.begin(); it != m_resources.end(); ++it)
+			{
+				asset = std::dynamic_pointer_cast<T>(*it);
+				if (asset)
+				{
+					if (asset->m_path == _path)
+					{
+						return asset;
+					}
+				}
+			}
+			asset = std::make_shared<T>();
+			asset->m_context = m_context;
+			asset->onLoad(_path);
+			m_resources.push_back(asset);
+			return asset;
+		}
 
 	private:
+		friend class Core;
 		std::list<std::shared_ptr<Asset>> m_resources;
+		std::weak_ptr<glwrap::Context> m_context;
 
 	};
 
@@ -39,8 +62,7 @@ namespace cobebe
 	class Mesh : private NonCopyable, public Asset
 	{
 	public:
-		~Mesh();
-		void onLoad(const std::string& path);
+		void onLoad(const std::string& _path);
 
 	private:
 		friend class Renderer;
@@ -53,11 +75,10 @@ namespace cobebe
 	class Texture : private NonCopyable, public Asset
 	{
 	public:
-		~Texture();
-		void onLoad(const std::string& path);
+		void onLoad(const std::string& _path);
 
 	private:
-		friend class Material;
+		friend class Renderer;
 		std::shared_ptr<glwrap::Texture> m_internal;
 
 	};
@@ -67,11 +88,10 @@ namespace cobebe
 	class Shader : private NonCopyable, public Asset
 	{
 	public:
-		~Shader();
-		void onLoad(const std::string& path);
+		void onLoad(const std::string& _path);
 
 	private:
-		friend class Material;
+		friend class Renderer;
 		std::shared_ptr<glwrap::ShaderProgram> m_internal;
 
 	};

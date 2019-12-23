@@ -14,20 +14,21 @@ namespace glwrap
 
 	class Texture
 	{
+	public:
+		Texture();
+		Texture(int _width, int _height, bool _base);
+		Texture(std::string _path);
+		glm::vec2 getSize();
+		GLuint getId();
+
+	private:
 		friend class RenderTexture;
 		friend class DepthBuffer;
 		friend class Context;
-	private:
+
 		GLuint m_id;
 		glm::vec2 m_size;
 		std::weak_ptr<Context> m_context;
-
-	public:
-		Texture();
-		Texture(int width, int height, bool _base);
-		Texture(std::string file);
-		glm::vec2 getSize();
-		GLuint getId();
 
 	};
 }

@@ -9,23 +9,25 @@ namespace glwrap
 
 	class VertexBuffer
 	{
-		friend class Context;
+	public:
+		VertexBuffer();
+
+		void add(glm::vec2 _value);
+		void add(glm::vec3 _value);
+		void add(glm::vec4 _value);
+
+		int getComponents();
+		int getDataSize();
+		GLuint getId();
+
 	private:
+		friend class Context;
+
 		GLuint m_id;
 		int m_components;
 		std::vector <GLfloat> m_data;
 		bool m_dirty;
 		std::weak_ptr<Context> m_context;
 
-	public:
-		VertexBuffer();
-
-		void add(glm::vec2 value);
-		void add(glm::vec3 value);
-		void add(glm::vec4 value);
-
-		int getComponents();
-		int getDataSize();
-		GLuint getId();
 	};
 }

@@ -1,10 +1,4 @@
-#include "Context.h"
-#include "VertexBuffer.h"
-#include "VertexArray.h"
-#include "Texture.h"
-#include "RenderTexture.h"
-#include "DepthBuffer.h"
-#include "ShaderProgram.h"
+#include <glwrap/glwrap.h>
 
 namespace glwrap
 {

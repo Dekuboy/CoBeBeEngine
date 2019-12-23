@@ -28,9 +28,11 @@ namespace cobebe
 		std::weak_ptr<Entity> m_entity;
 
 		virtual void onInit();
-		virtual void onBegin();
 		virtual void onTick();
+		virtual void onPreDisplay();
 		virtual void onDisplay();
+		virtual void onPostDisplay();
+		virtual void onGUI();
 
 	};
 }

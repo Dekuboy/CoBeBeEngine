@@ -10,21 +10,23 @@ namespace glwrap
 
 	class VertexArray
 	{
+	public:
+		VertexArray();
+		VertexArray(std::string _path);
+		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
+		int getVertexCount();
+		GLuint getId();
+
+	private:
 		friend class Context;
+
 		GLuint m_id;
 		bool m_dirty;
 		std::vector<std::shared_ptr<VertexBuffer>> m_buffers;
 		std::weak_ptr<Context> m_context;
 
-		void splitStringWhitespace(std::string& input, std::vector<std::string>& output);
-		void splitString(std::string& input, char splitter, std::vector<std::string>& output);
-
-	public:
-		VertexArray();
-		VertexArray(std::string path);
-		void setBuffer(std::string attribute, std::shared_ptr<VertexBuffer> buffer);
-		int getVertexCount();
-		GLuint getId();
+		void splitStringWhitespace(std::string& _input, std::vector<std::string>& _output);
+		void splitString(std::string& _input, char _splitter, std::vector<std::string>& _output);
 
 	};
 }
