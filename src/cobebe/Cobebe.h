@@ -12,5 +12,4 @@
 #include <cobebe/Resources/Resources.h>
 #include <cobebe/Renderer/Renderer.h>
 #include <cobebe/Exception.h>
-#include <cobebe/TriangleRenderer.h>
 #endif

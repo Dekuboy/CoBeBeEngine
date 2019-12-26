@@ -13,20 +13,42 @@ namespace cobebe
 	class Mouse;
 	class Resources;
 
+	/**
+	* The Core of the engine
+	* -to be instantiated once in main via Core::initialise
+	* -manages game systems and entities
+	* -use to access access game systems
+	* -use to add entities to game
+	*/
 	class Core : private NonCopyable
 	{
 	public:
 		Core();
 		~Core();
 
+		/**
+		* \brief Use to instantiate Core class
+		*/
 		static const std::shared_ptr<Core> initialise();
 
+		/**
+		* \brief Use to run the Core gameplay loop
+		*/
 		void run();
 
+		/**
+		* \brief Use to stop the gameplay loop
+		*/
 		void stop();
 
+		/**
+		* \brief Adds entity to the game loop
+		*/
 		std::shared_ptr<Entity> addEntity();
 
+		/**
+		* \brief Returns first entity with the input Component
+		*/
 		template <class T>
 		std::shared_ptr<Entity> getEntityByComponent()
 		{
@@ -50,11 +72,26 @@ namespace cobebe
 			return NULL;
 		}
 
+		/**
+		* \brief Adds Camera to list using screen size for the RenderTexture
+		*/
 		std::shared_ptr<Camera> addCamera();
+		/**
+		* \brief Adds Camera to list using input size for the RenderTexture
+		*/
 		std::shared_ptr<Camera> addCamera(int _renderWidth, int _renderHeight);
+		/**
+		* \brief Returns the Camera currently drawing to screen
+		*/
 		std::shared_ptr<Camera> getCurrentCamera();
-		std::shared_ptr<Camera> getCamera(int _id);
+		/**
+		* \brief Gets Camera specified
+		*/
+		std::shared_ptr<Camera> getCamera();
 
+		/**
+		* \brief Returns Asset of file path
+		*/
 		template <class T>
 		std::shared_ptr<T> loadAsset(std::string _path)
 		{
@@ -63,21 +100,21 @@ namespace cobebe
 		}
 
 	private:
-		std::weak_ptr<Core> m_self;
+		std::weak_ptr<Core> m_self; /// Pointer to self to be placed in added entities
 
 		SDL_Window *m_window;
-		std::shared_ptr<glwrap::ShaderProgram> m_nullShader;
+		std::shared_ptr<glwrap::ShaderProgram> m_nullShader; /// Draws RenderTexture
 
-		std::shared_ptr<glwrap::Context> m_context;
-		std::list<std::shared_ptr<Entity>> m_entities;
-		std::list<std::shared_ptr<Camera>> m_cameras;
-		std::weak_ptr<Camera> m_currentCamera;
-		std::shared_ptr<Environment> m_environment;
-		std::shared_ptr<Keyboard> m_keyboard;
-		std::shared_ptr<Mouse> m_mouse;
+		std::shared_ptr<glwrap::Context> m_context; /// Safely instantiates OpenGL objects
+		std::list<std::shared_ptr<Entity>> m_entities; /// List of entities in game loop
+		std::list<std::shared_ptr<Camera>> m_cameras; /// List of cameras in game loop
+		std::weak_ptr<Camera> m_currentCamera; /// Holds Camera currently drawing to the screen
+		std::shared_ptr<Environment> m_environment; /// Holds deltaTime and window size
+		std::shared_ptr<Keyboard> m_keyboard; /// Holds keyboard inputs
+		std::shared_ptr<Mouse> m_mouse; /// Holds mouse inputs
 
-		std::shared_ptr<Resources> m_resources;
+		std::shared_ptr<Resources> m_resources; /// Holds loaded file paths
 
-		bool running;
+		bool m_running; /// Controls the game loop
 	};
 }

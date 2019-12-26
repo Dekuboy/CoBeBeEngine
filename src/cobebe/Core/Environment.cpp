@@ -9,17 +9,17 @@ namespace cobebe
 		m_height = 720;
 	}
 
-	float Environment::getDeltaTime()
+	const float Environment::getDeltaTime()
 	{
 		return m_deltaTime;
 	}
 
-	int Environment::getWidth()
+	const int Environment::getWidth()
 	{
 		return m_width;
 	}
 
-	int Environment::getHeight()
+	const int Environment::getHeight()
 	{
 		return m_height;
 	}

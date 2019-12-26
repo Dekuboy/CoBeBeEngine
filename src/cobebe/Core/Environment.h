@@ -1,21 +1,34 @@
-class Core;
 namespace cobebe
 {
+	class Core;
+
+	/**
+	* Holds deltaTime and screen size
+	*/
 	class Environment
 	{
 	public:
 		Environment();
 
-		float getDeltaTime();
-		int getWidth();
-		int getHeight();
+		/**
+		* \brief Retrives deltaTime
+		*/
+		const float getDeltaTime();
+		/**
+		* \brief Retrieves screen width
+		*/
+		const int getWidth();
+		/**
+		* \brief Retrieves screen height
+		*/
+		const int getHeight();
 
 	private:
 		friend class Core;
 
-		float m_deltaTime;
-		int m_width;
-		int m_height;
+		float m_deltaTime; /// Maintains framerate
+		int m_width; /// Screen width
+		int m_height; /// Screen height
 
 	};
 }

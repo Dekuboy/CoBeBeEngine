@@ -43,16 +43,15 @@ namespace cobebe
 			{
 				m_shader->m_internal->setUniform("in_View", glm::inverse(m_camera->getView()));
 				m_shader->m_internal->setUniform("in_Projection", m_camera->getProjection());
-				m_shader->m_internal->draw(m_camera->m_texture, m_mesh->m_internal);
+				m_camera->draw(m_shader->m_internal, m_mesh->m_internal);
 			}
 			else
 			{
 				std::shared_ptr<Camera> currentCam = getCore()->getCurrentCamera();
 
-
 				m_shader->m_internal->setUniform("in_View", glm::inverse(currentCam->getView()));
 				m_shader->m_internal->setUniform("in_Projection", currentCam->getProjection());
-				m_shader->m_internal->draw(currentCam->m_texture, m_mesh->m_internal);
+				currentCam->draw(m_shader->m_internal, m_mesh->m_internal);
 			}
 		}
 	}

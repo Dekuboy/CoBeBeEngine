@@ -11,7 +11,7 @@ namespace cobebe
 {
 	Core::Core()
 	{
-
+		m_running = false;
 	}
 
 	Core::~Core()
@@ -56,10 +56,10 @@ namespace cobebe
 
 	void Core::run()
 	{
-		bool quit = false;
+		m_running = true;
 
 		float currentTime, lastTime = SDL_GetTicks();
-		while (!quit)
+		while (m_running)
 		{
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
@@ -120,7 +120,7 @@ namespace cobebe
 			{
 				if (event.type == SDL_QUIT)
 				{
-					quit = true;
+					m_running = false;
 				}
 			}
 		}

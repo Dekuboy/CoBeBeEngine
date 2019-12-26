@@ -24,8 +24,16 @@ namespace cobebe
 	}
 
 
-	void Camera::setProjection(float _angle, float _width, float _height, float _near, float _far)
+	void Camera::setPerspective(float _angle, float _width, float _height, float _near, float _far)
 	{
 		m_projection = glm::perspective(glm::radians(_angle), _width / _height, _near, _far);
+	}
+
+	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::VertexArray> _meshInternal)
+	{
+		if (m_isOn)
+		{
+			_shaderInternal->draw(m_texture, _meshInternal);
+		}
 	}
 }

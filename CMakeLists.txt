@@ -62,9 +62,6 @@ add_library(cobebe
 	src/cobebe/Renderer/Renderer.h
 	src/cobebe/Renderer/Renderer.cpp
 
-	src/cobebe/TriangleRenderer.h
-	src/cobebe/TriangleRenderer.cpp
-
 	src/cobebe/Cobebe.h
 )
 

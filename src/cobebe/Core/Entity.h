@@ -8,14 +8,23 @@ namespace cobebe
 	class Component;
 	class Transform;
 
+	/**
+	* Represents an object in the game loop
+	*/
 	class Entity
 	{
 	public:
 		Entity();
 		virtual ~Entity() {}
 
+		/**
+		* \brief Returns pointer to Core
+		*/
 		const std::shared_ptr<Core> getCore();
 
+		/**
+		* \brief Adds Component of type to Entity
+		*/
 		template <class T>
 		std::shared_ptr<T> addComponent()
 		{
@@ -26,6 +35,9 @@ namespace cobebe
 			return comp;
 		}
 
+		/**
+		* \brief Adds Component of type to Entity using parameters
+		*/
 		template <class T, class A>
 		std::shared_ptr<T> addComponent(A _a)
 		{
@@ -36,6 +48,9 @@ namespace cobebe
 			return comp;
 		}
 
+		/**
+		* \brief Adds Component of type to Entity using parameters
+		*/
 		template <class T, class A, class B>
 		std::shared_ptr<T> addComponent(A _a, B _b)
 		{
@@ -46,6 +61,9 @@ namespace cobebe
 			return comp;
 		}
 
+		/**
+		* \brief Adds Component of type to Entity using parameters
+		*/
 		template <class T, class A, class B, class C>
 		std::shared_ptr<T> addComponent(A _a, B _b, C _c)
 		{
@@ -56,6 +74,9 @@ namespace cobebe
 			return comp;
 		}
 
+		/**
+		* \brief Adds Component of type to Entity using parameters
+		*/
 		template <class T>
 		std::shared_ptr<T> getComponent()
 		{
@@ -73,19 +94,40 @@ namespace cobebe
 			throw Exception("Component not found");
 		}
 
+		/**
+		* \brief Returns pointer to Transform component
+		*/
 		std::shared_ptr<Transform> getTransform();
 
 	private:
 		friend class Core;
-		bool m_kill;
+		bool m_kill; /// Marks Entity for destruction
 
-		std::list<std::shared_ptr<Component>> m_components;
-		std::weak_ptr<Core> m_core;
-		std::weak_ptr<Entity> m_self;
-		std::weak_ptr<Transform> m_transform;
+		std::list<std::shared_ptr<Component>> m_components; /// List of components attached to entity
+		std::weak_ptr<Core> m_core; /// Pointer to games Core
+		std::weak_ptr<Entity> m_self; /// Pointer to self to be placed in attached components
+		std::weak_ptr<Transform> m_transform; /// Pointer to attached Transform Component
 
+		/**
+		* \brief Calls on all components once per frame
+		*/
 		void tick();
+		/**
+		* \brief Calls on all components before displaying to screen
+		*/
+		void preDisplay();
+		/**
+		* \brief Calls on all components once displaying to screen
+		*/
 		void display();
+		/**
+		* \brief Calls on all components after displaying to screen
+		*/
+		void postDisplay();
+		/**
+		* \brief Calls on all components when the GUI is drawn to screen
+		*/
+		void GUI();
 
 	};
 }

@@ -10,23 +10,34 @@ namespace cobebe
 {
 	class Renderer;
 
+	/**
+	* Parent class for loaded assets
+	*/
 	class Asset
 	{
 	public:
+		/**
+		* \brief Activates once when loading a file
+		*/
 		virtual void onLoad(const std::string& _path);
 
 	protected:
 		friend class Resources;
-		std::string m_path;
-		std::weak_ptr<glwrap::Context> m_context;
+		std::string m_path; /// Folder path as identification
+		std::weak_ptr<glwrap::Context> m_context; /// Pointer to context for OpenGL asset creation
 
 	};
 
 
-
+	/**
+	* Holds and manages loaded file assets
+	*/
 	class Resources
 	{
 	public:
+		/**
+		* \brief Loads Asset of type (loads file if new Asset)
+		*/
 		template <class T>
 		std::shared_ptr<T> load(std::string _path)
 		{
@@ -52,13 +63,15 @@ namespace cobebe
 
 	private:
 		friend class Core;
-		std::list<std::shared_ptr<Asset>> m_resources;
-		std::weak_ptr<glwrap::Context> m_context;
+		std::list<std::shared_ptr<Asset>> m_resources; /// List of currently loaded assets
+		std::weak_ptr<glwrap::Context> m_context; /// Pointer to context for OpenGL assets
 
 	};
 
 
-
+	/**
+	* Stores a VertexArray to set in Renderer
+	*/
 	class Mesh : private NonCopyable, public Asset
 	{
 	public:
@@ -66,12 +79,14 @@ namespace cobebe
 
 	private:
 		friend class Renderer;
-		std::shared_ptr<glwrap::VertexArray> m_internal;
+		std::shared_ptr<glwrap::VertexArray> m_internal; /// Pointer to OpenGL VertexArray
 
 	};
 
 
-
+	/**
+	* Stores a Texture to set in Renderer
+	*/
 	class Texture : private NonCopyable, public Asset
 	{
 	public:
@@ -79,12 +94,14 @@ namespace cobebe
 
 	private:
 		friend class Renderer;
-		std::shared_ptr<glwrap::Texture> m_internal;
+		std::shared_ptr<glwrap::Texture> m_internal; /// Pointer to OpenGL Texture
 
 	};
 
 
-
+	/**
+	* Stores a Shader to set in Renderer
+	*/
 	class Shader : private NonCopyable, public Asset
 	{
 	public:
@@ -92,7 +109,7 @@ namespace cobebe
 
 	private:
 		friend class Renderer;
-		std::shared_ptr<glwrap::ShaderProgram> m_internal;
+		std::shared_ptr<glwrap::ShaderProgram> m_internal; /// Pointer to OpenGL ShaderProgram
 
 	};
 }
