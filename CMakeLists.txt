@@ -57,16 +57,26 @@ add_library(cobebe
 	src/cobebe/Core/Camera.h
 	src/cobebe/Core/Camera.cpp
 
+	src/cobebe/Resources/Asset.h
+	src/cobebe/Resources/Asset.cpp
 	src/cobebe/Resources/Resources.h
 	src/cobebe/Resources/Resources.cpp
+
+	src/cobebe/Resources/RendAssets.h
+	src/cobebe/Resources/RendAssets.cpp
+	src/cobebe/Resources/Sound.h
+	src/cobebe/Resources/Sound.cpp
+
 	src/cobebe/Renderer/Renderer.h
 	src/cobebe/Renderer/Renderer.cpp
+	src/cobebe/Speaker/Speaker.h
+	src/cobebe/Speaker/Speaker.cpp
 
 	src/cobebe/Cobebe.h
 )
 
 target_link_libraries(cobebe 
-	SDL2 glwrap
+	SDL2 glwrap OpenAL32
 )
 
 add_executable(dungeon

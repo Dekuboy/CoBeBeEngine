@@ -3,6 +3,8 @@
 #include <SDL2/SDL.h>
 #include <cobebe/NonCopyable.h>
 #include <glwrap/glwrap.h>
+#include <AL/al.h>
+#include <AL/alc.h>
 
 namespace cobebe
 {
@@ -17,8 +19,9 @@ namespace cobebe
 	* The Core of the engine
 	* -to be instantiated once in main via Core::initialise
 	* -manages game systems and entities
-	* -use to access access game systems
-	* -use to add entities to game
+	* -use to: access access game systems
+	*          add entities to game
+	*          load assets into game
 	*/
 	class Core : private NonCopyable
 	{
@@ -85,9 +88,22 @@ namespace cobebe
 		*/
 		std::shared_ptr<Camera> getCurrentCamera();
 		/**
-		* \brief Gets Camera specified
+		* \brief Returns Camera specified
 		*/
 		std::shared_ptr<Camera> getCamera();
+
+		/**
+		* \brief Returns Keyboard inputs
+		*/
+		std::shared_ptr<Keyboard> getKeyboard();
+		/**
+		* \brief Returns Mouse inputs
+		*/
+		std::shared_ptr<Mouse> getMouse();
+		/**
+		* \brief Returns Environment inputs
+		*/
+		std::shared_ptr<Environment> getEnvironment();
 
 		/**
 		* \brief Returns Asset of file path
@@ -102,8 +118,11 @@ namespace cobebe
 	private:
 		std::weak_ptr<Core> m_self; /// Pointer to self to be placed in added entities
 
-		SDL_Window *m_window;
+		SDL_Window *m_window; /// Engine window
 		std::shared_ptr<glwrap::ShaderProgram> m_nullShader; /// Draws RenderTexture
+
+		ALCdevice * m_device; /// Engine sound device
+		ALCcontext * m_alContext; /// Engine sound context
 
 		std::shared_ptr<glwrap::Context> m_context; /// Safely instantiates OpenGL objects
 		std::list<std::shared_ptr<Entity>> m_entities; /// List of entities in game loop

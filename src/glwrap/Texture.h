@@ -1,5 +1,5 @@
-#ifndef TEXTURE_H
-#define TEXTURE_H
+#ifndef _GLWRAP_TEXTURE
+#define _GLWRAP_TEXTURE
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>

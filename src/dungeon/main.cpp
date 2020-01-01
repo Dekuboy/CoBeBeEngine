@@ -13,6 +13,7 @@ int main()
 	renderer->setMesh(mesh);
 	renderer->setTexture(texture);
 	renderer->setShader(shader);
+	entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
 	
 	App->run();
 

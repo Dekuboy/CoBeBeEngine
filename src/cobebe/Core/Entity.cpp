@@ -24,6 +24,19 @@ namespace cobebe
 		{
 			(*it)->onTick();
 		}
+
+		// Iterate through each Component and delete any marked as killed
+		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end();)
+		{
+			if ((*it)->m_kill)
+			{
+				it = m_components.erase(it);
+			}
+			else
+			{
+				it++;
+			}
+		}
 	}
 
 	void Entity::display()

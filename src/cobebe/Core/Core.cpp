@@ -16,6 +16,19 @@ namespace cobebe
 
 	Core::~Core()
 	{
+		/*
+		* Clean up OpenAL data.
+		*
+		* Note: Make sure current context has been set to NULL before deleting context.
+		*       Make sure context destroyed before closing device.
+		*/
+		alcMakeContextCurrent(NULL);
+		alcDestroyContext(m_alContext);
+		alcCloseDevice(m_device);
+
+		/*
+		* Clean up SDL Window
+		*/
 		SDL_DestroyWindow(m_window);
 		SDL_Quit();
 	}
@@ -40,6 +53,35 @@ namespace cobebe
 			throw Exception("Window");
 		}
 
+		/*
+		* Initialize OpenAL audio system
+		*/
+
+		// Open up the OpenAL device
+		temp->m_device = alcOpenDevice(NULL);
+
+		if (temp->m_device == NULL)
+		{
+			throw Exception("Cannot open al device");
+		}
+
+		// Create audio context
+		temp->m_alContext = alcCreateContext(temp->m_device, NULL);
+
+		if (temp->m_alContext == NULL)
+		{
+			alcCloseDevice(temp->m_device);
+			throw Exception("Cannot create al context");
+		}
+
+		// Set as current context
+		if (!alcMakeContextCurrent(temp->m_alContext))
+		{
+			alcDestroyContext(temp->m_alContext);
+			alcCloseDevice(temp->m_device);
+			throw Exception("Cannot set as current context");
+		}
+
 		temp->m_context = glwrap::Context::initialise();
 		temp->m_currentCamera = temp->addCamera();
 		temp->m_currentCamera.lock()->m_isOn = true;
@@ -61,6 +103,7 @@ namespace cobebe
 		float currentTime, lastTime = SDL_GetTicks();
 		while (m_running)
 		{
+			// Tick each Entity, if an error occurs destroy the Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				try
@@ -74,6 +117,7 @@ namespace cobebe
 				}
 			}
 
+			// Iterate through entities and delete any marked as killed
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end();)
 			{
 				if ((*it)->m_kill)
@@ -86,6 +130,7 @@ namespace cobebe
 				}
 			}
 
+			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
 			glEnable(GL_CULL_FACE);
 			glEnable(GL_DEPTH_TEST);
@@ -93,11 +138,13 @@ namespace cobebe
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
 
+			// Display each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->display();
 			}
 
+			// Draw current Camera to screen
 			m_nullShader->setViewport(glm::vec4(0, 0, 
 				m_environment->m_width, m_environment->m_height));
 			m_nullShader->setUniform("in_Texture", 
@@ -106,6 +153,7 @@ namespace cobebe
 
 			SDL_GL_SwapWindow(m_window);
 
+			// Update deltaTime
 			currentTime = SDL_GetTicks();
 			m_environment->m_deltaTime = (float)(currentTime - lastTime) / 1000.0f;
 			lastTime = currentTime;
@@ -128,11 +176,12 @@ namespace cobebe
 
 	void Core::stop()
 	{
-
+		m_running = false;
 	}
 
 	std::shared_ptr<Entity> Core::addEntity()
 	{
+		// Initialise Entity before pushing to list
 		std::shared_ptr<Entity> tempEntity = std::make_shared<Entity>();
 		std::shared_ptr<Transform> tempTransform = tempEntity->addComponent<Transform>();
 		tempEntity->m_transform = tempTransform;
@@ -144,6 +193,7 @@ namespace cobebe
 
 	std::shared_ptr<Camera> Core::addCamera()
 	{
+		// Initialise Camera before pushing to list
 		std::shared_ptr<Camera> tempCamera = std::make_shared<Camera>();
 		int width = m_environment->m_width;
 		int height = m_environment->m_height;
@@ -157,6 +207,7 @@ namespace cobebe
 
 	std::shared_ptr<Camera> Core::addCamera(int _renderWidth, int _renderHeight)
 	{
+		// Initialise Camera before pushing to list
 		std::shared_ptr<Camera> tempCamera = std::make_shared<Camera>();
 		tempCamera->m_texture = m_context->createRenderTexture(_renderWidth, _renderHeight);
 		tempCamera->m_projection = glm::perspective(glm::radians(45.0f),
@@ -169,5 +220,20 @@ namespace cobebe
 	std::shared_ptr<Camera> Core::getCurrentCamera()
 	{
 		return m_currentCamera.lock();
+	}
+
+	std::shared_ptr<Keyboard> Core::getKeyboard()
+	{
+		return m_keyboard;
+	}
+
+	std::shared_ptr<Mouse> Core::getMouse()
+	{
+		return m_mouse;
+	}
+
+	std::shared_ptr<Environment> Core::getEnvironment()
+	{
+		return m_environment;
 	}
 }

@@ -1,5 +1,5 @@
-#ifndef RENDTEXTURE_H
-#define RENDTEXTURE_H
+#ifndef _GLWRAP_RENDTEXTURE
+#define _GLWRAP_RENDTEXTURE
 #include <glwrap/Texture.h>
 
 namespace glwrap

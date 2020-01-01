@@ -3,6 +3,7 @@
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Core/Core.h>
 #include <cobebe/Resources/Resources.h>
+#include <cobebe/Resources/RendAssets.h>
 #include <cobebe/Core/Camera.h>
 
 namespace cobebe
@@ -22,14 +23,29 @@ namespace cobebe
 		m_mesh = _mesh;
 	}
 
+	void Renderer::setMesh(std::string _path)
+	{
+		m_mesh = getCore()->loadAsset<Mesh>(_path);
+	}
+
 	void Renderer::setTexture(std::shared_ptr<Texture> _texture)
 	{
 		m_texture = _texture;
 	}
 
+	void Renderer::setTexture(std::string _path)
+	{
+		m_texture = getCore()->loadAsset<Texture>(_path);
+	}
+
 	void Renderer::setShader(std::shared_ptr<Shader> _shader)
 	{
 		m_shader = _shader;
+	}
+
+	void Renderer::setShader(std::string _path)
+	{
+		m_shader = getCore()->loadAsset<Shader>(_path);
 	}
 
 	void Renderer::onDisplay()

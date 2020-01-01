@@ -45,6 +45,7 @@ namespace cobebe
 
 	private:
 		friend class Core;
+
 		bool m_isOn; ///< Checks if the Camera is on
 		std::shared_ptr<glwrap::RenderTexture> m_texture; ///< Camera draws to internal RenderTexture
 

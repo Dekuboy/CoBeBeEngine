@@ -1,5 +1,5 @@
-#ifndef _ENTITY_COMPONENT
-#define _ENTITY_COMPONENT
+#ifndef _COBEBE_COMPONENT
+#define _COBEBE_COMPONENT
 #include <memory>
 #include <cobebe/NonCopyable.h>
 
@@ -10,6 +10,7 @@ namespace cobebe
 	class Keyboard;
 	class Mouse;
 	class Environment;
+	class Resources;
 
 	/**
 	* Parent class ready to attach to an Entity
@@ -24,33 +25,35 @@ namespace cobebe
 	class Component : private NonCopyable
 	{
 	public:
+		Component();
 		virtual ~Component() {}
 
 		/**
-		* \brief Retrieve attached entity
+		* \brief Retrieve attached Entity
 		*/
 		std::shared_ptr<Entity> getEntity();
 		/**
-		* \brief Retrieve engine core
+		* \brief Retrieve engine Core
 		*/
 		std::shared_ptr<Core> getCore();
 		/**
-		* \brief Retrieve keyboard inputs
+		* \brief Retrieve Keyboard inputs
 		*/
 		std::shared_ptr<Keyboard> getKeyboard();
 		/**
-		* \brief Retrieve mouse inputs
+		* \brief Retrieve Mouse inputs
 		*/
 		std::shared_ptr<Mouse> getMouse();
 		/**
-		* \brief Retrieve engine environment
+		* \brief Retrieve engine Environment
 		*/
 		std::shared_ptr<Environment> getEnvironment();
 
 	private:
 		friend class Entity;
+		bool m_kill; /// Marks Component for destruction
 
-		std::weak_ptr<Entity> m_entity; ///< Pointer to entity to
+		std::weak_ptr<Entity> m_entity; ///< Pointer to entity
 
 		/**
 		* \brief Activates when added to Entity
