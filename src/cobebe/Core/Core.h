@@ -13,6 +13,7 @@ namespace cobebe
 	class Camera;
 	class Keyboard;
 	class Mouse;
+	class Gamepad;
 	class Resources;
 
 	/**
@@ -93,6 +94,10 @@ namespace cobebe
 		std::shared_ptr<Camera> getCamera();
 
 		/**
+		* \brief Polls events and updates inputs
+		*/
+		void pollSDLEvent();
+		/**
 		* \brief Returns Keyboard inputs
 		*/
 		std::shared_ptr<Keyboard> getKeyboard();
@@ -131,6 +136,7 @@ namespace cobebe
 		std::shared_ptr<Environment> m_environment; /// Holds deltaTime and window size
 		std::shared_ptr<Keyboard> m_keyboard; /// Holds keyboard inputs
 		std::shared_ptr<Mouse> m_mouse; /// Holds mouse inputs
+		std::shared_ptr<Gamepad> m_gamepad; /// Holds gamepad inputs
 
 		std::shared_ptr<Resources> m_resources; /// Holds loaded file paths
 

@@ -3,9 +3,11 @@
 #include <cobebe/Core/Transform.h>
 #include <cobebe/Core/Camera.h>
 #include <cobebe/Core/Environment.h>
+#include <cobebe/Core/Keyboard.h>
+#include <cobebe/Core/Mouse.h>
 #include <cobebe/Resources/Resources.h>
-#include <SDL2/SDL.h>
 #include <glm/ext.hpp>
+#include <iostream>
 
 namespace cobebe
 {
@@ -45,7 +47,7 @@ namespace cobebe
 
 		temp->m_window = SDL_CreateWindow("CoBeBe Window",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-			temp->m_environment->m_width, temp->m_environment->m_height, 
+			temp->m_environment->m_width, temp->m_environment->m_height,
 			SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
 		if (!SDL_GL_CreateContext(temp->m_window))
@@ -85,6 +87,12 @@ namespace cobebe
 		temp->m_context = glwrap::Context::initialise();
 		temp->m_currentCamera = temp->addCamera();
 		temp->m_currentCamera.lock()->m_isOn = true;
+
+		temp->m_keyboard = std::make_shared<Keyboard>();
+		temp->m_keyboard->m_core = temp;
+		temp->m_keyboard->onInit();
+
+		temp->m_mouse = std::make_shared<Mouse>();
 
 		temp->m_resources = std::make_shared<Resources>();
 		temp->m_resources->m_context = temp->m_context;
@@ -130,6 +138,9 @@ namespace cobebe
 				}
 			}
 
+			// Reset keys for next tick
+			m_keyboard->resetKeys();
+
 			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
 			glEnable(GL_CULL_FACE);
@@ -145,9 +156,9 @@ namespace cobebe
 			}
 
 			// Draw current Camera to screen
-			m_nullShader->setViewport(glm::vec4(0, 0, 
+			m_nullShader->setViewport(glm::vec4(0, 0,
 				m_environment->m_width, m_environment->m_height));
-			m_nullShader->setUniform("in_Texture", 
+			m_nullShader->setUniform("in_Texture",
 				m_currentCamera.lock()->m_texture);
 			m_nullShader->draw();
 
@@ -162,14 +173,11 @@ namespace cobebe
 				SDL_Delay((unsigned int)(((1.0f / 60.0f) - m_environment->m_deltaTime)*1000.0f));
 			}
 
-			SDL_Event event = { 0 };
-
-			while (SDL_PollEvent(&event))
+			// Poll SDL Events
+			pollSDLEvent();
+			if (m_keyboard->isKeyPressed(SDL_SCANCODE_W))
 			{
-				if (event.type == SDL_QUIT)
-				{
-					m_running = false;
-				}
+				m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
 			}
 		}
 	}
@@ -220,6 +228,58 @@ namespace cobebe
 	std::shared_ptr<Camera> Core::getCurrentCamera()
 	{
 		return m_currentCamera.lock();
+	}
+
+	void Core::pollSDLEvent()
+	{
+		SDL_Event event = { 0 };
+
+		while (SDL_PollEvent(&event))
+		{
+			int code;
+			if (event.type == SDL_QUIT)
+			{
+				m_running = false;
+			}
+			else if (event.type == SDL_KEYDOWN)
+			{
+				code = event.key.keysym.scancode;
+				m_keyboard->m_keysPressed.push_back
+				(code);
+			}
+			else if (event.type == SDL_KEYUP)
+			{
+				code = event.key.keysym.scancode;
+				m_keyboard->m_keysReleased.push_back
+				(code);
+			}
+		}
+
+		int posX, posY;
+		SDL_GetMouseState(&posX, &posY);
+
+		// If applicable, return mouse to centre
+		if (m_mouse->m_warpMouse)
+		{
+			int Mid_X = m_environment->m_width / 2;
+			int Mid_Y = m_environment->m_height / 2;
+
+			SDL_WarpMouseInWindow(NULL, Mid_X, Mid_Y);
+
+			// Set the movement of the mouse
+			m_mouse->m_movement.x = posX - Mid_X;
+			m_mouse->m_movement.y = posY - Mid_Y;
+
+			m_mouse->m_position = glm::vec2(posX, posY);
+		}
+		else
+		{
+			// Set the movement of the mouse
+			m_mouse->m_movement.x = posX - m_mouse->m_position.x;
+			m_mouse->m_movement.y = posY - m_mouse->m_position.y;
+
+			m_mouse->m_position = glm::vec2(posX, posY);
+		}
 	}
 
 	std::shared_ptr<Keyboard> Core::getKeyboard()

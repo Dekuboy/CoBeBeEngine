@@ -106,17 +106,25 @@ namespace cobebe
 		{
 			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
+			cmp = std::dynamic_pointer_cast<T>(m_transform.lock());
+			if (!cmp)
 			{
-				cmp = std::dynamic_pointer_cast<T>(*it);
-				if (cmp)
+				for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
 				{
-					(*it)->m_kill = true;
-					return;
+					cmp = std::dynamic_pointer_cast<T>(*it);
+					if (cmp)
+					{
+						(*it)->m_kill = true;
+						return;
+					}
 				}
-			}
 
-			throw Exception("Component not found");
+				throw Exception("Component not found");
+			}
+			else
+			{
+				throw Exception("Cannot remove Transform component");
+			}
 		}
 
 		/**
@@ -127,20 +135,28 @@ namespace cobebe
 		{
 			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
+			cmp = std::dynamic_pointer_cast<T>(m_transform.lock());
+			if (!cmp)
 			{
-				cmp = std::dynamic_pointer_cast<T>(*it);
-				if (cmp)
+				for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
 				{
-					if (_removeCmp == cmp)
+					cmp = std::dynamic_pointer_cast<T>(*it);
+					if (cmp)
 					{
-						(*it)->m_kill = true;
-						return;
+						if (_removeCmp == cmp)
+						{
+							(*it)->m_kill = true;
+							return;
+						}
 					}
 				}
-			}
 
-			throw Exception("Component not found");
+				throw Exception("Component not found");
+			}
+			else
+			{
+				throw Exception("Cannot remove Transform component");
+			}
 		}
 
 		/**
@@ -151,20 +167,28 @@ namespace cobebe
 		{
 			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
+			cmp = std::dynamic_pointer_cast<T>(m_transform.lock());
+			if (!cmp)
 			{
-				cmp = std::dynamic_pointer_cast<T>(*it);
-				if (cmp)
+				for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
 				{
-					if (_removeCmp == &(*cmp))
+					cmp = std::dynamic_pointer_cast<T>(*it);
+					if (cmp)
 					{
-						(*it)->m_kill = true;
-						return;
+						if (_removeCmp == &(*cmp))
+						{
+							(*it)->m_kill = true;
+							return;
+						}
 					}
 				}
-			}
 
-			throw Exception("Component not found");
+				throw Exception("Component not found");
+			}
+			else
+			{
+				throw Exception("Cannot remove Transform");
+			}
 		}
 
 		/**

@@ -8,6 +8,7 @@
 namespace cobebe
 {
 	class Sound;
+	class Transform;
 
 	class Speaker : public Component
 	{
@@ -19,6 +20,7 @@ namespace cobebe
 	private:
 		ALuint m_sourceId;
 
+		std::weak_ptr<Transform> m_transform; /// Pointer to Transform component
 		std::string m_path;
 		std::shared_ptr<Sound> m_soundSrc;
 		bool m_isPlaying;
