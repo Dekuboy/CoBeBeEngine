@@ -53,6 +53,8 @@ add_library(cobebe
 	src/cobebe/Core/Keyboard.cpp
 	src/cobebe/Core/Mouse.h
 	src/cobebe/Core/Mouse.cpp
+	src/cobebe/Core/Gamepad.h
+	src/cobebe/Core/Gamepad.cpp
 
 	src/cobebe/Core/Camera.h
 	src/cobebe/Core/Camera.cpp

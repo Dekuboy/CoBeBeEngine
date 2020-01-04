@@ -106,6 +106,10 @@ namespace cobebe
 		*/
 		std::shared_ptr<Mouse> getMouse();
 		/**
+		* \brief Returns Gamepad inputs
+		*/
+		std::shared_ptr<Gamepad> getGamepad();
+		/**
 		* \brief Returns Environment inputs
 		*/
 		std::shared_ptr<Environment> getEnvironment();

@@ -15,8 +15,6 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		std::weak_ptr<Core> m_core;
-
 		const uint8_t* m_state;
 
 		std::vector<int> m_keysPressed;

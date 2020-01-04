@@ -5,6 +5,7 @@
 #include <cobebe/Core/Environment.h>
 #include <cobebe/Core/Keyboard.h>
 #include <cobebe/Core/Mouse.h>
+#include <cobebe/Core/Gamepad.h>
 #include <cobebe/Resources/Resources.h>
 #include <glm/ext.hpp>
 #include <iostream>
@@ -29,6 +30,11 @@ namespace cobebe
 		alcCloseDevice(m_device);
 
 		/*
+		* Clean up input Devices
+		*/
+		m_gamepad = NULL;
+
+		/*
 		* Clean up SDL Window
 		*/
 		SDL_DestroyWindow(m_window);
@@ -40,9 +46,9 @@ namespace cobebe
 		std::shared_ptr<Core> temp = std::make_shared<Core>();
 		temp->m_environment = std::make_shared<Environment>();
 
-		if (SDL_Init(SDL_INIT_VIDEO) < 0)
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
 		{
-			throw Exception("Vid");
+			throw Exception("SDL");
 		}
 
 		temp->m_window = SDL_CreateWindow("CoBeBe Window",
@@ -89,10 +95,11 @@ namespace cobebe
 		temp->m_currentCamera.lock()->m_isOn = true;
 
 		temp->m_keyboard = std::make_shared<Keyboard>();
-		temp->m_keyboard->m_core = temp;
 		temp->m_keyboard->onInit();
 
 		temp->m_mouse = std::make_shared<Mouse>();
+
+		temp->m_gamepad = std::make_shared<Gamepad>();
 
 		temp->m_resources = std::make_shared<Resources>();
 		temp->m_resources->m_context = temp->m_context;
@@ -138,8 +145,9 @@ namespace cobebe
 				}
 			}
 
-			// Reset keys for next tick
+			// Reset inputs for next tick
 			m_keyboard->resetKeys();
+			m_gamepad->resetButtons();
 
 			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
@@ -166,7 +174,7 @@ namespace cobebe
 
 			// Update deltaTime
 			currentTime = SDL_GetTicks();
-			m_environment->m_deltaTime = (float)(currentTime - lastTime) / 1000.0f;
+			m_environment->m_deltaTime = (currentTime - lastTime) / 1000.0f;
 			lastTime = currentTime;
 			if (m_environment->m_deltaTime < (1.0f / 60.0f))
 			{
@@ -175,7 +183,7 @@ namespace cobebe
 
 			// Poll SDL Events
 			pollSDLEvent();
-			if (m_keyboard->isKeyPressed(SDL_SCANCODE_W))
+			if (m_keyboard->isKeyPressed(SDL_SCANCODE_W) || m_gamepad->isButtonPressed(0, GamepadButton::aButton))
 			{
 				m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
 			}
@@ -234,6 +242,8 @@ namespace cobebe
 	{
 		SDL_Event event = { 0 };
 
+		int controllerId;
+
 		while (SDL_PollEvent(&event))
 		{
 			int code;
@@ -252,6 +262,36 @@ namespace cobebe
 				code = event.key.keysym.scancode;
 				m_keyboard->m_keysReleased.push_back
 				(code);
+			}
+			else if (event.type == SDL_CONTROLLERBUTTONDOWN)
+			{
+				controllerId = m_gamepad->getControllerId(event.cdevice.which);
+				m_gamepad->pressButton(controllerId, GamepadButton(event.cbutton.button));
+			}
+			else if (event.type == SDL_CONTROLLERBUTTONUP)
+			{
+				controllerId = m_gamepad->getControllerId(event.cdevice.which);
+				m_gamepad->releaseButton(controllerId, GamepadButton(event.cbutton.button));
+			}
+			else if (event.type == SDL_CONTROLLERAXISMOTION)
+			{
+				controllerId = m_gamepad->getControllerId(event.cdevice.which);
+				if (abs(event.caxis.value) > 3000)
+				{
+					m_gamepad->setAxis(controllerId, GamepadAxis(event.caxis.axis), event.caxis.value);
+				}
+				else
+				{
+					m_gamepad->setAxis(controllerId, GamepadAxis(event.caxis.axis), 0);
+				}
+			}
+			else if (event.type == SDL_CONTROLLERDEVICEADDED)
+			{
+				m_gamepad->addController(event.cdevice.which);
+			}
+			else if (event.type == SDL_CONTROLLERDEVICEREMOVED)
+			{
+				m_gamepad->removeController(event.cdevice.which);
 			}
 		}
 
@@ -290,6 +330,11 @@ namespace cobebe
 	std::shared_ptr<Mouse> Core::getMouse()
 	{
 		return m_mouse;
+	}
+
+	std::shared_ptr<Gamepad> Core::getGamepad()
+	{
+		return m_gamepad;
 	}
 
 	std::shared_ptr<Environment> Core::getEnvironment()
