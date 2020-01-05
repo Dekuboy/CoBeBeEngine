@@ -10,7 +10,7 @@ namespace cobebe
 {
 	void Renderer::onInit()
 	{
-		m_transform = getEntity()->getComponent<Transform>();
+		m_transform = getTransform();
 	}
 
 	void Renderer::setCamera(std::shared_ptr<Camera> _camera)

@@ -5,9 +5,12 @@
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Core/Component.h>
 #include <cobebe/Core/Transform.h>
+#include <cobebe/Collider/Collider.h>
+#include <cobebe/Collider/BoxCollider.h>
 #include <cobebe/Core/Environment.h>
 #include <cobebe/Core/Keyboard.h>
 #include <cobebe/Core/Mouse.h>
+#include <cobebe/Core/Gamepad.h>
 #include <cobebe/Core/Camera.h>
 #include <cobebe/Resources/Asset.h>
 #include <cobebe/Resources/Resources.h>

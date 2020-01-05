@@ -5,37 +5,40 @@
 #define _COBEBE_GAMEPAD_LIMIT 4
 #endif
 
-namespace cobebe
+namespace cobebeInput
 {
 	enum GamepadButton
 	{
-		aButton,
+		aButton = SDL_CONTROLLER_BUTTON_A,
 		bButton,
 		xButton,
 		yButton,
-		back,
-		guide,
-		start,
-		leftStick,
-		rightStick,
-		leftShoulder,
-		rightShoulder,
-		up,
-		down,
-		left,
-		right
+		backButton,
+		guideButton,
+		startButton,
+		leftStickButton,
+		rightStickButton,
+		leftShoulderButton,
+		rightShoulderButton,
+		upButton,
+		downButton,
+		leftButton,
+		rightButton
 	};
 
 	enum GamepadAxis
 	{
-		leftX,
-		leftY,
-		rightX,
-		rightY,
-		leftTrigger,
-		rightTrigger
+		leftXAxis,
+		leftYAxis,
+		rightXAxis,
+		rightYAxis,
+		leftTriggerAxis,
+		rightTriggerAxis
 	};
+}
 
+namespace cobebe
+{
 	class Core;
 
 	class GamepadInputs
@@ -45,9 +48,9 @@ namespace cobebe
 
 	private:
 		friend class Gamepad;
-		std::vector<GamepadButton> m_buttons;
-		std::vector<GamepadButton> m_buttonsPressed;
-		std::vector<GamepadButton> m_buttonsReleased;
+		std::vector<cobebeInput::GamepadButton> m_buttons;
+		std::vector<cobebeInput::GamepadButton> m_buttonsPressed;
+		std::vector<cobebeInput::GamepadButton> m_buttonsReleased;
 
 		std::vector<int> m_axisValues;
 
@@ -61,11 +64,11 @@ namespace cobebe
 		Gamepad();
 		~Gamepad();
 
-		bool isButton(int _controllerId, GamepadButton _button);
-		bool isButtonPressed(int _controllerId, GamepadButton _button);
-		bool isButtonReleased(int _controllerId, GamepadButton _button);
+		bool isButton(int _controllerId, cobebeInput::GamepadButton _button);
+		bool isButtonPressed(int _controllerId, cobebeInput::GamepadButton _button);
+		bool isButtonReleased(int _controllerId, cobebeInput::GamepadButton _button);
 
-		int getAxis(int _controllerId, GamepadAxis _axis);
+		int getAxis(int _controllerId, cobebeInput::GamepadAxis _axis);
 
 	private:
 		friend class Core;
@@ -76,10 +79,10 @@ namespace cobebe
 
 		int getControllerId(Sint32 _gamepadId);
 
-		void pressButton(int _controllerId, GamepadButton _button);
-		void releaseButton(int _controllerId, GamepadButton _button);
+		void pressButton(int _controllerId, cobebeInput::GamepadButton _button);
+		void releaseButton(int _controllerId, cobebeInput::GamepadButton _button);
 
-		void setAxis(int _controllerId, GamepadAxis _axis, int _value);
+		void setAxis(int _controllerId, cobebeInput::GamepadAxis _axis, int _value);
 
 		void addController(Sint32 _gamepadId);
 		void removeController(Sint32 _gamepadId);

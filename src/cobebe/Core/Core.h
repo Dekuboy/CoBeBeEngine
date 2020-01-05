@@ -56,7 +56,7 @@ namespace cobebe
 		template <class T>
 		std::shared_ptr<Entity> getEntityByComponent()
 		{
-			std::shared_ptr<T> cmp
+			std::shared_ptr<T> cmp;
 
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
@@ -74,6 +74,25 @@ namespace cobebe
 				}
 			}
 			return NULL;
+		}
+		/**
+		* \brief Returns all entities with the input Component
+		*/
+		template <class T>
+		std::list<std::shared_ptr<Entity>> getAllEntitiesByComponent()
+		{
+			std::list<std::shared_ptr<Entity>> rtn;
+			std::shared_ptr<T> cmp;
+
+			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			{
+				cmp = (*it)->getComponent<T>();
+				if (cmp)
+				{
+					rtn.push_back(*it);
+				}
+			}
+			return rtn;
 		}
 
 		/**

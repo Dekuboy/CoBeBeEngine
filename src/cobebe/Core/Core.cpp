@@ -157,6 +157,12 @@ namespace cobebe
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
 
+			// PreDisplay each Entity
+			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			{
+				(*it)->preDisplay();
+			}
+
 			// Display each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
@@ -172,6 +178,18 @@ namespace cobebe
 
 			SDL_GL_SwapWindow(m_window);
 
+			// PostDisplay each Entity
+			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			{
+				(*it)->postDisplay();
+			}
+
+			// GUI each Entity
+			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			{
+				(*it)->gui();
+			}
+
 			// Update deltaTime
 			currentTime = SDL_GetTicks();
 			m_environment->m_deltaTime = (currentTime - lastTime) / 1000.0f;
@@ -183,7 +201,7 @@ namespace cobebe
 
 			// Poll SDL Events
 			pollSDLEvent();
-			if (m_keyboard->isKeyPressed(SDL_SCANCODE_W) || m_gamepad->isButtonPressed(0, GamepadButton::aButton))
+			if (m_keyboard->isKeyPressed(SDL_SCANCODE_Q) || m_gamepad->isButtonPressed(0, cobebeInput::GamepadButton::aButton))
 			{
 				m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
 			}
@@ -266,23 +284,23 @@ namespace cobebe
 			else if (event.type == SDL_CONTROLLERBUTTONDOWN)
 			{
 				controllerId = m_gamepad->getControllerId(event.cdevice.which);
-				m_gamepad->pressButton(controllerId, GamepadButton(event.cbutton.button));
+				m_gamepad->pressButton(controllerId, cobebeInput::GamepadButton(event.cbutton.button));
 			}
 			else if (event.type == SDL_CONTROLLERBUTTONUP)
 			{
 				controllerId = m_gamepad->getControllerId(event.cdevice.which);
-				m_gamepad->releaseButton(controllerId, GamepadButton(event.cbutton.button));
+				m_gamepad->releaseButton(controllerId, cobebeInput::GamepadButton(event.cbutton.button));
 			}
 			else if (event.type == SDL_CONTROLLERAXISMOTION)
 			{
 				controllerId = m_gamepad->getControllerId(event.cdevice.which);
 				if (abs(event.caxis.value) > 3000)
 				{
-					m_gamepad->setAxis(controllerId, GamepadAxis(event.caxis.axis), event.caxis.value);
+					m_gamepad->setAxis(controllerId, cobebeInput::GamepadAxis(event.caxis.axis), event.caxis.value);
 				}
 				else
 				{
-					m_gamepad->setAxis(controllerId, GamepadAxis(event.caxis.axis), 0);
+					m_gamepad->setAxis(controllerId, cobebeInput::GamepadAxis(event.caxis.axis), 0);
 				}
 			}
 			else if (event.type == SDL_CONTROLLERDEVICEADDED)

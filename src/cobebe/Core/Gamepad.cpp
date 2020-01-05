@@ -36,7 +36,7 @@ namespace cobebe
 		}
 	}
 
-	bool Gamepad::isButton(int _controllerId, GamepadButton _button)
+	bool Gamepad::isButton(int _controllerId, cobebeInput::GamepadButton _button)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{
@@ -53,7 +53,7 @@ namespace cobebe
 		return false;
 	}
 
-	bool Gamepad::isButtonPressed(int _controllerId, GamepadButton _button)
+	bool Gamepad::isButtonPressed(int _controllerId, cobebeInput::GamepadButton _button)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{
@@ -70,7 +70,7 @@ namespace cobebe
 		return false;
 	}
 
-	bool Gamepad::isButtonReleased(int _controllerId, GamepadButton _button)
+	bool Gamepad::isButtonReleased(int _controllerId, cobebeInput::GamepadButton _button)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{
@@ -87,7 +87,7 @@ namespace cobebe
 		return false;
 	}
 
-	int Gamepad::getAxis(int _controllerId, GamepadAxis _axis)
+	int Gamepad::getAxis(int _controllerId, cobebeInput::GamepadAxis _axis)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{
@@ -109,7 +109,7 @@ namespace cobebe
 		return -1;
 	}
 
-	void Gamepad::pressButton(int _controllerId, GamepadButton _button)
+	void Gamepad::pressButton(int _controllerId, cobebeInput::GamepadButton _button)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{
@@ -119,7 +119,7 @@ namespace cobebe
 		}
 	}
 
-	void Gamepad::releaseButton(int _controllerId, GamepadButton _button)
+	void Gamepad::releaseButton(int _controllerId, cobebeInput::GamepadButton _button)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{
@@ -127,7 +127,7 @@ namespace cobebe
 			controller->m_buttonsReleased.push_back(_button);
 
 			int size = controller->m_buttons.size();
-			for (std::vector<GamepadButton>::iterator it =
+			for (std::vector<cobebeInput::GamepadButton>::iterator it =
 				controller->m_buttons.begin(); it != controller->m_buttons.end();)
 			{
 				if ((*it) == _button)
@@ -142,7 +142,7 @@ namespace cobebe
 		}
 	}
 
-	void Gamepad::setAxis(int _controllerId, GamepadAxis _axis, int _value)
+	void Gamepad::setAxis(int _controllerId, cobebeInput::GamepadAxis _axis, int _value)
 	{
 		if (_controllerId >= 0 && _controllerId < _COBEBE_GAMEPAD_LIMIT)
 		{

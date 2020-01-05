@@ -47,6 +47,14 @@ add_library(cobebe
 	src/cobebe/Core/Transform.h
 	src/cobebe/Core/Transform.cpp
 
+	src/cobebe/Collider/tribox.cpp
+	src/cobebe/Collider/Collider.h
+	src/cobebe/Collider/Collider.cpp
+	src/cobebe/Collider/BoxCollider.h
+	src/cobebe/Collider/BoxCollider.cpp
+	src/cobebe/Collider/StaticModelCollider.h
+	src/cobebe/Collider/StaticModelCollider.cpp
+
 	src/cobebe/Core/Environment.h
 	src/cobebe/Core/Environment.cpp
 	src/cobebe/Core/Keyboard.h
@@ -82,6 +90,8 @@ target_link_libraries(cobebe
 )
 
 add_executable(dungeon
+	src/dungeon/PlayerController.h
+	src/dungeon/PlayerController.cpp
 	src/dungeon/main.cpp
 )
 

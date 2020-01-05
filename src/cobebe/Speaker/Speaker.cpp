@@ -33,7 +33,7 @@ namespace cobebe
 		m_sourceId = 0;
 		alGenSources(1, &m_sourceId);
 
-		m_transform = getEntity()->getTransform();
+		m_transform = getTransform();
 		glm::vec3 pos = m_transform.lock()->m_position;
 		std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
 		glm::vec4 res = cam->getView() * glm::vec4(pos, 1.0f);

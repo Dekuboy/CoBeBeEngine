@@ -94,8 +94,7 @@ namespace cobebe
 					return cmp;
 				}
 			}
-
-			throw Exception("Component not found");
+			return NULL;
 		}
 
 		/**
@@ -224,7 +223,6 @@ namespace cobebe
 		/**
 		* \brief Calls on all components when the GUI is drawn to screen
 		*/
-		void GUI();
-
+		void gui();
 	};
 }

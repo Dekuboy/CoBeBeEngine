@@ -7,8 +7,10 @@ namespace cobebe
 {
 	class Core;
 	class Entity;
+	class Transform;
 	class Keyboard;
 	class Mouse;
+	class Gamepad;
 	class Environment;
 	class Resources;
 
@@ -33,6 +35,10 @@ namespace cobebe
 		*/
 		std::shared_ptr<Entity> getEntity();
 		/**
+		* \brief Retrieve Transform component attached to Entity
+		*/
+		std::shared_ptr<Transform> getTransform();
+		/**
 		* \brief Retrieve engine Core
 		*/
 		std::shared_ptr<Core> getCore();
@@ -44,6 +50,10 @@ namespace cobebe
 		* \brief Retrieve Mouse inputs
 		*/
 		std::shared_ptr<Mouse> getMouse();
+		/**
+		* \brief Retrieve Gamepad inputs
+		*/
+		std::shared_ptr<Gamepad> getGamepad();
 		/**
 		* \brief Retrieve engine Environment
 		*/
@@ -79,7 +89,6 @@ namespace cobebe
 		* \brief Activates when the GUI is drawn to screen
 		*/
 		virtual void onGUI();
-
 	};
 }
 #endif

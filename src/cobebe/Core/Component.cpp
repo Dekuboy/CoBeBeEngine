@@ -14,6 +14,11 @@ namespace cobebe
 		return m_entity.lock();
 	}
 
+	std::shared_ptr<Transform> Component::getTransform()
+	{
+		return m_entity.lock()->getTransform();
+	}
+
 	std::shared_ptr<Core> Component::getCore()
 	{
 		return m_entity.lock()->getCore();
@@ -27,6 +32,11 @@ namespace cobebe
 	std::shared_ptr<Mouse> Component::getMouse()
 	{
 		return m_entity.lock()->getCore()->getMouse();
+	}
+
+	std::shared_ptr<Gamepad> Component::getGamepad()
+	{
+		return m_entity.lock()->getCore()->getGamepad();
 	}
 
 	std::shared_ptr<Environment> Component::getEnvironment()
