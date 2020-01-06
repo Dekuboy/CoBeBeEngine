@@ -2,6 +2,11 @@
 
 namespace cobebe
 {
+	std::vector<std::shared_ptr<glwrap::Face>> Mesh::getFaces()
+	{
+		return m_internal->getFaces();
+	}
+
 	void Mesh::onLoad(const std::string& _path)
 	{
 		m_internal = m_context.lock()->createMesh(_path);

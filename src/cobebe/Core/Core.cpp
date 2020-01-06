@@ -93,6 +93,7 @@ namespace cobebe
 		temp->m_context = glwrap::Context::initialise();
 		temp->m_currentCamera = temp->addCamera();
 		temp->m_currentCamera.lock()->m_isOn = true;
+		temp->m_currentCamera.lock()->m_position = glm::vec3(0, 0, 10);
 
 		temp->m_keyboard = std::make_shared<Keyboard>();
 		temp->m_keyboard->onInit();

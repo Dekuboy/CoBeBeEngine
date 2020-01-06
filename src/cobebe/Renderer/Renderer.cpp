@@ -48,11 +48,16 @@ namespace cobebe
 		m_shader = getCore()->loadAsset<Shader>(_path);
 	}
 
+	std::shared_ptr<Mesh> Renderer::getMesh()
+	{
+		return m_mesh;
+	}
+
 	void Renderer::onDisplay()
 	{
 		if (m_mesh && m_texture && m_shader)
 		{
-			glm::mat4 model = glm::inverse(m_transform.lock()->getModel());
+			glm::mat4 model = m_transform.lock()->getModel();
 			m_shader->m_internal->setUniform("in_Model", model);
 			m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
 			if (m_camera)

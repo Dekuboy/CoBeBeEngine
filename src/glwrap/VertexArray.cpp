@@ -92,6 +92,9 @@ namespace glwrap
 		std::shared_ptr<VertexBuffer> normalBuffer;
 		std::shared_ptr<VertexBuffer> lightMapBuffer;
 
+		Face f;
+		Face fq;
+
 		while (!file.eof())
 		{
 			std::getline(file, line);
@@ -130,38 +133,114 @@ namespace glwrap
 				std::vector<std::string> subsplit;
 				splitString(splitLine.at(1), '/', subsplit);
 
-				if (subsplit.size() >= 1) positionBuffer->add(positions.at(atoi(subsplit.at(0).c_str()) - 1));
-				if (subsplit.size() >= 2) texCoordBuffer->add(texCoords.at(atoi(subsplit.at(1).c_str()) - 1));
-				if (subsplit.size() >= 3) normalBuffer->add(normals.at(atoi(subsplit.at(2).c_str()) - 1));
-				if (subsplit.size() >= 4) lightMapBuffer->add(lightMaps.at(atoi(subsplit.at(3).c_str()) - 1));
+				if (subsplit.size() >= 1)
+				{
+					f.pa = positions.at(atoi(subsplit.at(0).c_str()) - 1);
+					positionBuffer->add(f.pa);
+				}
+				if (subsplit.size() >= 2)
+				{
+					f.tca = texCoords.at(atoi(subsplit.at(1).c_str()) - 1);
+					texCoordBuffer->add(f.tca);
+				}
+				if (subsplit.size() >= 3)
+				{
+					f.na = normals.at(atoi(subsplit.at(2).c_str()) - 1);
+					normalBuffer->add(f.na);
+				}
+				if (subsplit.size() >= 4)
+				{
+					f.lmca = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+					lightMapBuffer->add(f.lmca);
+				}
 				splitString(splitLine.at(2), '/', subsplit);
-				if (subsplit.size() >= 1) positionBuffer->add(positions.at(atoi(subsplit.at(0).c_str()) - 1));
-				if (subsplit.size() >= 2) texCoordBuffer->add(texCoords.at(atoi(subsplit.at(1).c_str()) - 1));
-				if (subsplit.size() >= 3) normalBuffer->add(normals.at(atoi(subsplit.at(2).c_str()) - 1));
-				if (subsplit.size() >= 4) lightMapBuffer->add(lightMaps.at(atoi(subsplit.at(3).c_str()) - 1));
+				if (subsplit.size() >= 1) 
+				{
+					f.pb = positions.at(atoi(subsplit.at(0).c_str()) - 1);
+					positionBuffer->add(f.pb);
+				}
+				if (subsplit.size() >= 2)
+				{
+					f.tcb = texCoords.at(atoi(subsplit.at(1).c_str()) - 1);
+					texCoordBuffer->add(f.tcb);
+				}
+				if (subsplit.size() >= 3)
+				{
+					f.nb = normals.at(atoi(subsplit.at(2).c_str()) - 1);
+					normalBuffer->add(f.nb);
+				}
+				if (subsplit.size() >= 4) 
+				{
+					f.lmcb = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+					lightMapBuffer->add(f.lmcb);
+				}
 				splitString(splitLine.at(3), '/', subsplit);
-				if (subsplit.size() >= 1) positionBuffer->add(positions.at(atoi(subsplit.at(0).c_str()) - 1));
-				if (subsplit.size() >= 2) texCoordBuffer->add(texCoords.at(atoi(subsplit.at(1).c_str()) - 1));
-				if (subsplit.size() >= 3) normalBuffer->add(normals.at(atoi(subsplit.at(2).c_str()) - 1));
-				if (subsplit.size() >= 4) lightMapBuffer->add(lightMaps.at(atoi(subsplit.at(3).c_str()) - 1));
+				if (subsplit.size() >= 1)
+				{
+					f.pc = positions.at(atoi(subsplit.at(0).c_str()) - 1);
+					positionBuffer->add(f.pc);
+				}
+				if (subsplit.size() >= 2)
+				{
+					f.tcc = texCoords.at(atoi(subsplit.at(1).c_str()) - 1);
+					texCoordBuffer->add(f.tcc);
+				}
+				if (subsplit.size() >= 3)
+				{
+					f.nc = normals.at(atoi(subsplit.at(2).c_str()) - 1);
+					normalBuffer->add(f.nc);
+				}
+				if (subsplit.size() >= 4)
+				{
+					f.lmcc = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+					lightMapBuffer->add(f.lmcc);
+				}
 
+				m_faces.push_back(std::make_shared<Face>(f));
 				if (splitLine.size() < 5) continue;
-				splitString(splitLine.at(3), '/', subsplit);
 
-				if (subsplit.size() >= 1) positionBuffer->add(positions.at(atoi(subsplit.at(0).c_str()) - 1));
-				if (subsplit.size() >= 2) texCoordBuffer->add(texCoords.at(atoi(subsplit.at(1).c_str()) - 1));
-				if (subsplit.size() >= 3) normalBuffer->add(normals.at(atoi(subsplit.at(2).c_str()) - 1));
-				if (subsplit.size() >= 4) lightMapBuffer->add(lightMaps.at(atoi(subsplit.at(3).c_str()) - 1));
+				fq.pa = f.pc;
+				positionBuffer->add(fq.pa);
+				fq.tca = f.tcc;
+				texCoordBuffer->add(fq.tca);
+				fq.na = f.nc;
+				normalBuffer->add(fq.na);
+				fq.lmca = f.lmcc;
+				if (lightMapBuffer) lightMapBuffer->add(fq.lmca);
+
 				splitString(splitLine.at(4), '/', subsplit);
-				if (subsplit.size() >= 1) positionBuffer->add(positions.at(atoi(subsplit.at(0).c_str()) - 1));
-				if (subsplit.size() >= 2) texCoordBuffer->add(texCoords.at(atoi(subsplit.at(1).c_str()) - 1));
-				if (subsplit.size() >= 3) normalBuffer->add(normals.at(atoi(subsplit.at(2).c_str()) - 1));
-				if (subsplit.size() >= 4) lightMapBuffer->add(lightMaps.at(atoi(subsplit.at(3).c_str()) - 1));
+				if (subsplit.size() >= 1)
+				{
+					fq.pb = positions.at(atoi(subsplit.at(0).c_str()) - 1);
+					positionBuffer->add(fq.pb);
+				}
+				if (subsplit.size() >= 2)
+				{
+					fq.tcb = texCoords.at(atoi(subsplit.at(1).c_str()) - 1);
+					texCoordBuffer->add(fq.tcb);
+				}
+				if (subsplit.size() >= 3)
+				{
+					fq.nb = normals.at(atoi(subsplit.at(2).c_str()) - 1);
+					normalBuffer->add(fq.nb);
+				}
+				if (subsplit.size() >= 4)
+				{
+					fq.lmcb = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+					lightMapBuffer->add(fq.lmcb);
+				}
+
 				splitString(splitLine.at(1), '/', subsplit);
-				if (subsplit.size() >= 1) positionBuffer->add(positions.at(atoi(subsplit.at(0).c_str()) - 1));
-				if (subsplit.size() >= 2) texCoordBuffer->add(texCoords.at(atoi(subsplit.at(1).c_str()) - 1));
-				if (subsplit.size() >= 3) normalBuffer->add(normals.at(atoi(subsplit.at(2).c_str()) - 1));
-				if (subsplit.size() >= 4) lightMapBuffer->add(lightMaps.at(atoi(subsplit.at(3).c_str()) - 1));
+				fq.pc = f.pa;
+				positionBuffer->add(fq.pc);
+				fq.tcc = f.tca;
+				texCoordBuffer->add(fq.tcc);
+				fq.nc = f.na;
+				normalBuffer->add(fq.nc);
+				fq.lmcc = f.lmca;
+				if (lightMapBuffer) lightMapBuffer->add(fq.lmcc);
+
+				m_faces.push_back(std::make_shared<Face>(fq));
 			}
 		}
 
@@ -248,5 +327,10 @@ namespace glwrap
 		}
 
 		return m_id;
+	}
+
+	std::vector<std::shared_ptr<Face>> VertexArray::getFaces()
+	{
+		return m_faces;
 	}
 }

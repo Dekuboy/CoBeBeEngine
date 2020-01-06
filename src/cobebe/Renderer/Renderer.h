@@ -47,6 +47,11 @@ namespace cobebe
 		*/
 		void setShader(std::string _path);
 
+		/**
+		* \brief Returns loaded mesh
+		*/
+		std::shared_ptr<Mesh> getMesh();
+
 	private:
 		std::shared_ptr<Camera> m_camera; /// Stores Camera to draw to when set
 		std::weak_ptr<Transform> m_transform; /// Pointer to Transform component

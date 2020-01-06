@@ -13,6 +13,7 @@ namespace cobebe
 	class Mesh : private NonCopyable, public Asset
 	{
 	public:
+		std::vector<std::shared_ptr<glwrap::Face>> getFaces();
 
 	private:
 		friend class Renderer;
