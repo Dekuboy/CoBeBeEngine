@@ -18,6 +18,9 @@
 #include <cobebe/Resources/RendAssets.h>
 #include <cobebe/Resources/Sound.h>
 #include <cobebe/Renderer/Renderer.h>
+#include <cobebe/Renderer/ShadowRenderer.h>
+#include <cobebe/Renderer/Lighting.h>
+#include <cobebe/Renderer/PointLight.h>
 #include <cobebe/Speaker/Speaker.h>
 #include <cobebe/Exception.h>
 #endif

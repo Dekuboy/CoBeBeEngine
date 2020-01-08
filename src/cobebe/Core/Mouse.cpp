@@ -12,16 +12,16 @@ namespace cobebe
 
 	glm::vec2 Mouse::getPosition()
 	{
-		return glm::vec2();
+		return m_position;
 	}
 
 	glm::vec2 Mouse::getMovement()
 	{
-		return glm::vec2();
+		return m_movement;
 	}
 
 	void Mouse::warpMouse(bool _switch)
 	{
-
+		m_warpMouse = _switch;
 	}
 }

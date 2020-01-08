@@ -2,6 +2,7 @@
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Core/Transform.h>
 #include <cobebe/Core/Camera.h>
+#include <cobebe/Renderer/Lighting.h>
 #include <cobebe/Core/Environment.h>
 #include <cobebe/Core/Keyboard.h>
 #include <cobebe/Core/Mouse.h>
@@ -95,6 +96,7 @@ namespace cobebe
 		temp->m_currentCamera.lock()->m_isOn = true;
 		temp->m_currentCamera.lock()->m_position = glm::vec3(0, 0, 10);
 
+
 		temp->m_keyboard = std::make_shared<Keyboard>();
 		temp->m_keyboard->onInit();
 
@@ -107,6 +109,10 @@ namespace cobebe
 
 		temp->m_nullShader = temp->m_context->
 			createShader("shaders\\nullpass.shad");
+
+		temp->m_lighting = std::make_shared<Lighting>();
+		temp->m_lighting->m_core = temp;
+		temp->m_lighting->onInit();
 
 		temp->m_self = temp;
 		return temp;
@@ -128,7 +134,7 @@ namespace cobebe
 				}
 				catch (const Exception& e)
 				{
-					e.what();
+					std::cout << e.what();
 					(*it)->m_kill = true;
 				}
 			}
@@ -158,11 +164,18 @@ namespace cobebe
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
 
+			// Clear Shadows
+			m_lighting->clear();
+
 			// PreDisplay each Entity
+			// Renders to DepthMaps in Lighting
+			//glCullFace(GL_FRONT);
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->preDisplay();
 			}
+			//glCullFace(GL_BACK);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			// Display each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -255,6 +268,16 @@ namespace cobebe
 	std::shared_ptr<Camera> Core::getCurrentCamera()
 	{
 		return m_currentCamera.lock();
+	}
+
+	std::shared_ptr<Camera> Core::getCamera()
+	{
+		return m_currentCamera.lock();
+	}
+
+	std::shared_ptr<Lighting> Core::getLighting()
+	{
+		return m_lighting;
 	}
 
 	void Core::pollSDLEvent()

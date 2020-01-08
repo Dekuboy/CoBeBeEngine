@@ -8,6 +8,7 @@ namespace cobebe
 	class Core;
 	class Entity;
 	class Transform;
+	class Lighting;
 	class Keyboard;
 	class Mouse;
 	class Gamepad;
@@ -42,6 +43,10 @@ namespace cobebe
 		* \brief Retrieve engine Core
 		*/
 		std::shared_ptr<Core> getCore();
+		/**
+		* \brief Retrive Lighting in Core
+		*/
+		std::shared_ptr<Lighting> getLighting();
 		/**
 		* \brief Retrieve Keyboard inputs
 		*/

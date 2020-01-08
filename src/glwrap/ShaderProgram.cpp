@@ -106,9 +106,9 @@ namespace glwrap
 
 		std::string src = FileManager::loadWin(_path);
 
-		vertShader = "#version 140\n#define VERTEX\n" + src;
+		vertShader = "#define VERTEX\n" + src;
 
-		fragShader = "#version 140\n#define FRAGMENT\n" + src;
+		fragShader = "#define FRAGMENT\n" + src;
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();

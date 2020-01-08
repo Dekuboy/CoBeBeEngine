@@ -94,7 +94,10 @@ namespace cobebe
 			{
 				np = m_lastPosition + m_offset;
 			}
-
+			if (np != np)
+			{
+				np = m_lastPosition + m_offset;
+			}
 			np = np - m_offset;
 			getTransform()->m_position = np;
 			m_lastPosition = np;

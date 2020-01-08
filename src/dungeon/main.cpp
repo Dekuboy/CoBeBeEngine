@@ -6,24 +6,23 @@ int main()
 	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 
 	std::shared_ptr<cobebe::Entity> entity = App->addEntity();
-	entity->getTransform()->m_position = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
-	renderer->setMesh("objs\\curuthers.obj");
-	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("shaders\\phong.shad");
+	std::shared_ptr<cobebe::ShadowRenderer> renderer = entity->addComponent<cobebe::ShadowRenderer>();
+	renderer->setMesh("objs\\graveyard.obj");
+	renderer->setTexture("images\\graveyard.png");
+	renderer->setShader("shadows\\spsmap.shad");
 
-	entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
+	//entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
 
 	entity->addComponent<cobebe::StaticModelCollider>();
 
 	entity = App->addEntity();
-	entity->getTransform()->m_position = glm::vec3(0.0f, 0.0f, 5.0f);
+	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
 
-	renderer = entity->addComponent<cobebe::Renderer>();
+	renderer = entity->addComponent<cobebe::ShadowRenderer>();
 	renderer->setMesh("objs\\curuthers.obj");
 	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("shaders\\phong.shad");
+	renderer->setShader("shadows\\spsmap.shad");
 
 	entity->addComponent<cobebe::BoxCollider>();
 

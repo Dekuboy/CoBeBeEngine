@@ -6,6 +6,8 @@
 namespace cobebe
 {
 	class Renderer;
+	class ShadowRenderer;
+	class Lighting;
 
 	/**
 	* Stores a VertexArray to set in Renderer
@@ -48,11 +50,21 @@ namespace cobebe
 	class Shader : private NonCopyable, public Asset
 	{
 	public:
+		void setEmissive(glm::vec3 _emissive);
+		void setAmbient(glm::vec3 _ambient);
+		void setLightPos(glm::vec3 _lightPos);
+		void setLightDir(glm::vec3 _lightDir);
+		void setLightSpace(glm::mat4 _lightSpace);
+
+		bool getUniformCheck();
+		void setUniformCheck(bool _switch);
 
 	private:
 		friend class Renderer;
+		friend class Lighting;
 
 		std::shared_ptr<glwrap::ShaderProgram> m_internal; /// Pointer to OpenGL ShaderProgram
+		bool m_uniformCheck;
 
 		void onLoad(const std::string& _path);
 

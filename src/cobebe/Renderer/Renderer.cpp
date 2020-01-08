@@ -1,4 +1,5 @@
 #include <cobebe/Renderer/Renderer.h>
+#include <cobebe/Renderer/Lighting.h>
 #include <cobebe/Core/Transform.h>
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Core/Core.h>
@@ -11,6 +12,7 @@ namespace cobebe
 	void Renderer::onInit()
 	{
 		m_transform = getTransform();
+		m_lighting = getLighting();
 	}
 
 	void Renderer::setCamera(std::shared_ptr<Camera> _camera)
@@ -51,6 +53,32 @@ namespace cobebe
 	std::shared_ptr<Mesh> Renderer::getMesh()
 	{
 		return m_mesh;
+	}
+
+	void Renderer::onTick()
+	{
+		m_shader->setUniformCheck(false);
+	}
+
+	void Renderer::onPreDisplay()
+	{
+		if (m_shader)
+		{
+			if (!m_shader->getUniformCheck())
+			{
+				m_shader->setEmissive(m_lighting->getGlobalLightEmissive());
+				m_shader->setAmbient(m_lighting->getGlobalLightAmbient());
+				m_shader->setLightDir(m_lighting->getGlobalLightDir());
+				//m_shader->setLightPos(m_lighting->getGlobalLightPos());
+
+				m_shader->setUniformCheck(true);
+			}
+		}
+		if (m_mesh && m_texture && m_shader)
+		{
+			glm::mat4 model = m_transform.lock()->getModel();
+			m_lighting->draw(m_mesh->m_internal, model);
+		}
 	}
 
 	void Renderer::onDisplay()

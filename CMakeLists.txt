@@ -79,6 +79,13 @@ add_library(cobebe
 
 	src/cobebe/Renderer/Renderer.h
 	src/cobebe/Renderer/Renderer.cpp
+	src/cobebe/Renderer/ShadowRenderer.h
+	src/cobebe/Renderer/ShadowRenderer.cpp
+	src/cobebe/Renderer/Lighting.h
+	src/cobebe/Renderer/Lighting.cpp
+	src/cobebe/Renderer/PointLight.h
+	src/cobebe/Renderer/PointLight.cpp
+
 	src/cobebe/Speaker/Speaker.h
 	src/cobebe/Speaker/Speaker.cpp
 

@@ -24,6 +24,11 @@ namespace cobebe
 		return m_entity.lock()->getCore();
 	}
 
+	std::shared_ptr<Lighting> Component::getLighting()
+	{
+		return m_entity.lock()->getCore()->getLighting();
+	}
+
 	std::shared_ptr<Keyboard> Component::getKeyboard()
 	{
 		return m_entity.lock()->getCore()->getKeyboard();

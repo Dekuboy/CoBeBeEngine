@@ -11,6 +11,7 @@ namespace cobebe
 	class Environment;
 	class Entity;
 	class Camera;
+	class Lighting;
 	class Keyboard;
 	class Mouse;
 	class Gamepad;
@@ -111,6 +112,10 @@ namespace cobebe
 		* \brief Returns Camera specified
 		*/
 		std::shared_ptr<Camera> getCamera();
+		/**
+		* \brief Returns Lighting
+		*/
+		std::shared_ptr<Lighting> getLighting();
 
 		/**
 		* \brief Polls events and updates inputs
@@ -156,6 +161,7 @@ namespace cobebe
 		std::list<std::shared_ptr<Entity>> m_entities; /// List of entities in game loop
 		std::list<std::shared_ptr<Camera>> m_cameras; /// List of cameras in game loop
 		std::weak_ptr<Camera> m_currentCamera; /// Holds Camera currently drawing to the screen
+		std::shared_ptr<Lighting> m_lighting; /// Holds all variables regarding Lighting
 		std::shared_ptr<Environment> m_environment; /// Holds deltaTime and window size
 		std::shared_ptr<Keyboard> m_keyboard; /// Holds keyboard inputs
 		std::shared_ptr<Mouse> m_mouse; /// Holds mouse inputs
