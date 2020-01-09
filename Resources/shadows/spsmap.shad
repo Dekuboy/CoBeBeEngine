@@ -100,7 +100,8 @@ void main()
 //	else
 //	{
 		float objectDepth = projCoords.z;
-		float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005);
+		//float bias = max(0.05 * (1.0 - dot(norm, lightDir)), 0.005); 
+		float bias = max(0.05 * tan(dot(norm, lightDir)), 0.005);
 		//vec2 texelSize = 1.0 / textureSize(in_DepthMap, 0);
 
 		// Sample the shadow map 4 times

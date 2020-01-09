@@ -1,4 +1,5 @@
 #include <cobebe/Renderer/PointLight.h>
+#include <glm/ext.hpp>
 
 namespace cobebe
 {
@@ -6,6 +7,24 @@ namespace cobebe
 	{
 		m_position = glm::vec3(0.0f);
 		m_colour = glm::vec3(1.0f);
+
+		float aspect = (float)1024 / (float)1024;
+		float near = 1.0f;
+		m_radius = 50.0f;
+		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, m_radius);
+
+		m_lightSpaces.push_back(shadowProj *
+			glm::lookAt(m_position, m_position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		m_lightSpaces.push_back(shadowProj *
+			glm::lookAt(m_position, m_position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+		m_lightSpaces.push_back(shadowProj *
+			glm::lookAt(m_position, m_position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+		m_lightSpaces.push_back(shadowProj *
+			glm::lookAt(m_position, m_position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+		m_lightSpaces.push_back(shadowProj *
+			glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+		m_lightSpaces.push_back(shadowProj *
+			glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 	}
 
 	glm::vec3 PointLight::getColour()
@@ -31,6 +50,25 @@ namespace cobebe
 		if (_radius > 0.0f)
 		{
 			m_radius = _radius;
+
+			m_lightSpaces.clear();
+
+			float aspect = (float)1024 / (float)1024;
+			float near = 1.0f;
+			glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, m_radius);
+
+			m_lightSpaces.push_back(shadowProj *
+				glm::lookAt(m_position, m_position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+			m_lightSpaces.push_back(shadowProj *
+				glm::lookAt(m_position, m_position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+			m_lightSpaces.push_back(shadowProj *
+				glm::lookAt(m_position, m_position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+			m_lightSpaces.push_back(shadowProj *
+				glm::lookAt(m_position, m_position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+			m_lightSpaces.push_back(shadowProj *
+				glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+			m_lightSpaces.push_back(shadowProj *
+				glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 		}
 	}
 }

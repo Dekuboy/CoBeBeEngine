@@ -13,9 +13,7 @@ namespace glwrap
 		GLuint getFbId();
 		virtual void clear();
 
-	private:
-		friend class DepthBuffer;
-		friend class Context;
+	protected:
 		GLuint m_fbo;
 
 	};

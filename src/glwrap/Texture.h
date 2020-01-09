@@ -9,8 +9,6 @@
 namespace glwrap
 {
 	class Context;
-	class RenderTexture;
-	class DepthBuffer;
 
 	class Texture
 	{
@@ -21,9 +19,7 @@ namespace glwrap
 		glm::vec2 getSize();
 		GLuint getId();
 
-	private:
-		friend class RenderTexture;
-		friend class DepthBuffer;
+	protected:
 		friend class Context;
 
 		GLuint m_id;

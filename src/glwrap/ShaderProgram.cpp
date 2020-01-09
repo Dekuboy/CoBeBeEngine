@@ -42,12 +42,25 @@ namespace glwrap
 	{
 		std::string vertShader;
 		std::string fragShader;
+		std::string geomShader;
 
 		std::string src = FileManager::loadWin("\\shaders\\phong.shad");
 
-		vertShader = "#version 140\n#define VERTEX\n" + src;
+		bool geometry = src.compare(0, 8, "#version");
+		if (geometry)
+		{
+			vertShader = "#define VERTEX\n" + src;
 
-		fragShader = "#version 140\n#define FRAGMENT\n" + src;
+			fragShader = "#define FRAGMENT\n" + src;
+
+			geomShader = "#define GEOMETRY\n" + src;
+		}
+		else
+		{
+			vertShader = "#version 140\n#define VERTEX\n" + src;
+
+			fragShader = "#version 140\n#define FRAGMENT\n" + src;
+		}
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();
@@ -72,9 +85,28 @@ namespace glwrap
 			throw std::exception();
 		}
 
+		GLuint geometryShaderId;
+		if (geometry)
+		{
+			const char *geom = geomShader.c_str();
+			GLuint geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometryShaderId, 1, &geom, NULL);
+			glCompileShader(geometryShaderId);
+			success = 0;
+			glGetShaderiv(geometryShaderId, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				throw std::exception();
+			}
+		}
+
 		m_id = glCreateProgram();
 		glAttachShader(m_id, vertexShaderId);
 		glAttachShader(m_id, fragmentShaderId);
+		if (geometry)
+		{
+			glAttachShader(m_id, geometryShaderId);
+		}
 
 		// Ensure the VAO "Position" attribute stream gets set as the first position
 		// during the link.
@@ -97,18 +129,36 @@ namespace glwrap
 		glDeleteShader(vertexShaderId);
 		glDetachShader(m_id, fragmentShaderId);
 		glDeleteShader(fragmentShaderId);
+		if (geometry)
+		{
+			glDetachShader(m_id, geometryShaderId);
+			glDeleteShader(geometryShaderId);
+		}
 	}
 
 	ShaderProgram::ShaderProgram(std::string _path)
 	{
 		std::string vertShader;
 		std::string fragShader;
+		std::string geomShader;
 
 		std::string src = FileManager::loadWin(_path);
 
-		vertShader = "#define VERTEX\n" + src;
+		bool geometry = (src.compare(0, 8, "#version") == 0);
+		if (geometry)
+		{
+			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
 
-		fragShader = "#define FRAGMENT\n" + src;
+			fragShader = src.substr(0, 12) + "\n#define FRAGMENT\n" + src.substr(12, std::string::npos);
+
+			geomShader = src.substr(0, 12) + "\n#define GEOMETRY\n" + src.substr(12, std::string::npos);
+		}
+		else
+		{
+			vertShader = "#version 140\n#define VERTEX\n" + src;
+
+			fragShader = "#version 140\n#define FRAGMENT\n" + src;
+		}
 
 		const char *vertex = vertShader.c_str();
 		const char *fragment = fragShader.c_str();
@@ -137,9 +187,28 @@ namespace glwrap
 			throw std::exception();
 		}
 
+		GLuint geometryShaderId;
+		if (geometry)
+		{
+			const char *geom = geomShader.c_str();
+			geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometryShaderId, 1, &geom, NULL);
+			glCompileShader(geometryShaderId);
+			success = 0;
+			glGetShaderiv(geometryShaderId, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				throw std::exception();
+			}
+		}
+
 		m_id = glCreateProgram();
 		glAttachShader(m_id, vertexShaderId);
 		glAttachShader(m_id, fragmentShaderId);
+		if (geometry)
+		{
+			glAttachShader(m_id, geometryShaderId);
+		}
 
 		// Ensure the VAO "Position" attribute stream gets set as the first position
 		// during the link.
@@ -161,6 +230,11 @@ namespace glwrap
 		glDeleteShader(vertexShaderId);
 		glDetachShader(m_id, fragmentShaderId);
 		glDeleteShader(fragmentShaderId);
+		if (geometry)
+		{
+			glDetachShader(m_id, geometryShaderId);
+			glDeleteShader(geometryShaderId);
+		}
 
 		std::shared_ptr<VertexBuffer> positions = std::make_shared<VertexBuffer>();
 		positions->add(glm::vec2(-1.0f, 1.0f));
@@ -270,6 +344,20 @@ namespace glwrap
 		glUseProgram(0);
 	}
 
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3> _vectors)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		glUseProgram(m_id);
+		glUniform3fv(uniformId, _vectors.size(), glm::value_ptr(_vectors.at(0)));
+		glUseProgram(0);
+	}
+
 	void ShaderProgram::setUniform(std::string _uniform, float _value)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
@@ -281,6 +369,20 @@ namespace glwrap
 
 		glUseProgram(m_id);
 		glUniform1f(uniformId, _value);
+		glUseProgram(0);
+	}
+
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<float> _floats)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		glUseProgram(m_id);
+		glUniform1fv(uniformId, _floats.size(), reinterpret_cast<GLfloat *>(_floats.data()));
 		glUseProgram(0);
 	}
 
@@ -330,6 +432,20 @@ namespace glwrap
 		glUseProgram(0);
 	}
 
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::mat4> _matrices)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		glUseProgram(m_id);
+		glUniformMatrix4fv(uniformId, _matrices.size(), 0, glm::value_ptr(_matrices.at(0)));
+		glUseProgram(0);
+	}
+
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthBuffer> _depth)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
@@ -359,6 +475,51 @@ namespace glwrap
 
 		glUseProgram(m_id);
 		glUniform1i(uniformId, m_samplers.size() - 1);
+		glUseProgram(0);
+	}
+
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube>> _cubes)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		bool skip = false;
+		int count = 0;
+		std::string temp;
+		glUseProgram(m_id);
+
+		for (std::vector<std::shared_ptr<DepthCube>>::iterator itr = _cubes.begin();
+			itr != _cubes.end(); itr++)
+		{
+			count++;
+			temp = _uniform + "[" + std::to_string(count) + "]";
+			GLint uniformId = glGetUniformLocation(m_id, temp.c_str());
+
+			for (int i = 0; i < m_samplers.size(); i++)
+			{
+				if (m_samplers.at(i).m_id == uniformId)
+				{
+					m_samplers.at(i).m_texture = (*itr);
+
+					glUniform1i(uniformId, i);
+					skip = true;
+					break;
+				}
+			}
+			if (!skip)
+			{
+				Sampler s;
+				s.m_id = uniformId;
+				s.m_texture = (*itr);
+				m_samplers.push_back(s);
+
+				glUniform1i(uniformId, m_samplers.size() - 1);
+			}
+		}
 		glUseProgram(0);
 	}
 

@@ -1,7 +1,12 @@
 #include <glm/glm.hpp>
+#include <memory>
+#include <vector>
 
 namespace cobebe
 {
+	class Lighting;
+	class Shader;
+
 	class PointLight
 	{
 	public:
@@ -16,8 +21,10 @@ namespace cobebe
 		void setRadius(float _radius);
 
 	private:
+		friend class Lighting;
 		glm::vec3 m_colour;
 		float m_radius;
+		std::vector<glm::mat4> m_lightSpaces;
 
 	};
 }

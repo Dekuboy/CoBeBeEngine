@@ -175,6 +175,7 @@ namespace cobebe
 				(*it)->preDisplay();
 			}
 			//glCullFace(GL_BACK);
+			m_lighting->drawLighting();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			// Display each Entity

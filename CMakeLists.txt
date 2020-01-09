@@ -13,6 +13,8 @@ add_library(glwrap
 	src/glwrap/Context.cpp
 	src/glwrap/DepthBuffer.h
 	src/glwrap/DepthBuffer.cpp
+	src/glwrap/DepthCube.h
+	src/glwrap/DepthCube.cpp
 	src/glwrap/RenderTexture.h
 	src/glwrap/RenderTexture.cpp
 	src/glwrap/ShaderProgram.h

@@ -9,6 +9,12 @@ namespace cobebe
 	class Camera;
 	class Core;
 
+	struct ShadowModel
+	{
+		std::weak_ptr<glwrap::VertexArray> m_mesh;
+		glm::mat4 m_model;
+	};
+
 	class Lighting
 	{
 	public:
@@ -23,6 +29,12 @@ namespace cobebe
 		void setGlobalLightAmbient(glm::vec3 _lightAmbient);
 
 		glm::mat4 getGlobalLightSpace();
+
+		int getPointLightRCount();
+		std::vector<std::shared_ptr<glwrap::DepthCube>> getDepthCubes();
+		std::vector<glm::vec3> getPointPositions();
+		std::vector<glm::vec3> getPointColours();
+		std::vector<float> getFarPlanes();
 
 		std::shared_ptr<PointLight> addPointLight(glm::vec3 _position,
 			glm::vec3 _colour, float _radius);
@@ -48,12 +60,22 @@ namespace cobebe
 		std::shared_ptr<Shader> m_depthShader;
 		std::shared_ptr<glwrap::DepthBuffer> m_depthMap;
 
+		std::shared_ptr<Shader> m_cubeShader;
 		std::list<std::shared_ptr<PointLight>> m_pointLights;
+		int m_maxPointLights;
+		std::vector<std::shared_ptr<glwrap::DepthCube>> m_depthCubes;
+		std::vector<glm::vec3> m_pointLightPositions;
+		std::vector<glm::vec3> m_pointColours;
+		std::vector<float> m_farPlanes;
+
+		std::list<ShadowModel> m_shadowModels;
+
 		std::weak_ptr<Core> m_core;
 
 		void setGlobalLightPos(std::shared_ptr<Camera> _camera);
 
 		void clear();
 		void onInit();
+		void drawLighting();
 	};
 }

@@ -64,6 +64,31 @@ namespace cobebe
 		return m_globalLightSpace;
 	}
 
+	int Lighting::getPointLightRCount()
+	{
+		m_depthCubes.size();
+	}
+
+	std::vector<std::shared_ptr<glwrap::DepthCube>> Lighting::getDepthCubes()
+	{
+		return std::vector<std::shared_ptr<glwrap::DepthCube>>();
+	}
+
+	std::vector<glm::vec3> Lighting::getPointPositions()
+	{
+		return std::vector<glm::vec3>();
+	}
+
+	std::vector<glm::vec3> Lighting::getPointColours()
+	{
+		return std::vector<glm::vec3>();
+	}
+
+	std::vector<float> Lighting::getFarPlanes()
+	{
+		return std::vector<float>();
+	}
+
 	std::shared_ptr<PointLight> Lighting::addPointLight(glm::vec3 _position,
 		glm::vec3 _colour, float _radius)
 	{
@@ -84,13 +109,15 @@ namespace cobebe
 	void Lighting::draw(std::shared_ptr<glwrap::VertexArray> _meshInternal,
 		glm::mat4 _modelMat)
 	{
-		m_depthShader->m_internal->setUniform("in_Model", _modelMat);
-		m_depthShader->m_internal->draw(m_depthMap, _meshInternal);
+		ShadowModel tempModel;
+		tempModel.m_mesh = _meshInternal;
+		tempModel.m_model = _modelMat;
+		m_shadowModels.push_back(tempModel);
 	}
 
 	void Lighting::setGlobalLightPos(std::shared_ptr<Camera> _camera)
 	{
-		_camera->
+		//_camera->
 
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,
 			-10.0f, 10.0f, 1.0f, m_globalLightRenderDistance);
@@ -116,10 +143,11 @@ namespace cobebe
 		m_globalLightEmissive = glm::vec3(0.0f);
 		m_globalLightAmbient = glm::vec3(0.1f);
 
-		m_globalLightRenderDistance = 10.0f;
+		m_globalLightRenderDistance = 25.0f;
 
-		m_depthMap = std::make_shared<glwrap::DepthBuffer>(2048, 2048);
+		m_depthMap = std::make_shared<glwrap::DepthBuffer>(1024, 1024);
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadow.shad");
+		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowCube.shad");
 
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,
 			-10.0f, 10.0f, 1.0f, m_globalLightRenderDistance);
@@ -133,5 +161,16 @@ namespace cobebe
 		m_globalLightSpace = lightProjection * lightView;
 
 		m_depthShader->setLightSpace(m_globalLightSpace);
+	}
+
+	void Lighting::drawLighting()
+	{
+		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
+			it != m_shadowModels.end();)
+		{
+			m_depthShader->m_internal->setUniform("in_Model", (*it).m_model);
+			m_depthShader->m_internal->draw(m_depthMap, (*it).m_mesh.lock());
+			it = m_shadowModels.erase(it);
+		}
 	}
 }

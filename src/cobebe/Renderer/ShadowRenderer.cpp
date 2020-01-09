@@ -13,7 +13,6 @@ namespace cobebe
 			m_lighting->setDepthBuffer(m_shader);
 			if (!m_shader->getUniformCheck())
 			{
-				//m_shader->setEmissive(m_lighting->getGlobalLightEmissive());
 				m_shader->setAmbient(m_lighting->getGlobalLightAmbient());
 				m_shader->setLightDir(m_lighting->getGlobalLightDir());
 				//m_shader->setLightPos(m_lighting->getGlobalLightPos());
