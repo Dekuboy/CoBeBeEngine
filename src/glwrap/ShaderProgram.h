@@ -18,6 +18,7 @@ namespace glwrap
 	{
 		GLint m_id;
 		std::shared_ptr<Texture> m_texture;
+		std::shared_ptr<DepthCube> m_depthCube;
 	};
 
 	class ShaderProgram
@@ -41,6 +42,7 @@ namespace glwrap
 		void setUniform(std::string _uniform, glm::mat4 _matrix);
 		void setUniform(std::string _uniform, std::vector<glm::mat4> _matrices);
 		void setUniform(std::string _uniform, std::shared_ptr<DepthBuffer> _depth);
+		void setUniform(std::string _uniform, std::shared_ptr<DepthCube> _depthCube);
 		void setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube>> _cubes);
 
 		GLuint getId();

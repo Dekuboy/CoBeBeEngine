@@ -288,6 +288,10 @@ namespace glwrap
 			{
 				glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_texture->getId());
 			}
+			else if (m_samplers.at(i).m_depthCube)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, m_samplers.at(i).m_depthCube->getId());
+			}
 			else
 			{
 				glBindTexture(GL_TEXTURE_2D, 0);
@@ -299,7 +303,15 @@ namespace glwrap
 		for (size_t i = 0; i < m_samplers.size(); i++)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);
-			glBindTexture(GL_TEXTURE_2D, 0);
+
+			if (m_samplers.at(i).m_texture)
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+			else if (m_samplers.at(i).m_depthCube)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			}
 		}
 
 		glBindVertexArray(0);
@@ -414,6 +426,7 @@ namespace glwrap
 			if (m_samplers.at(i).m_id == uniformId)
 			{
 				m_samplers.at(i).m_texture = _texture;
+				m_samplers.at(i).m_depthCube = NULL;
 
 				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
@@ -474,6 +487,7 @@ namespace glwrap
 			if (m_samplers.at(i).m_id == uniformId)
 			{
 				m_samplers.at(i).m_texture = _depth;
+				m_samplers.at(i).m_depthCube = NULL;
 
 				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
@@ -485,6 +499,39 @@ namespace glwrap
 		Sampler s;
 		s.m_id = uniformId;
 		s.m_texture = _depth;
+		m_samplers.push_back(s);
+
+		glUseProgram(m_id);
+		glUniform1i(uniformId, m_samplers.size() - 1);
+		glUseProgram(0);
+	}
+
+	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthCube> _depthCube)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		for (int i = 0; i < m_samplers.size(); i++)
+		{
+			if (m_samplers.at(i).m_id == uniformId)
+			{
+				m_samplers.at(i).m_depthCube = _depthCube;
+				m_samplers.at(i).m_texture = NULL;
+
+				glUseProgram(m_id);
+				glUniform1i(uniformId, i);
+				glUseProgram(0);
+				return;
+			}
+		}
+
+		Sampler s;
+		s.m_id = uniformId;
+		s.m_depthCube = _depthCube;
 		m_samplers.push_back(s);
 
 		glUseProgram(m_id);
@@ -516,7 +563,8 @@ namespace glwrap
 			{
 				if (m_samplers.at(i).m_id == uniformId)
 				{
-					m_samplers.at(i).m_texture = (*itr);
+					m_samplers.at(i).m_depthCube = (*itr);
+					m_samplers.at(i).m_texture = NULL;
 
 					glUniform1i(uniformId, i);
 					skip = true;
@@ -527,7 +575,7 @@ namespace glwrap
 			{
 				Sampler s;
 				s.m_id = uniformId;
-				s.m_texture = (*itr);
+				s.m_depthCube = (*itr);
 				m_samplers.push_back(s);
 
 				glUniform1i(uniformId, m_samplers.size() - 1);

@@ -211,7 +211,7 @@ namespace cobebe
 
 		m_globalLightRenderDistance = 25.0f;
 
-		m_depthMap = std::make_shared<glwrap::DepthBuffer>(1024, 1024);
+		m_depthMap = std::make_shared<glwrap::DepthBuffer>(512, 512);
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadow.shad");
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowCube.shad");
 
@@ -229,7 +229,7 @@ namespace cobebe
 		m_depthShader->setLightSpace(m_globalLightSpace);
 
 		std::shared_ptr<PointLight> light = addPointLight(
-			glm::vec3(200, 2, -5), glm::vec3(0.2f), 50.0f);
+			glm::vec3(-12, 2, -5), glm::vec3(0.2f), 25.0f);
 	}
 
 	void Lighting::drawLighting()
@@ -244,6 +244,8 @@ namespace cobebe
 		for (std::list<std::shared_ptr<PointLight>>::iterator pointIt = m_pointLights.begin();
 			pointIt != m_pointLights.end(); pointIt++)
 		{
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 			m_pointLightPositions.push_back((*pointIt)->m_position);
 			m_pointColours.push_back((*pointIt)->m_colour);
 			m_farPlanes.push_back((*pointIt)->m_radius);
@@ -256,7 +258,7 @@ namespace cobebe
 				it != m_shadowModels.end(); it++)
 			{
 				m_cubeShader->m_internal->setUniform("in_Model", (*it).m_model);
-				m_cubeShader->m_internal->draw(m_depthMap, (*it).m_mesh.lock());
+				m_cubeShader->m_internal->draw((*pointIt)->m_depthCube, (*it).m_mesh.lock());
 			}
 		}
 

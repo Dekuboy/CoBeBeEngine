@@ -65,22 +65,22 @@ namespace cobebe
 
 	void Shader::setDepthCubes(std::vector<std::shared_ptr<glwrap::DepthCube>> _depthCubes)
 	{
-		m_internal->setUniform("in_DepthMap", _depthCubes.at(0));
+		m_internal->setUniform("in_DepthMap", _depthCubes);
 	}
 
 	void Shader::setPointLightPositions(std::vector<glm::vec3> _pointLightPositions)
 	{
-		m_internal->setUniform("in_LightPos", _pointLightPositions.at(0));
+		m_internal->setUniform("in_LightPos", _pointLightPositions);
 	}
 
 	void Shader::setPointLightColours(std::vector<glm::vec3> _pointColours)
 	{
-		m_internal->setUniform("in_LightCol", _pointColours.at(0));
+		m_internal->setUniform("in_LightCol", _pointColours);
 	}
 
 	void Shader::setFarPlanes(std::vector<float> _farPlanes)
 	{
-		m_internal->setUniform("in_FarPlane", _farPlanes.at(0));
+		m_internal->setUniform("in_FarPlane", _farPlanes);
 	}
 
 	bool Shader::getUniformCheck()

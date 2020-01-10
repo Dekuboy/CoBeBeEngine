@@ -11,7 +11,7 @@ namespace cobebe
 
 		float aspect = (float)1024 / (float)1024;
 		float near = 1.0f;
-		m_radius = 50.0f;
+		m_radius = 25.0f;
 		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, m_radius);
 
 		m_lightSpaces.push_back(shadowProj *
