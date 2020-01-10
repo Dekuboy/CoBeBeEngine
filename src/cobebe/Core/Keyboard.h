@@ -4,6 +4,9 @@
 
 namespace cobebeInput
 {
+	/**
+	* Converts sdl input to keyboard input
+	*/
 	enum KeyboardKey
 	{
 		aKey = SDL_SCANCODE_A,
@@ -35,7 +38,19 @@ namespace cobebeInput
 		enterKey = SDL_SCANCODE_RETURN,
 		backspaceKey = SDL_SCANCODE_BACKSPACE,
 		spaceKey = SDL_SCANCODE_SPACE,
-		escKey = SDL_SCANCODE_ESCAPE
+		escKey = SDL_SCANCODE_ESCAPE,
+		leftShiftKey = SDL_SCANCODE_LSHIFT,
+		tabKey = SDL_SCANCODE_TAB,
+		zeroKey = SDL_SCANCODE_0,
+		oneKey = SDL_SCANCODE_1,
+		twoKey = SDL_SCANCODE_2,
+		threeKey = SDL_SCANCODE_3,
+		fourKey = SDL_SCANCODE_4,
+		fiveKey = SDL_SCANCODE_5,
+		sixKey = SDL_SCANCODE_6,
+		sevenKey = SDL_SCANCODE_7,
+		eightKey = SDL_SCANCODE_8,
+		nineKey = SDL_SCANCODE_9
 	};
 }
 

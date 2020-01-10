@@ -202,6 +202,7 @@ namespace cobebe
 			(*it)->m_depthCube->clear();
 		}
 
+		// Vectors must clear as PointLights may change values after tick
 		m_pointLightPositions.clear();
 		m_pointColours.clear();
 		m_farPlanes.clear();
@@ -209,8 +210,10 @@ namespace cobebe
 
 	void Lighting::onInit()
 	{
+		// Temporary max PointLights set to current value in shader
 		m_maxPointLights = 10;
 
+		// Set global directional light values
 		m_globalLightDir = glm::normalize(glm::vec3(0.0f, -0.3f, 1.0f));;
 		m_globalLightCol = glm::vec3(0.5f);
 		m_globalLightEmissive = glm::vec3(0.0f);
@@ -218,10 +221,12 @@ namespace cobebe
 
 		m_globalLightRenderDistance = 25.0f;
 
+		// Set depth map ready for rendering
 		m_depthMap = std::make_shared<glwrap::DepthBuffer>(512, 512);
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadow.shad");
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowCube.shad");
 
+		// Set light space matrix
 		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,
 			-10.0f, 10.0f, 1.0f, m_globalLightRenderDistance);
 
@@ -235,12 +240,14 @@ namespace cobebe
 
 		m_depthShader->setLightSpace(m_globalLightSpace);
 
+		// Lighting must have 1 PointLight, even if it has no colour
 		std::shared_ptr<PointLight> light = addPointLight(
 			glm::vec3(-12, 2, -5), glm::vec3(0.2f), 25.0f);
 	}
 
 	void Lighting::drawLighting()
 	{
+		// Draws to global directional light depth map
 		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
 			it != m_shadowModels.end(); it++)
 		{
@@ -248,6 +255,9 @@ namespace cobebe
 			m_depthShader->m_internal->draw(m_depthMap, (*it).m_mesh.lock());
 		}
 
+		// Iterates through each PointLight
+		// Sets cube light space matrices once per shader
+		// -avoids setting once per shader per model
 		for (std::list<std::shared_ptr<PointLight>>::iterator pointIt = m_pointLights.begin();
 			pointIt != m_pointLights.end(); pointIt++)
 		{
@@ -261,6 +271,7 @@ namespace cobebe
 			m_cubeShader->m_internal->setUniform("in_FarPlane", (*pointIt)->m_radius);
 			m_cubeShader->setLightPos((*pointIt)->m_position);
 
+			// Draws to PointLight depth map
 			for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
 				it != m_shadowModels.end(); it++)
 			{
@@ -269,10 +280,7 @@ namespace cobebe
 			}
 		}
 
-		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
-			it != m_shadowModels.end();)
-		{
-			it = m_shadowModels.erase(it);
-		}
+		// Deletes models to prepare for next display
+		m_shadowModels.clear();
 	}
 }

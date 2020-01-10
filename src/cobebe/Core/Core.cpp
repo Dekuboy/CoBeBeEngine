@@ -121,6 +121,7 @@ namespace cobebe
 	void Core::run()
 	{
 		m_running = true;
+		SDL_ShowCursor(false);
 
 		float currentTime, lastTime = SDL_GetTicks();
 		while (m_running)
@@ -151,10 +152,6 @@ namespace cobebe
 					it++;
 				}
 			}
-
-			// Reset inputs for next tick
-			m_keyboard->resetKeys();
-			m_gamepad->resetButtons();
 
 			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
@@ -214,6 +211,10 @@ namespace cobebe
 				SDL_Delay((unsigned int)(((1.0f / 60.0f) - m_environment->m_deltaTime)*1000.0f));
 				m_environment->m_deltaTime = 1.0f / 60.0f;
 			}
+
+			// Reset inputs for next tick
+			m_keyboard->resetKeys();
+			m_gamepad->resetButtons();
 
 			// Poll SDL Events
 			pollSDLEvent();

@@ -5,18 +5,27 @@
 
 namespace cobebe
 {
+	/**
+	* \brief Collider parent store entities collided with
+	*/
 	class Collider : public Component
 	{
 	public:
+		/**
+		* \brief Returns true if collision has occured
+		*/
 		bool checkColliding();
+		/**
+		* \brief return list of all collided 
+		*/
 		const std::list<std::shared_ptr<Entity>> getColliders();
 
 	protected:
-		bool m_hasCollided;
-		std::list<std::shared_ptr<Entity>> m_colliders;
+		bool m_hasCollided; /// Has the object collided this tick?
+		std::list<std::shared_ptr<Entity>> m_colliders; /// List of collided entities
 
 	private:
-		void onGUI();
+		virtual void onGUI();
 	};
 }
 #endif
