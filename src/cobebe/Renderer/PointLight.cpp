@@ -1,4 +1,5 @@
 #include <cobebe/Renderer/PointLight.h>
+#include <cobebe/Core/Core.h>
 #include <glm/ext.hpp>
 
 namespace cobebe
@@ -6,7 +7,7 @@ namespace cobebe
 	PointLight::PointLight()
 	{
 		m_position = glm::vec3(0.0f);
-		m_colour = glm::vec3(1.0f);
+		m_colour = glm::vec3(0.2f);
 
 		float aspect = (float)1024 / (float)1024;
 		float near = 1.0f;
@@ -25,6 +26,8 @@ namespace cobebe
 			glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
 		m_lightSpaces.push_back(shadowProj *
 			glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+
+		m_depthCube = std::make_shared<glwrap::DepthCube>(1024, 1024);
 	}
 
 	glm::vec3 PointLight::getColour()

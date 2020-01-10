@@ -316,6 +316,20 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	void ShaderProgram::setUniform(std::string _uniform, int _value)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		glUseProgram(m_id);
+		glUniform1i(uniformId, _value);
+		glUseProgram(0);
+	}
+
 	void ShaderProgram::setUniform(std::string _uniform, glm::vec4 _value)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
@@ -495,7 +509,6 @@ namespace glwrap
 		for (std::vector<std::shared_ptr<DepthCube>>::iterator itr = _cubes.begin();
 			itr != _cubes.end(); itr++)
 		{
-			count++;
 			temp = _uniform + "[" + std::to_string(count) + "]";
 			GLint uniformId = glGetUniformLocation(m_id, temp.c_str());
 
@@ -519,6 +532,7 @@ namespace glwrap
 
 				glUniform1i(uniformId, m_samplers.size() - 1);
 			}
+			count++;
 		}
 		glUseProgram(0);
 	}

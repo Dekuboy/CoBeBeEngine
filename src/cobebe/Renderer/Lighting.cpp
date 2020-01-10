@@ -64,36 +64,64 @@ namespace cobebe
 		return m_globalLightSpace;
 	}
 
-	int Lighting::getPointLightRCount()
+	void Lighting::setPointLightRCount(std::shared_ptr<Shader> _shadowShader)
 	{
-		m_depthCubes.size();
+		_shadowShader->setPointLightCount(m_depthCubes.size());
 	}
 
-	std::vector<std::shared_ptr<glwrap::DepthCube>> Lighting::getDepthCubes()
+	void Lighting::setDepthCubes(std::shared_ptr<Shader> _shadowShader)
 	{
-		return std::vector<std::shared_ptr<glwrap::DepthCube>>();
+		_shadowShader->setDepthCubes(m_depthCubes);
 	}
 
-	std::vector<glm::vec3> Lighting::getPointPositions()
+	void Lighting::setPointPositions(std::shared_ptr<Shader> _shadowShader)
 	{
-		return std::vector<glm::vec3>();
+		_shadowShader->setPointLightPositions(m_pointLightPositions);
 	}
 
-	std::vector<glm::vec3> Lighting::getPointColours()
+	void Lighting::setPointColours(std::shared_ptr<Shader> _shadowShader)
 	{
-		return std::vector<glm::vec3>();
+		_shadowShader->setPointLightColours(m_pointColours);
 	}
 
-	std::vector<float> Lighting::getFarPlanes()
+	void Lighting::setFarPlanes(std::shared_ptr<Shader> _shadowShader)
 	{
-		return std::vector<float>();
+		_shadowShader->setFarPlanes(m_farPlanes);
+	}
+
+	std::shared_ptr<PointLight> Lighting::addPointLight()
+	{
+		if (m_pointLights.size() < m_maxPointLights)
+		{
+			std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+			light->m_core = m_core;
+
+			m_pointLights.push_back(light);
+			m_depthCubes.push_back(light->m_depthCube);
+
+			return light;
+		}
+		return NULL;
 	}
 
 	std::shared_ptr<PointLight> Lighting::addPointLight(glm::vec3 _position,
 		glm::vec3 _colour, float _radius)
 	{
-		std::shared_ptr<PointLight> light;
-		return light;
+		if (m_pointLights.size() < m_maxPointLights)
+		{
+			std::shared_ptr<PointLight> light = std::make_shared<PointLight>();
+			light->m_core = m_core;
+
+			light->m_position = _position;
+			light->setColour(_colour);
+			light->setRadius(_radius);
+
+			m_pointLights.push_back(light);
+			m_depthCubes.push_back(light->m_depthCube);
+
+			return light;
+		}
+		return NULL;
 	}
 
 	std::list<std::shared_ptr<PointLight>> Lighting::getPointLights()
@@ -101,9 +129,35 @@ namespace cobebe
 		return m_pointLights;
 	}
 
+	void Lighting::removePointLight(std::shared_ptr<PointLight> _light)
+	{
+		if (_light)
+		{
+			int count = 0;
+			for (std::list<std::shared_ptr<PointLight>>::iterator it = m_pointLights.begin();
+				it != m_pointLights.end();)
+			{
+				if (_light == (*it))
+				{
+					it = m_pointLights.erase(it);
+					std::vector<std::shared_ptr<glwrap::DepthCube>>::iterator
+						dc = m_depthCubes.begin() + count;
+					m_depthCubes.erase(dc);
+					return;
+				}
+				count++;
+			}
+		}
+	}
+
+	void Lighting::emptyPointLights()
+	{
+		m_pointLights.clear();
+	}
+
 	void Lighting::setDepthBuffer(std::shared_ptr<Shader> _shadowShader)
 	{
-		_shadowShader->m_internal->setUniform("in_DepthMap", m_depthMap);
+		_shadowShader->m_internal->setUniform("in_DepthBuff", m_depthMap);
 	}
 
 	void Lighting::draw(std::shared_ptr<glwrap::VertexArray> _meshInternal,
@@ -134,10 +188,22 @@ namespace cobebe
 	void Lighting::clear()
 	{
 		m_depthMap->clear();
+
+		for (std::list<std::shared_ptr<PointLight>>::iterator it = m_pointLights.begin();
+			it != m_pointLights.end(); it++)
+		{
+			(*it)->m_depthCube->clear();
+		}
+
+		m_pointLightPositions.clear();
+		m_pointColours.clear();
+		m_farPlanes.clear();
 	}
 
 	void Lighting::onInit()
 	{
+		m_maxPointLights = 10;
+
 		m_globalLightDir = glm::normalize(glm::vec3(0.0f, -0.3f, 1.0f));;
 		m_globalLightCol = glm::vec3(0.5f);
 		m_globalLightEmissive = glm::vec3(0.0f);
@@ -161,15 +227,42 @@ namespace cobebe
 		m_globalLightSpace = lightProjection * lightView;
 
 		m_depthShader->setLightSpace(m_globalLightSpace);
+
+		std::shared_ptr<PointLight> light = addPointLight(
+			glm::vec3(200, 2, -5), glm::vec3(0.2f), 50.0f);
 	}
 
 	void Lighting::drawLighting()
 	{
 		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
-			it != m_shadowModels.end();)
+			it != m_shadowModels.end(); it++)
 		{
 			m_depthShader->m_internal->setUniform("in_Model", (*it).m_model);
 			m_depthShader->m_internal->draw(m_depthMap, (*it).m_mesh.lock());
+		}
+
+		for (std::list<std::shared_ptr<PointLight>>::iterator pointIt = m_pointLights.begin();
+			pointIt != m_pointLights.end(); pointIt++)
+		{
+			m_pointLightPositions.push_back((*pointIt)->m_position);
+			m_pointColours.push_back((*pointIt)->m_colour);
+			m_farPlanes.push_back((*pointIt)->m_radius);
+
+			m_cubeShader->setLightSpace((*pointIt)->m_lightSpaces);
+			m_cubeShader->m_internal->setUniform("in_FarPlane", (*pointIt)->m_radius);
+			m_cubeShader->setLightPos((*pointIt)->m_position);
+
+			for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
+				it != m_shadowModels.end(); it++)
+			{
+				m_cubeShader->m_internal->setUniform("in_Model", (*it).m_model);
+				m_cubeShader->m_internal->draw(m_depthMap, (*it).m_mesh.lock());
+			}
+		}
+
+		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
+			it != m_shadowModels.end();)
+		{
 			it = m_shadowModels.erase(it);
 		}
 	}

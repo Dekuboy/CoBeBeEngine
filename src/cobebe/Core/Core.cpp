@@ -212,6 +212,7 @@ namespace cobebe
 			if (m_environment->m_deltaTime < (1.0f / 60.0f))
 			{
 				SDL_Delay((unsigned int)(((1.0f / 60.0f) - m_environment->m_deltaTime)*1000.0f));
+				m_environment->m_deltaTime = 1.0f / 60.0f;
 			}
 
 			// Poll SDL Events
@@ -238,6 +239,11 @@ namespace cobebe
 		tempEntity->m_core = m_self;
 		m_entities.push_back(tempEntity);
 		return tempEntity;
+	}
+
+	std::shared_ptr<glwrap::Context> Core::getGLContext()
+	{
+		return m_context;
 	}
 
 	std::shared_ptr<Camera> Core::addCamera()

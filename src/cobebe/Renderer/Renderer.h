@@ -65,7 +65,7 @@ namespace cobebe
 
 		void onTick();
 		virtual void onPreDisplay();
-		void onDisplay();
+		virtual void onDisplay();
 	};
 }
 #endif

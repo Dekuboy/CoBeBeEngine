@@ -1,3 +1,4 @@
+#include <glwrap/glwrap.h>
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
@@ -6,6 +7,7 @@ namespace cobebe
 {
 	class Lighting;
 	class Shader;
+	class Core;
 
 	class PointLight
 	{
@@ -25,6 +27,10 @@ namespace cobebe
 		glm::vec3 m_colour;
 		float m_radius;
 		std::vector<glm::mat4> m_lightSpaces;
+
+		std::shared_ptr<glwrap::DepthCube> m_depthCube;
+
+		std::weak_ptr<Core> m_core;
 
 	};
 }

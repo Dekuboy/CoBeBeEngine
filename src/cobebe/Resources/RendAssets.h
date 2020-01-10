@@ -8,6 +8,7 @@ namespace cobebe
 	class Renderer;
 	class ShadowRenderer;
 	class Lighting;
+	class Camera;
 
 	/**
 	* Stores a VertexArray to set in Renderer
@@ -54,10 +55,25 @@ namespace cobebe
 		void setAmbient(glm::vec3 _ambient);
 		void setLightPos(glm::vec3 _lightPos);
 		void setLightDir(glm::vec3 _lightDir);
+		void setLightCol(glm::vec3 _lightCol);
 		void setLightSpace(glm::mat4 _lightSpace);
+
+		void setLightSpace(std::vector<glm::mat4> _lightSpace);
+
+		void setPointLightCount(int _count);
+		void setDepthCubes(std::vector<std::shared_ptr<glwrap::DepthCube>> _depthCubes);
+		void setPointLightPositions(std::vector<glm::vec3> _pointLightPositions);
+		void setPointLightColours(std::vector<glm::vec3> _pointColours);
+		void setFarPlanes(std::vector<float> _farPlanes);
 
 		bool getUniformCheck();
 		void setUniformCheck(bool _switch);
+		bool getShadowCheck();
+		void setShadowCheck(bool _switch);
+
+		void setCam(std::shared_ptr<Camera> _camera);
+
+		void resetChecks();
 
 	private:
 		friend class Renderer;
@@ -65,6 +81,9 @@ namespace cobebe
 
 		std::shared_ptr<glwrap::ShaderProgram> m_internal; /// Pointer to OpenGL ShaderProgram
 		bool m_uniformCheck;
+		bool m_shadowCheck;
+
+		std::shared_ptr<Camera> m_camSet;
 
 		void onLoad(const std::string& _path);
 

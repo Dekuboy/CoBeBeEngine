@@ -57,7 +57,7 @@ namespace cobebe
 
 	void Renderer::onTick()
 	{
-		m_shader->setUniformCheck(false);
+		m_shader->resetChecks();
 	}
 
 	void Renderer::onPreDisplay()
@@ -90,16 +90,14 @@ namespace cobebe
 			m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
 			if (m_camera)
 			{
-				m_shader->m_internal->setUniform("in_View", glm::inverse(m_camera->getView()));
-				m_shader->m_internal->setUniform("in_Projection", m_camera->getProjection());
+				m_shader->setCam(m_camera);
 				m_camera->draw(m_shader->m_internal, m_mesh->m_internal);
 			}
 			else
 			{
 				std::shared_ptr<Camera> currentCam = getCore()->getCurrentCamera();
 
-				m_shader->m_internal->setUniform("in_View", glm::inverse(currentCam->getView()));
-				m_shader->m_internal->setUniform("in_Projection", currentCam->getProjection());
+				m_shader->setCam(currentCam);
 				currentCam->draw(m_shader->m_internal, m_mesh->m_internal);
 			}
 		}

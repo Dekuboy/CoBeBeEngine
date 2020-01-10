@@ -97,6 +97,10 @@ namespace cobebe
 		}
 
 		/**
+		* \brief Gets the current gl Context
+		*/
+		std::shared_ptr<glwrap::Context> getGLContext();
+		/**
 		* \brief Adds Camera to list using screen size for the RenderTexture
 		*/
 		std::shared_ptr<Camera> addCamera();

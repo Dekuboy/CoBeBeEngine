@@ -7,7 +7,6 @@ namespace cobebe
 {
 	class Core;
 	class Texture;
-	class Renderer;
 
 	/**
 	* Represents a cameras position and perspective

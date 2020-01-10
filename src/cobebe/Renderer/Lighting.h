@@ -30,15 +30,18 @@ namespace cobebe
 
 		glm::mat4 getGlobalLightSpace();
 
-		int getPointLightRCount();
-		std::vector<std::shared_ptr<glwrap::DepthCube>> getDepthCubes();
-		std::vector<glm::vec3> getPointPositions();
-		std::vector<glm::vec3> getPointColours();
-		std::vector<float> getFarPlanes();
+		void setPointLightRCount(std::shared_ptr<Shader> _shadowShader);
+		void setDepthCubes(std::shared_ptr<Shader> _shadowShader);
+		void setPointPositions(std::shared_ptr<Shader> _shadowShader);
+		void setPointColours(std::shared_ptr<Shader> _shadowShader);
+		void setFarPlanes(std::shared_ptr<Shader> _shadowShader);
 
+		std::shared_ptr<PointLight> addPointLight();
 		std::shared_ptr<PointLight> addPointLight(glm::vec3 _position,
 			glm::vec3 _colour, float _radius);
 		std::list<std::shared_ptr<PointLight>> getPointLights();
+		void removePointLight(std::shared_ptr<PointLight> _light);
+		void emptyPointLights();
 
 		void setDepthBuffer(std::shared_ptr<Shader> _shadowShader);
 

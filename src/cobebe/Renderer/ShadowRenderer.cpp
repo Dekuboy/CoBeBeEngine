@@ -23,4 +23,24 @@ namespace cobebe
 		}
 		Renderer::onPreDisplay();
 	}
+
+	void ShadowRenderer::onDisplay()
+	{
+		if (m_shader)
+		{
+			if (!m_shader->getShadowCheck())
+			{
+				m_shader->setLightCol(m_lighting->getGlobalLightCol());
+
+				m_lighting->setPointLightRCount(m_shader);
+				m_lighting->setDepthCubes(m_shader);
+				m_lighting->setPointPositions(m_shader);
+				m_lighting->setPointColours(m_shader);
+				m_lighting->setFarPlanes(m_shader);
+
+				m_shader->setShadowCheck(true);
+			}
+		}
+		Renderer::onDisplay();
+	}
 }

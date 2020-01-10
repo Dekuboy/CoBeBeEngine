@@ -10,7 +10,7 @@ int main()
 	std::shared_ptr<cobebe::ShadowRenderer> renderer = entity->addComponent<cobebe::ShadowRenderer>();
 	renderer->setMesh("objs\\graveyard.obj");
 	renderer->setTexture("images\\graveyard.png");
-	renderer->setShader("shadows\\pcfmap.shad");
+	renderer->setShader("shadows\\cubemap.shad");
 
 	//entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
 
@@ -22,7 +22,7 @@ int main()
 	renderer = entity->addComponent<cobebe::ShadowRenderer>();
 	renderer->setMesh("objs\\curuthers.obj");
 	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("shadows\\pcfmap.shad");
+	renderer->setShader("shadows\\cubemap.shad");
 
 	entity->addComponent<cobebe::BoxCollider>();
 

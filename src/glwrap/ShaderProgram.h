@@ -31,6 +31,7 @@ namespace glwrap
 		void draw(std::shared_ptr<VertexArray> _vertexArray);
 		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray);
 
+		void setUniform(std::string _uniform, int _value);
 		void setUniform(std::string _uniform, glm::vec4 _value);
 		void setUniform(std::string _uniform, glm::vec3 _value);
 		void setUniform(std::string _uniform, std::vector<glm::vec3> _vectors);

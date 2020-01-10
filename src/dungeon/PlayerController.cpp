@@ -83,13 +83,13 @@ void PlayerController::onTick()
 
 float PlayerController::ClampAngle(float _angle, float _min, float _max)
 {
-	if (_angle > 360) 
+	if (_angle > glm::radians(360.0f))
 	{ 
-		_angle -= 360; 
+		_angle -= glm::radians(360.0f);
 	}
-	if (_angle < -360) 
+	if (_angle < glm::radians(-360.0f))
 	{
-		_angle += 360; 
+		_angle += glm::radians(360.0f);
 	}
 	return glm::clamp(_angle, _min, _max);
 }

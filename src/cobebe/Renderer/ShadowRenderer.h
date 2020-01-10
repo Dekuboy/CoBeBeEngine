@@ -8,6 +8,7 @@ namespace cobebe
 
 	private:
 		void onPreDisplay();
+		void onDisplay();
 
 	};
 }

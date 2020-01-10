@@ -70,7 +70,6 @@ void main()
 
 	vec3 light = in_Ambient + (1.0 - shadow) * (diffuse + specular);
 	gl_FragColor = tex * vec4(light, 1);
-	//gl_FragColor = vec4(vec3(closestDepth / in_FarPlane), 1.0);
 }
 
 #endif
