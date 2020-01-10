@@ -87,9 +87,20 @@ float random(vec3 seed, int i){
 	return fract(sin(dot_product) * 43758.5453);
 }
 
-float pcfGlobalShadow()
+float pcfGlobalShadow(vec3 _projCoords, float _bias)
 {
-	return 0.0f;
+	float shadow = 0.0;
+	float objectDepth = _projCoords.z;
+	vec2 texelSize = 1.0 / textureSize(in_DepthBuff, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+		for(int y = -1; y <= 1; ++y)
+		{
+			float pcfDepth = texture(in_DepthBuff, _projCoords.xy + vec2(x, y) * texelSize).r; 
+			shadow += objectDepth - _bias > pcfDepth ? 1.0 : 0.0;        
+		}    
+	}
+	return shadow / 9.0;
 }
 
 float spsGlobalShadow(vec3 _projCoords, float _bias)
