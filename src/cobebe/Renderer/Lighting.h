@@ -19,6 +19,7 @@ namespace cobebe
 	{
 	public:
 		glm::vec3 getGlobalLightPos();
+		void setGlobalLightPos(glm::vec3 _position);
 		glm::vec3 getGlobalLightDir();
 		void setGlobalLightDir(glm::vec3 _lightDir);
 		glm::vec3 getGlobalLightCol();

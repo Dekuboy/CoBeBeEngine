@@ -13,6 +13,11 @@ namespace cobebe
 		return m_globalLightPos;
 	}
 
+	void Lighting::setGlobalLightPos(glm::vec3 _position)
+	{
+		m_globalLightPos = _position;
+	}
+
 	glm::vec3 Lighting::getGlobalLightDir()
 	{
 		return m_globalLightDir;
@@ -153,6 +158,8 @@ namespace cobebe
 	void Lighting::emptyPointLights()
 	{
 		m_pointLights.clear();
+		m_depthCubes.clear();
+		addPointLight(glm::vec3(0), glm::vec3(0), 1);
 	}
 
 	void Lighting::setDepthBuffer(std::shared_ptr<Shader> _shadowShader)

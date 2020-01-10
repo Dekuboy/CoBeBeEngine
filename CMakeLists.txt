@@ -104,6 +104,17 @@ add_executable(dungeon
 	src/dungeon/main.cpp
 )
 
+add_executable(lightDemo
+	src/lightDemo/SceneController.h
+	src/lightDemo/SceneController.cpp
+	src/lightDemo/main.cpp
+)
+
 target_link_libraries(dungeon 
 	cobebe
 )
+
+target_link_libraries(lightDemo
+	cobebe
+)
+	

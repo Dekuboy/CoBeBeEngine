@@ -14,7 +14,8 @@ namespace cobebe
 	public:
 		PointLight();
 
-		glm::vec3 m_position;
+		glm::vec3 getPosition();
+		void setPosition(glm::vec3 _position);
 
 		glm::vec3 getColour();
 		void setColour(glm::vec3 _lightCol);
@@ -24,6 +25,7 @@ namespace cobebe
 
 	private:
 		friend class Lighting;
+		glm::vec3 m_position;
 		glm::vec3 m_colour;
 		float m_radius;
 		std::vector<glm::mat4> m_lightSpaces;

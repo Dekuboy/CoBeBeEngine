@@ -204,7 +204,7 @@ namespace glwrap
 				fq.tca = f.tcc;
 				texCoordBuffer->add(fq.tca);
 				fq.na = f.nc;
-				normalBuffer->add(fq.na);
+				if (normalBuffer) normalBuffer->add(fq.na);
 				fq.lmca = f.lmcc;
 				if (lightMapBuffer) lightMapBuffer->add(fq.lmca);
 
@@ -236,7 +236,7 @@ namespace glwrap
 				fq.tcc = f.tca;
 				texCoordBuffer->add(fq.tcc);
 				fq.nc = f.na;
-				normalBuffer->add(fq.nc);
+				if (normalBuffer) normalBuffer->add(fq.nc);
 				fq.lmcc = f.lmca;
 				if (lightMapBuffer) lightMapBuffer->add(fq.lmcc);
 

@@ -30,6 +30,17 @@ namespace cobebe
 		m_depthCube = std::make_shared<glwrap::DepthCube>(1024, 1024);
 	}
 
+	glm::vec3 PointLight::getPosition()
+	{
+		return m_position;
+	}
+
+	void PointLight::setPosition(glm::vec3 _position)
+	{
+		m_position = _position;
+		setRadius(m_radius);
+	}
+
 	glm::vec3 PointLight::getColour()
 	{
 		return m_colour;

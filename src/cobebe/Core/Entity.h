@@ -195,6 +195,11 @@ namespace cobebe
 		*/
 		std::shared_ptr<Transform> getTransform();
 
+		/**
+		* \brief Kills the entity
+		*/
+		void kill();
+
 	private:
 		friend class Core;
 		bool m_kill; /// Marks Entity for destruction
