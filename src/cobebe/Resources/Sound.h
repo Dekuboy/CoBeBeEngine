@@ -1,4 +1,5 @@
 #include <cobebe/Resources/Asset.h>
+#include <cobebe/Resources/Resources.h>
 #include <AL/al.h>
 #include <AL/alc.h>
 

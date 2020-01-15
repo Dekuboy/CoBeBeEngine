@@ -27,6 +27,12 @@ int main()
 	entity->addComponent<cobebe::BoxCollider>();
 
 	entity->addComponent<PlayerController>();
+
+	entity = App->addEntity();
+	entity->getTransform()->m_position = glm::vec3(0.5f);
+
+	std::shared_ptr<cobebe::ImageGUI> gui = entity->addComponent<cobebe::ImageGUI>();
+	gui->setTexture("images\\health_bar.png");
 	
 	App->run();
 

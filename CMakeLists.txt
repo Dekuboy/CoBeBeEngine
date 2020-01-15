@@ -88,6 +88,11 @@ add_library(cobebe
 	src/cobebe/Renderer/PointLight.h
 	src/cobebe/Renderer/PointLight.cpp
 
+	src/cobebe/GUI/Canvas.h
+	src/cobebe/GUI/Canvas.cpp
+	src/cobebe/GUI/ImageGUI.h
+	src/cobebe/GUI/ImageGUI.cpp
+
 	src/cobebe/Speaker/Speaker.h
 	src/cobebe/Speaker/Speaker.cpp
 

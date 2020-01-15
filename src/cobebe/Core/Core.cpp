@@ -7,6 +7,7 @@
 #include <cobebe/Core/Keyboard.h>
 #include <cobebe/Core/Mouse.h>
 #include <cobebe/Core/Gamepad.h>
+#include <cobebe/GUI/Canvas.h>
 #include <cobebe/Resources/Resources.h>
 #include <glm/ext.hpp>
 #include <iostream>
@@ -114,6 +115,10 @@ namespace cobebe
 		temp->m_lighting->m_core = temp;
 		temp->m_lighting->onInit();
 
+		temp->m_canvas = std::make_shared<Canvas>();
+		temp->m_canvas->m_core = temp;
+		temp->m_canvas->onInit();
+
 		temp->m_self = temp;
 		return temp;
 	}
@@ -181,14 +186,9 @@ namespace cobebe
 				(*it)->display();
 			}
 
-			// Draw current Camera to screen
-			m_nullShader->setViewport(glm::vec4(0, 0,
-				m_environment->m_width, m_environment->m_height));
-			m_nullShader->setUniform("in_Texture",
-				m_currentCamera.lock()->m_texture);
-			m_nullShader->draw();
-
-			SDL_GL_SwapWindow(m_window);
+			glDisable(GL_DEPTH_TEST);
+			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
 
 			// PostDisplay each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -196,11 +196,22 @@ namespace cobebe
 				(*it)->postDisplay();
 			}
 
+
+			// Draw current Camera to screen
+			m_nullShader->setViewport(glm::vec4(0, 0,
+				m_environment->m_width, m_environment->m_height));
+			m_nullShader->setUniform("in_Texture",
+				m_currentCamera.lock()->m_texture);
+			m_nullShader->draw();
+
 			// GUI each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->gui();
 			}
+
+			// Draw to window
+			SDL_GL_SwapWindow(m_window);
 
 			// Update deltaTime
 			currentTime = SDL_GetTicks();
@@ -286,6 +297,11 @@ namespace cobebe
 	std::shared_ptr<Lighting> Core::getLighting()
 	{
 		return m_lighting;
+	}
+
+	std::shared_ptr<Canvas> Core::getCanvas()
+	{
+		return m_canvas;
 	}
 
 	void Core::pollSDLEvent()

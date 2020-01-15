@@ -1,3 +1,6 @@
+#ifndef _COBEBE_RESOURCES
+#define _COBEBE_RESOURCES
+
 #include <string>
 #include <memory>
 #include <list>
@@ -47,3 +50,4 @@ namespace cobebe
 
 	};
 }
+#endif

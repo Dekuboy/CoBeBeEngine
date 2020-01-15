@@ -1,12 +1,13 @@
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
 #include <cobebe/Resources/Asset.h>
+#include <cobebe/Resources/Resources.h>
 #include <cobebe/NonCopyable.h>
 
 namespace cobebe
 {
 	class Renderer;
-	class ShadowRenderer;
+	class Canvas;
 	class Lighting;
 	class Camera;
 
@@ -37,6 +38,7 @@ namespace cobebe
 
 	private:
 		friend class Renderer;
+		friend class Canvas;
 
 		std::shared_ptr<glwrap::Texture> m_internal; /// Pointer to OpenGL Texture
 
@@ -77,6 +79,7 @@ namespace cobebe
 
 	private:
 		friend class Renderer;
+		friend class Canvas;
 		friend class Lighting;
 
 		std::shared_ptr<glwrap::ShaderProgram> m_internal; /// Pointer to OpenGL ShaderProgram
