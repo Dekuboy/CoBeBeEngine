@@ -24,9 +24,9 @@ namespace cobebe
 		glm::mat4 model(1.0f);
 
 		model = glm::translate(model, 
-			glm::vec3(100.0f, 550.0f, 0.0f));
+			glm::vec3(_position.x * m_currentWidth, _position.y * m_currentHeight, _position.z));
 		model = glm::scale(model, 
-			glm::vec3(100, 50, 1));
+			glm::vec3(_size.x * m_currentWidth, _size.y * m_currentHeight, 1));
 
 		m_staticShader->m_internal->setUniform("in_Model", model);
 		m_staticShader->m_internal->setUniform("in_Texture", _image->m_internal);
@@ -40,6 +40,7 @@ namespace cobebe
 			(float)m_currentWidth, 0.0f, (float)m_currentHeight, -1.0f, 1.0f);
 
 		m_staticShader->m_internal->setUniform("in_Projection", m_projection);
+		m_staticShader->m_internal->setViewport(glm::vec4(0, 0, m_currentWidth, m_currentHeight));
 	}
 
 	void Canvas::onInit()

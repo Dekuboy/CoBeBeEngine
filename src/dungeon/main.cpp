@@ -29,7 +29,8 @@ int main()
 	entity->addComponent<PlayerController>();
 
 	entity = App->addEntity();
-	entity->getTransform()->m_position = glm::vec3(0.5f);
+	entity->getTransform()->m_position = glm::vec3(0.12f, 0.92f, 0.1f);
+	entity->getTransform()->m_scale = glm::vec3(0.1f, 0.05f, 1.0f);
 
 	std::shared_ptr<cobebe::ImageGUI> gui = entity->addComponent<cobebe::ImageGUI>();
 	gui->setTexture("images\\health_bar.png");
