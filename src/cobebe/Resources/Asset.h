@@ -8,7 +8,7 @@
 namespace cobebe
 {
 	/**
-	* Parent class for loaded assets
+	* \brief Parent class for loaded assets
 	*/
 	class Asset
 	{
@@ -17,8 +17,8 @@ namespace cobebe
 	protected:
 		friend class Resources;
 
-		std::string m_path; /// Folder path as identification
-		std::weak_ptr<glwrap::Context> m_context; /// Pointer to context for OpenGL asset creation
+		std::string m_path; ///< Folder path as identification
+		std::weak_ptr<glwrap::Context> m_context; ///< Pointer to context for OpenGL asset creation
 
 		/**
 		* \brief Activates once when loading a file

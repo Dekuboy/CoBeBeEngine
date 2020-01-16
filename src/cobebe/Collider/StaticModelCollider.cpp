@@ -348,8 +348,8 @@ namespace cobebe
 	glm::vec3 StaticModelCollider::faceNormal(glwrap::Face& _face)
 	{
 		glm::vec3 N = glm::cross(
-			_face.pb - _face.pc,
-			_face.pa - _face.pc);
+			_face.pa - _face.pc,
+			_face.pb - _face.pc);
 
 		return N;
 	}

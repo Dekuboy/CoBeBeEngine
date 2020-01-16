@@ -15,7 +15,7 @@ int main()
 
 	entity->addComponent<Bloom>();
 
-	//entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
+	entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
 
 	entity->addComponent<cobebe::StaticModelCollider>();
 
@@ -27,7 +27,8 @@ int main()
 	renderer->setTexture("images\\curuthers_diffuse.png");
 	renderer->setShader("shadows\\cubemap.shad");
 
-	entity->addComponent<cobebe::BoxCollider>();
+	std::shared_ptr<cobebe::BoxCollider> tmp = entity->addComponent<cobebe::BoxCollider>();
+	tmp->setSize(glm::vec3(0.7f));
 
 	entity->addComponent<PlayerController>();
 

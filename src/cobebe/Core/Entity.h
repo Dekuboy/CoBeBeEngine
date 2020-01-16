@@ -9,7 +9,7 @@ namespace cobebe
 	class Transform;
 
 	/**
-	* Represents an object in the game loop
+	* \brief Represents an object in the game loop
 	*/
 	class Entity
 	{
@@ -159,38 +159,6 @@ namespace cobebe
 		}
 
 		/**
-		* \brief Removes Component passed in from Entity
-		*/
-		template <class T>
-		void removeComponent(T* _removeCmp)
-		{
-			std::shared_ptr<T> cmp;
-
-			cmp = std::dynamic_pointer_cast<T>(m_transform.lock());
-			if (!cmp)
-			{
-				for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
-				{
-					cmp = std::dynamic_pointer_cast<T>(*it);
-					if (cmp)
-					{
-						if (_removeCmp == &(*cmp))
-						{
-							(*it)->m_kill = true;
-							return;
-						}
-					}
-				}
-
-				throw Exception("Component not found");
-			}
-			else
-			{
-				throw Exception("Cannot remove Transform");
-			}
-		}
-
-		/**
 		* \brief Returns pointer to Transform component
 		*/
 		std::shared_ptr<Transform> getTransform();
@@ -202,12 +170,12 @@ namespace cobebe
 
 	private:
 		friend class Core;
-		bool m_kill; /// Marks Entity for destruction
+		bool m_kill; ///< Marks Entity for destruction
 
-		std::list<std::shared_ptr<Component>> m_components; /// List of components attached to entity
-		std::weak_ptr<Core> m_core; /// Pointer to games Core
-		std::weak_ptr<Entity> m_self; /// Pointer to self to be placed in attached components
-		std::weak_ptr<Transform> m_transform; /// Pointer to attached Transform Component
+		std::list<std::shared_ptr<Component>> m_components; ///< List of components attached to entity
+		std::weak_ptr<Core> m_core; ///< Pointer to games Core
+		std::weak_ptr<Entity> m_self; ///< Pointer to self to be placed in attached components
+		std::weak_ptr<Transform> m_transform; ///< Pointer to attached Transform Component
 
 		/**
 		* \brief Calls on all components once per frame

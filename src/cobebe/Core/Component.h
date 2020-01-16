@@ -16,7 +16,7 @@ namespace cobebe
 	class Resources;
 
 	/**
-	* Parent class ready to attach to an Entity
+	* \brief Parent class ready to attach to an Entity
 	* -provides virtual void functions:
 	* --onInit();
 	* --onTick();
@@ -64,9 +64,9 @@ namespace cobebe
 		*/
 		std::shared_ptr<Environment> getEnvironment();
 
-	private:
+	protected:
 		friend class Entity;
-		bool m_kill; /// Marks Component for destruction
+		bool m_kill; ///< Marks Component for destruction
 
 		std::weak_ptr<Entity> m_entity; ///< Pointer to entity
 

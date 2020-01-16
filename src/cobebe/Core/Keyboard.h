@@ -5,7 +5,7 @@
 namespace cobebeInput
 {
 	/**
-	* Converts sdl input to keyboard input
+	* \brief Converts sdl input to keyboard input
 	*/
 	enum KeyboardKey
 	{
@@ -58,22 +58,41 @@ namespace cobebe
 {
 	class Core;
 
+	/**
+	* \brief Stores input values from the keyboard
+	*/
 	class Keyboard
 	{
 	public:
+		/**
+		* \brief Retrieves corresponding key input
+		*/
 		bool isKey(int _key);
+		/**
+		* \brief Retrieves corresponding key press
+		*/
 		bool isKeyPressed(int _key);
+		/**
+		* \brief Retrieves corresponding key release
+		*/
 		bool isKeyReleased(int _key);
 
 	private:
 		friend class Core;
 
-		const uint8_t* m_state;
+		const uint8_t* m_state; ///< Pointer to keyboard state
 
-		std::vector<int> m_keysPressed;
-		std::vector<int> m_keysReleased;
+		std::vector<int> m_keysPressed; ///< Vector of keys pressed
+		std::vector<int> m_keysReleased; ///< Vector of keys released
 
+		/**
+		* \brief Initialises variables after Core pointer set
+		*/
 		void onInit();
+
+		/**
+		* \brief Clears pressed and released keys on all Gamepads
+		*/
 		void resetKeys();
 
 	};

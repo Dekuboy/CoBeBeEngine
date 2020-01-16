@@ -23,7 +23,7 @@ namespace cobebe
 	void Speaker::onInit()
 	{
 		// Generally not needed. Translate sources instead
-		alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
+		//alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
 
 		m_soundSrc = getCore()->loadAsset<Sound>(m_path);
 
@@ -57,7 +57,7 @@ namespace cobebe
 		if (state == AL_STOPPED)
 		{
 			m_isPlaying = false;
-			getEntity()->removeComponent<Speaker>(this);
+			m_kill = true;
 		}
 		else
 		{

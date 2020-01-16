@@ -9,7 +9,7 @@ namespace cobebe
 	class Texture;
 
 	/**
-	* Represents a cameras position and perspective
+	* \brief Represents a cameras position and perspective
 	* -holds a RenderTexture to draw to
 	*/
 	class Camera

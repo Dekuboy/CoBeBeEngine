@@ -3,7 +3,7 @@ namespace cobebe
 	class Core;
 
 	/**
-	* Holds deltaTime and screen size
+	* \brief Holds deltaTime and screen size
 	*/
 	class Environment
 	{
@@ -26,9 +26,9 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		float m_deltaTime; /// Maintains framerate
-		int m_width; /// Screen width
-		int m_height; /// Screen height
+		float m_deltaTime; ///< Maintains framerate
+		int m_width; ///< Screen width
+		int m_height; ///< Screen height
 
 	};
 }

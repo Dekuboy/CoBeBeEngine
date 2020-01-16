@@ -10,7 +10,7 @@ void Bloom::blur()
 	shader->setUniform("in_Texture", m_lightKeyRt);
 	shader->draw(m_blurRt);
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		shader->setUniform("in_Texture", m_blurRt);
 		shader->draw(m_blur2Rt);

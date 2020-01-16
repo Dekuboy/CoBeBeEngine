@@ -4,7 +4,7 @@
 namespace cobebe
 {
 	/**
-	* Simple AABB collider
+	* \brief Simple AABB collider
 	*/
 	class BoxCollider : public Collider
 	{
@@ -27,14 +27,14 @@ namespace cobebe
 		void setStatic(bool _switch);
 
 	private:
-		glm::vec3 m_size; /// Size of BozCollider
-		glm::vec3 m_offset; /// Position from the origin(transform position)
-		bool m_isTrigger; /// Does BoxCollider ghost
-		bool m_isStatic; /// Does BoxCollider stay still
-		glm::vec3 m_lastPosition; /// Stores last position in case of new position failure
+		glm::vec3 m_size; ///< Size of BozCollider
+		glm::vec3 m_offset; ///< Position from the origin(transform position)
+		bool m_isTrigger; ///< Does BoxCollider ghost
+		bool m_isStatic; ///< Does BoxCollider stay still
+		glm::vec3 m_lastPosition; ///< Stores last position in case of new position failure
 
-		void collideBox(); /// Checks collision with all entities with BoxCollider
-		void collideStaticModel(); /// Checks collision with all entities with StaticModelCollider
+		void collideBox(); ///< Checks collision with all entities with BoxCollider
+		void collideStaticModel(); ///< Checks collision with all entities with StaticModelCollider
 
 		/**
 		* \brief Checks if box is colliding

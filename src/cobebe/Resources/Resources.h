@@ -10,7 +10,7 @@ namespace cobebe
 	class Asset;
 
 	/**
-	* Holds and manages loaded file assets
+	* \brief Holds and manages loaded file assets
 	*/
 	class Resources
 	{
@@ -45,8 +45,8 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		std::list<std::shared_ptr<Asset>> m_resources; /// List of currently loaded assets
-		std::weak_ptr<glwrap::Context> m_context; /// Pointer to context for OpenGL assets
+		std::list<std::shared_ptr<Asset>> m_resources; ///< List of currently loaded assets
+		std::weak_ptr<glwrap::Context> m_context; ///< Pointer to context for OpenGL assets
 
 	};
 }

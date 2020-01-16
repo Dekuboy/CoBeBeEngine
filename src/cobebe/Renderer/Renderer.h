@@ -15,7 +15,7 @@ namespace cobebe
 	class Lighting;
 
 	/**
-	* Displays an Entity to the screen via loaded assets
+	* \brief Displays an Entity to the screen via loaded assets
 	*/
 	class Renderer : public Component
 	{
@@ -56,12 +56,12 @@ namespace cobebe
 		std::shared_ptr<Mesh> getMesh();
 
 	protected:
-		std::shared_ptr<Camera> m_camera; /// Stores Camera to draw to when set
-		std::weak_ptr<Transform> m_transform; /// Pointer to Transform component
-		std::shared_ptr<Lighting> m_lighting; /// Pointer to Lighting to get uniforms
-		std::shared_ptr<Mesh> m_mesh; /// Loaded Mesh to draw
-		std::shared_ptr<Texture> m_texture; /// Loaded Texture to apply
-		std::shared_ptr<Shader> m_shader; /// Loaded Shader to draw with
+		std::shared_ptr<Camera> m_camera; ///< Stores Camera to draw to when set
+		std::weak_ptr<Transform> m_transform; ///< Pointer to Transform component
+		std::shared_ptr<Lighting> m_lighting; ///< Pointer to Lighting to get uniforms
+		std::shared_ptr<Mesh> m_mesh; ///< Loaded Mesh to draw
+		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
+		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
 
 		void onTick();
 		virtual void onPreDisplay();
