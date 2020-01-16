@@ -4,6 +4,7 @@
 #include <glwrap/Context.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/VertexArray.h>
+#include <glwrap/Part.h>
 #include <glwrap/ShaderProgram.h>
 #include <glwrap/Texture.h>
 #include <glwrap/RenderTexture.h>

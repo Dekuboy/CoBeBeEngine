@@ -1,5 +1,6 @@
 #include <cobebe/cobebe.h>
 #include "PlayerController.h"
+#include "Bloom.h"
 
 int main()
 {
@@ -11,6 +12,8 @@ int main()
 	renderer->setMesh("objs\\graveyard.obj");
 	renderer->setTexture("images\\graveyard.png");
 	renderer->setShader("shadows\\cubemap.shad");
+
+	entity->addComponent<Bloom>();
 
 	//entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
 

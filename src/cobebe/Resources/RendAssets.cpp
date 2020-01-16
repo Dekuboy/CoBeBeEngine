@@ -20,6 +20,11 @@ namespace cobebe
 		m_internal = m_context.lock()->createTexture(_path);
 	}
 
+	const std::shared_ptr<glwrap::ShaderProgram> Shader::getInternal()
+	{
+		return m_internal;
+	}
+
 	void Shader::setEmissive(glm::vec3 _emissive)
 	{
 		m_internal->setUniform("in_Emissive", _emissive);

@@ -215,7 +215,7 @@ namespace cobebe
 
 		// Set global directional light values
 		m_globalLightDir = glm::normalize(glm::vec3(0.0f, -0.3f, 1.0f));;
-		m_globalLightCol = glm::vec3(0.5f);
+		m_globalLightCol = glm::vec3(0.3f);
 		m_globalLightEmissive = glm::vec3(0.0f);
 		m_globalLightAmbient = glm::vec3(0.1f);
 

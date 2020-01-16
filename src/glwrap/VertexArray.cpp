@@ -1,6 +1,7 @@
 #include <glwrap/VertexArray.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
+#include <glwrap/Part.h>
 
 #include <fstream>
 #include <iostream>

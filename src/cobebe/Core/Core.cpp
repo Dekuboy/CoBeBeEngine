@@ -294,6 +294,11 @@ namespace cobebe
 		return m_currentCamera.lock();
 	}
 
+	std::shared_ptr<glwrap::ShaderProgram> Core::getNullPassShader()
+	{
+		return m_nullShader;
+	}
+
 	std::shared_ptr<Lighting> Core::getLighting()
 	{
 		return m_lighting;

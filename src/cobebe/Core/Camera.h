@@ -41,6 +41,15 @@ namespace cobebe
 		* \brief Draws to cameras RenderTexture
 		*/
 		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::VertexArray> _meshInternal);
+		/**
+		* \brief Draws to cameras RenderTexture
+		*/
+		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
+
+		/**
+		* \brief Sets RenderTexture to uniform in passed in shader
+		*/
+		void setRtUniform(std::string _uniform, std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
 
 	private:
 		friend class Core;

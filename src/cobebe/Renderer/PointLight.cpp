@@ -7,7 +7,7 @@ namespace cobebe
 	PointLight::PointLight()
 	{
 		m_position = glm::vec3(0.0f);
-		m_colour = glm::vec3(0.2f);
+		m_colour = glm::vec3(0.1f);
 
 		float aspect = (float)1024 / (float)1024;
 		float near = 1.0f;

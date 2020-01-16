@@ -36,4 +36,16 @@ namespace cobebe
 			_shaderInternal->draw(m_texture, _meshInternal);
 		}
 	}
+
+	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal)
+	{
+		if (m_isOn)
+		{
+			_shaderInternal->draw(m_texture);
+		}
+	}
+	void Camera::setRtUniform(std::string _uniform, std::shared_ptr<glwrap::ShaderProgram> _shaderInternal)
+	{
+		_shaderInternal->setUniform(_uniform, m_texture);
+	}
 }

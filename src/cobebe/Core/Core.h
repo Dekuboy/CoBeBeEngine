@@ -118,6 +118,10 @@ namespace cobebe
 		*/
 		std::shared_ptr<Camera> getCamera();
 		/**
+		* \brief Returns the null shader for drawing RenderTextures
+		*/
+		std::shared_ptr<glwrap::ShaderProgram> getNullPassShader();
+		/**
 		* \brief Returns Lighting
 		*/
 		std::shared_ptr<Lighting> getLighting();

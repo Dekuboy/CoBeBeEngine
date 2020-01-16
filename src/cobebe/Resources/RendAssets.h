@@ -53,6 +53,8 @@ namespace cobebe
 	class Shader : private NonCopyable, public Asset
 	{
 	public:
+		const std::shared_ptr<glwrap::ShaderProgram> getInternal();
+
 		void setEmissive(glm::vec3 _emissive);
 		void setAmbient(glm::vec3 _ambient);
 		void setLightPos(glm::vec3 _lightPos);

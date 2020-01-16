@@ -25,6 +25,10 @@ add_library(glwrap
 	src/glwrap/VertexArray.cpp
 	src/glwrap/VertexBuffer.h
 	src/glwrap/VertexBuffer.cpp
+	src/glwrap/Animation.h
+	src/glwrap/Animation.cpp
+	src/glwrap/Part.h
+	src/glwrap/Part.cpp
 	src/glwrap/stb_image.h
 )
 if(MSVC)
@@ -106,6 +110,8 @@ target_link_libraries(cobebe
 add_executable(dungeon
 	src/dungeon/PlayerController.h
 	src/dungeon/PlayerController.cpp
+	src/dungeon/Bloom.h
+	src/dungeon/Bloom.cpp
 	src/dungeon/main.cpp
 )
 
