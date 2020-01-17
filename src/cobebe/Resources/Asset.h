@@ -1,6 +1,7 @@
 #ifndef _COBEBE_ASSET
 #define _COBEBE_ASSET
 
+#include <cobebe/NonCopyable.h>
 #include <string>
 #include <memory>
 #include <glwrap/glwrap.h>
@@ -10,7 +11,7 @@ namespace cobebe
 	/**
 	* \brief Parent class for loaded assets
 	*/
-	class Asset
+	class Asset : private NonCopyable
 	{
 	public:
 

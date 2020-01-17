@@ -14,7 +14,7 @@ namespace cobebe
 	/**
 	* \brief Stores a VertexArray to set in Renderer
 	*/
-	class Mesh : private NonCopyable, public Asset
+	class Mesh : public Asset
 	{
 	public:
 		/**
@@ -35,7 +35,7 @@ namespace cobebe
 	/**
 	* \brief Stores a Texture to set for drawing in Shader
 	*/
-	class Texture : private NonCopyable, public Asset
+	class Texture : public Asset
 	{
 	public:
 
@@ -53,9 +53,12 @@ namespace cobebe
 	/**
 	* \brief Stores a Shader to set in Renderer
 	*/
-	class Shader : private NonCopyable, public Asset
+	class Shader : public Asset
 	{
 	public:
+		/**
+		* \brief Get the internal glwrap ShaderProgram
+		*/
 		const std::shared_ptr<glwrap::ShaderProgram> getInternal();
 
 		/**

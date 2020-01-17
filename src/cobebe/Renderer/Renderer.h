@@ -20,7 +20,6 @@ namespace cobebe
 	class Renderer : public Component
 	{
 	public:
-		void onInit();
 		/**
 		* \brief Stores Camera that Renderer draws to if required
 		*/
@@ -63,6 +62,7 @@ namespace cobebe
 		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
 
+		void onInit();
 		void onTick();
 		virtual void onPreDisplay();
 		virtual void onDisplay();
