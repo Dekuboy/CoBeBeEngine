@@ -7,6 +7,8 @@ namespace cobebe
 {
 	class Core;
 	class Texture;
+	class Shader;
+	class Lighting;
 
 	/**
 	* \brief Represents a cameras position and perspective
@@ -47,15 +49,26 @@ namespace cobebe
 		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
 
 		/**
+		* \brief Draw from GBuffer to RenderTexture
+		*/
+		void drawLighting(std::shared_ptr<Shader> _shader);
+
+		/**
 		* \brief Sets RenderTexture to uniform in passed in shader
 		*/
 		void setRtUniform(std::string _uniform, std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
+		/**
+		* \brief Sets GBuffer variables to appropriate uniforms in passed in shader
+		*/
+		void setGbUniform(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
 
 	private:
 		friend class Core;
 
 		bool m_isOn; ///< Checks if the Camera is on
 		std::shared_ptr<glwrap::RenderTexture> m_texture; ///< Camera draws to internal RenderTexture
+		std::shared_ptr<glwrap::GBuffer> m_gBuffer; ///< Defers lighting to later
+		std::shared_ptr<Lighting> m_lighting; ///< Holds all variables regarding Lighting
 
 		glm::mat4 m_projection; ///< The projection matrix for passing to shader
 	};

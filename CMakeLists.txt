@@ -25,6 +25,8 @@ add_library(glwrap
 	src/glwrap/VertexArray.cpp
 	src/glwrap/VertexBuffer.h
 	src/glwrap/VertexBuffer.cpp
+	src/glwrap/GBuffer.h
+	src/glwrap/GBuffer.cpp
 	src/glwrap/Animation.h
 	src/glwrap/Animation.cpp
 	src/glwrap/Part.h

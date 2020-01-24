@@ -8,6 +8,7 @@
 #include <glwrap/ShaderProgram.h>
 #include <glwrap/Texture.h>
 #include <glwrap/RenderTexture.h>
+#include <glwrap/GBuffer.h>
 #include <glwrap/DepthBuffer.h>
 #include <glwrap/DepthCube.h>
 #endif

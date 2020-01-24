@@ -11,14 +11,24 @@ namespace glwrap
 	class VertexArray;
 	class Texture;
 	class RenderTexture;
+	class GBuffer;
 	class DepthBuffer;
 	class DepthCube;
+
+	enum gType
+	{
+		pos,
+		norm,
+		albed
+	};
 
 	struct Sampler
 	{
 		GLint m_id;
 		std::shared_ptr<Texture> m_texture;
 		std::shared_ptr<DepthCube> m_depthCube;
+		std::shared_ptr<GBuffer> m_gBuffer;
+		gType m_gType;
 	};
 
 	class ShaderProgram
@@ -44,6 +54,7 @@ namespace glwrap
 		void setUniform(std::string _uniform, std::shared_ptr<DepthBuffer> _depth);
 		void setUniform(std::string _uniform, std::shared_ptr<DepthCube> _depthCube);
 		void setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube>> _cubes);
+		void setUniform(std::shared_ptr<GBuffer> _gBuffer);
 
 		GLuint getId();
 		void setViewport(glm::vec4 _viewport);

@@ -57,4 +57,10 @@ namespace glwrap
 		rtn->m_context = m_self;
 		return rtn;
 	}
+	std::shared_ptr<GBuffer> Context::createGBuffer(int _width, int _height)
+	{
+		std::shared_ptr<GBuffer> rtn = std::make_shared<GBuffer>(_width, _height);
+		rtn->m_context = m_self;
+		return rtn;
+	}
 }

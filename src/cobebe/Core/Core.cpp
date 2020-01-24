@@ -8,7 +8,7 @@
 #include <cobebe/Core/Mouse.h>
 #include <cobebe/Core/Gamepad.h>
 #include <cobebe/GUI/Canvas.h>
-#include <cobebe/Resources/Resources.h>
+#include <cobebe/Resources/RendAssets.h>
 #include <glm/ext.hpp>
 #include <iostream>
 
@@ -93,10 +93,6 @@ namespace cobebe
 		}
 
 		temp->m_context = glwrap::Context::initialise();
-		temp->m_currentCamera = temp->addCamera();
-		temp->m_currentCamera.lock()->m_isOn = true;
-		temp->m_currentCamera.lock()->m_position = glm::vec3(0, 0, 10);
-
 
 		temp->m_keyboard = std::make_shared<Keyboard>();
 		temp->m_keyboard->onInit();
@@ -108,8 +104,8 @@ namespace cobebe
 		temp->m_resources = std::make_shared<Resources>();
 		temp->m_resources->m_context = temp->m_context;
 
-		temp->m_nullShader = temp->m_context->
-			createShader("shaders\\nullpass.shad");
+		temp->m_nullShader = temp->loadAsset<Shader>("shaders\\nullpass.shad");
+		temp->m_lightPassShader = temp->loadAsset<Shader>("deferred_shaders\\lightingG.shad");
 
 		temp->m_lighting = std::make_shared<Lighting>();
 		temp->m_lighting->m_core = temp;
@@ -118,6 +114,10 @@ namespace cobebe
 		temp->m_canvas = std::make_shared<Canvas>();
 		temp->m_canvas->m_core = temp;
 		temp->m_canvas->onInit();
+
+		temp->m_currentCamera = temp->addCamera();
+		temp->m_currentCamera.lock()->m_isOn = true;
+		temp->m_currentCamera.lock()->m_position = glm::vec3(0, 0, 10);
 
 		temp->m_self = temp;
 		return temp;
@@ -165,6 +165,7 @@ namespace cobebe
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
+			m_currentCamera.lock()->m_gBuffer->clear();
 
 			// Clear Shadows
 			m_lighting->clear();
@@ -196,13 +197,8 @@ namespace cobebe
 				(*it)->postDisplay();
 			}
 
-
 			// Draw current Camera to screen
-			m_nullShader->setViewport(glm::vec4(0, 0,
-				m_environment->m_width, m_environment->m_height));
-			m_nullShader->setUniform("in_Texture",
-				m_currentCamera.lock()->m_texture);
-			m_nullShader->draw();
+			drawToScreen();
 
 			// GUI each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -265,6 +261,8 @@ namespace cobebe
 		int width = m_environment->m_width;
 		int height = m_environment->m_height;
 		tempCamera->m_texture = m_context->createRenderTexture(width, height);
+		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
+		tempCamera->m_lighting = m_lighting;
 		tempCamera->m_projection = glm::perspective(glm::radians(45.0f),
 			(float)width / (float)height, 0.1f, 100.f);
 
@@ -277,6 +275,8 @@ namespace cobebe
 		// Initialise Camera before pushing to list
 		std::shared_ptr<Camera> tempCamera = std::make_shared<Camera>();
 		tempCamera->m_texture = m_context->createRenderTexture(_renderWidth, _renderHeight);
+		tempCamera->m_gBuffer = m_context->createGBuffer(_renderWidth, _renderHeight);
+		tempCamera->m_lighting = m_lighting;
 		tempCamera->m_projection = glm::perspective(glm::radians(45.0f),
 			(float)_renderWidth / (float)_renderHeight, 0.1f, 100.f);
 
@@ -296,7 +296,12 @@ namespace cobebe
 
 	std::shared_ptr<glwrap::ShaderProgram> Core::getNullPassShader()
 	{
-		return m_nullShader;
+		return m_nullShader->getInternal();
+	}
+
+	std::shared_ptr<glwrap::ShaderProgram> Core::getLightPassShader()
+	{
+		return m_lightPassShader->getInternal();
 	}
 
 	std::shared_ptr<Lighting> Core::getLighting()
@@ -411,5 +416,24 @@ namespace cobebe
 	std::shared_ptr<Environment> Core::getEnvironment()
 	{
 		return m_environment;
+	}
+
+	void Core::drawToScreen()
+	{
+		m_currentCamera.lock()->drawLighting(m_lightPassShader);
+
+		//std::shared_ptr<Shader> temp = loadAsset<Shader>("deferred_shaders\\test.shad");
+
+		//temp->getInternal()->setUniform(m_currentCamera.lock()->m_gBuffer);
+
+		//temp->getInternal()->draw(m_currentCamera.lock()->m_texture);
+
+		std::shared_ptr<glwrap::ShaderProgram> nullInternal = m_nullShader->getInternal();
+
+		nullInternal->setViewport(glm::vec4(0, 0,
+			m_environment->m_width, m_environment->m_height));
+		nullInternal->setUniform("in_Texture",
+			m_currentCamera.lock()->m_texture);
+		nullInternal->draw();
 	}
 }

@@ -12,7 +12,6 @@ namespace glwrap
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		glGenFramebuffers(1, &m_fbo);
-		if (!m_fbo) throw std::exception();
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_id, 0);

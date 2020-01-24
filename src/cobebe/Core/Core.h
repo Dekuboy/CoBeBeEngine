@@ -17,6 +17,7 @@ namespace cobebe
 	class Mouse;
 	class Gamepad;
 	class Resources;
+	class Shader;
 
 	/**
 	* \brief The Core of the engine
@@ -122,6 +123,10 @@ namespace cobebe
 		*/
 		std::shared_ptr<glwrap::ShaderProgram> getNullPassShader();
 		/**
+		* \brief 
+		*/
+		std::shared_ptr<glwrap::ShaderProgram> getLightPassShader();
+		/**
 		* \brief Returns Lighting
 		*/
 		std::shared_ptr<Lighting> getLighting();
@@ -162,10 +167,12 @@ namespace cobebe
 		}
 
 	private:
+
 		std::weak_ptr<Core> m_self; ///< Pointer to self to be placed in added entities
 
 		SDL_Window *m_window; ///< Engine window
-		std::shared_ptr<glwrap::ShaderProgram> m_nullShader; ///< Draws RenderTexture
+		std::shared_ptr<Shader> m_nullShader; ///< Draws RenderTexture
+		std::shared_ptr<Shader> m_lightPassShader; ///< Draws deferred lighting
 
 		ALCdevice * m_device; ///< Engine sound device
 		ALCcontext * m_alContext; ///< Engine sound context
@@ -186,5 +193,10 @@ namespace cobebe
 		std::shared_ptr<Resources> m_resources; ///< Holds loaded file paths
 
 		bool m_running; ///< Controls the game loop
+
+		/**
+		* \brief Passes current Cameras RenderTexture to screen
+		*/
+		void drawToScreen();
 	};
 }
