@@ -138,6 +138,7 @@ namespace cobebe
 		glm::vec3 m_globalLightAmbient; ///< Global ambient light
 
 		float m_globalLightRenderDistance; ///< Directional light depth map range
+		float m_globalLightScale; ///< Orthographic matrix scaling
 
 		std::shared_ptr<Shader> m_depthShader; ///< Directional light depth shader
 		std::shared_ptr<glwrap::DepthBuffer> m_depthMap; ///< Directional light depth map

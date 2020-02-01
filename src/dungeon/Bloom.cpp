@@ -26,7 +26,7 @@ void Bloom::blur()
 
 	m_nullShader->setUniform("in_Texture", m_mergeRt);
 
-	m_camera->draw(m_nullShader);
+	m_nullShader->draw();
 }
 
 void Bloom::onInit()

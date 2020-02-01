@@ -191,14 +191,14 @@ namespace cobebe
 			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			// Draw current Camera to screen
+			drawToScreen();
+
 			// PostDisplay each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->postDisplay();
 			}
-
-			// Draw current Camera to screen
-			drawToScreen();
 
 			// GUI each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)

@@ -13,7 +13,7 @@ int main()
 	renderer->setTexture("images\\graveyard.png");
 	renderer->setShader("deferred_shaders\\renderG.shad");
 
-	//entity->addComponent<Bloom>();
+	entity->addComponent<Bloom>();
 
 	entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
 

@@ -180,8 +180,8 @@ namespace cobebe
 	{
 		//_camera->
 
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,
-			-10.0f, 10.0f, 1.0f, m_globalLightRenderDistance);
+		glm::mat4 lightProjection = glm::ortho(-m_globalLightScale, m_globalLightScale,
+			-m_globalLightScale, m_globalLightScale, 1.0f, m_globalLightRenderDistance);
 
 		glm::mat4 lightView = glm::lookAt(m_globalLightPos,
 			m_globalLightPos + m_globalLightDir,
@@ -220,6 +220,7 @@ namespace cobebe
 		m_globalLightAmbient = glm::vec3(0.1f);
 
 		m_globalLightRenderDistance = 25.0f;
+		m_globalLightScale = 10.0f;
 
 		// Set depth map ready for rendering
 		m_depthMap = std::make_shared<glwrap::DepthBuffer>(512, 512);
@@ -227,10 +228,10 @@ namespace cobebe
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowCube.shad");
 
 		// Set light space matrix
-		glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f,
-			-10.0f, 10.0f, 1.0f, m_globalLightRenderDistance);
+		glm::mat4 lightProjection = glm::ortho(-m_globalLightScale, m_globalLightScale,
+			-m_globalLightScale, m_globalLightScale, 1.0f, m_globalLightRenderDistance);
 
-		m_globalLightPos = glm::vec3(-12, 2, -5);
+		m_globalLightPos = glm::vec3(-12, 2, -10);
 
 		glm::mat4 lightView = glm::lookAt(m_globalLightPos,
 			m_globalLightPos + m_globalLightDir,
