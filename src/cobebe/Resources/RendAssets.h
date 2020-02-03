@@ -120,14 +120,6 @@ namespace cobebe
 		* \brief Set if global lighting values have been set for shader to input value
 		*/
 		void setUniformCheck(bool _switch);
-		/**
-		* \brief Check if shadow values have been set for shader
-		*/
-		bool getShadowCheck();
-		/**
-		* \brief Set if shadow values have been set for shader to input value
-		*/
-		void setShadowCheck(bool _switch);
 
 		/**
 		* \brief Set current Camera view to input

@@ -27,7 +27,7 @@
 #include <cobebe/Resources/Sound.h>
 
 #include <cobebe/Renderer/Renderer.h>
-#include <cobebe/Renderer/ShadowRenderer.h>
+#include <cobebe/Renderer/PBRenderer.h>
 #include <cobebe/Renderer/Lighting.h>
 #include <cobebe/Renderer/PointLight.h>
 

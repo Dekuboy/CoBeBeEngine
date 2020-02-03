@@ -1,0 +1,57 @@
+#ifdef VERTEX
+
+attribute vec3 in_Position;
+attribute vec4 in_Color;
+attribute vec2 in_TexCoord;
+attribute vec3 in_Normal;
+
+uniform mat4 in_Projection;
+uniform mat4 in_View;
+uniform mat4 in_Model;
+
+varying vec4 ex_Color;
+varying vec2 ex_TexCoord;
+varying vec3 ex_FragPos;
+varying vec3 ex_Normal;
+
+void main()
+{
+	gl_Position = in_Projection * in_View * in_Model * vec4(in_Position, 1.0);
+	ex_Color = in_Color;
+	ex_TexCoord = in_TexCoord;
+
+	ex_Normal = mat3(in_Model) * in_Normal;
+	ex_FragPos = vec3(in_Model * vec4(in_Position, 1.0));
+}
+
+#endif
+
+#ifdef FRAGMENT
+
+out vec3 g_Position;
+out vec3 g_Normal;
+out vec4 g_AlbedoSpec;
+
+uniform sampler2D in_Texture;
+uniform sampler2D in_NormMap;
+uniform sampler2D in_MetalMap;
+uniform sampler2D in_RoughMap;
+uniform sampler2D in_AoMap;
+
+varying vec4 ex_Color;
+varying vec2 ex_TexCoord;
+varying vec3 ex_FragPos;
+varying vec3 ex_Normal;
+
+void main()
+{
+	g_Position = ex_FragPos;
+
+	g_Normal = normalize(ex_Normal);
+
+	g_AlbedoSpec.rgb = texture(in_Texture, ex_TexCoord).rgb;
+
+	g_AlbedoSpec.a = texture(in_MetalMap, ex_TexCoord).r;
+}
+
+#endif

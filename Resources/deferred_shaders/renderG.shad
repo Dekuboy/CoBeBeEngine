@@ -47,7 +47,7 @@ void main()
 
 	g_AlbedoSpec.rgb = texture(in_Texture, ex_TexCoord).rgb;
 
-	g_AlbedoSpec.a = 1;
+	g_AlbedoSpec.a = 0;
 }
 
 #endif

@@ -21,6 +21,14 @@ int main()
 
 	entity = App->addEntity();
 	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
+	std::shared_ptr<cobebe::PBRenderer> pbRenderer = entity->addComponent<cobebe::PBRenderer>();
+	pbRenderer->setMesh("sphere_bot\\sphere-bot-with-hydraulics-(Wavefront OBJ).obj");
+	pbRenderer->setTexture("sphere_bot\\Texture\\Sphere_Bot_color_2.png");
+	pbRenderer->setMetalMap("sphere_bot\\Texture\\Sphere_Bot_metalness.png");
+	pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
+
+	entity = App->addEntity();
+	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
 
 	renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\curuthers.obj");

@@ -55,24 +55,19 @@ namespace cobebe
 		{
 			std::shared_ptr<glwrap::ShaderProgram> temp = _shader->getInternal();
 
-			if (!_shader->getShadowCheck())
-			{
-				_shader->setLightCol(m_lighting->getGlobalLightCol());
-				m_lighting->setDepthBuffer(_shader);
-				_shader->setAmbient(m_lighting->getGlobalLightAmbient());
-				_shader->setLightDir(m_lighting->getGlobalLightDir());
-				_shader->setLightSpace(m_lighting->getGlobalLightSpace());
+			_shader->setLightCol(m_lighting->getGlobalLightCol());
+			m_lighting->setDepthBuffer(_shader);
+			_shader->setAmbient(m_lighting->getGlobalLightAmbient());
+			_shader->setLightDir(m_lighting->getGlobalLightDir());
+			_shader->setLightSpace(m_lighting->getGlobalLightSpace());
 
-				m_lighting->setPointLightRCount(_shader);
-				m_lighting->setDepthCubes(_shader);
-				m_lighting->setPointPositions(_shader);
-				m_lighting->setPointColours(_shader);
-				m_lighting->setFarPlanes(_shader);
+			m_lighting->setPointLightRCount(_shader);
+			m_lighting->setDepthCubes(_shader);
+			m_lighting->setPointPositions(_shader);
+			m_lighting->setPointColours(_shader);
+			m_lighting->setFarPlanes(_shader);
 
-				temp->setUniform(m_gBuffer);
-
-				_shader->setShadowCheck(true);
-			}
+			temp->setUniform(m_gBuffer);
 
 			temp->setUniform("in_ViewPos", m_position);
 			temp->draw(m_texture);

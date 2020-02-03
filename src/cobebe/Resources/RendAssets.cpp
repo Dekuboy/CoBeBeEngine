@@ -98,16 +98,6 @@ namespace cobebe
 		m_uniformCheck = _switch;
 	}
 
-	bool Shader::getShadowCheck()
-	{
-		return m_shadowCheck;
-	}
-
-	void Shader::setShadowCheck(bool _switch)
-	{
-		m_shadowCheck = _switch;
-	}
-
 	void Shader::setCam(std::shared_ptr<Camera> _camera)
 	{
 		if (_camera != m_camSet)
@@ -123,7 +113,6 @@ namespace cobebe
 		if (m_uniformCheck)
 		{
 			setUniformCheck(false);
-			setShadowCheck(false);
 
 			m_camSet = NULL;
 		}

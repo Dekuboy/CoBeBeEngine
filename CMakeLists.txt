@@ -87,8 +87,8 @@ add_library(cobebe
 
 	src/cobebe/Renderer/Renderer.h
 	src/cobebe/Renderer/Renderer.cpp
-	src/cobebe/Renderer/ShadowRenderer.h
-	src/cobebe/Renderer/ShadowRenderer.cpp
+	src/cobebe/Renderer/PBRenderer.h
+	src/cobebe/Renderer/PBRenderer.cpp
 	src/cobebe/Renderer/Lighting.h
 	src/cobebe/Renderer/Lighting.cpp
 	src/cobebe/Renderer/PointLight.h

@@ -3,18 +3,11 @@
 #include <cobebe/Core/Transform.h>
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Core/Core.h>
-#include <cobebe/Resources/Resources.h>
 #include <cobebe/Resources/RendAssets.h>
 #include <cobebe/Core/Camera.h>
 
 namespace cobebe
 {
-	void Renderer::onInit()
-	{
-		m_transform = getTransform();
-		m_lighting = getLighting();
-	}
-
 	void Renderer::setCamera(std::shared_ptr<Camera> _camera)
 	{
 		m_camera = _camera;
@@ -55,6 +48,17 @@ namespace cobebe
 		return m_mesh;
 	}
 
+	std::shared_ptr<glwrap::Texture> Renderer::getTextureInternal(std::shared_ptr<Texture> _texture)
+	{
+		return _texture->m_internal;
+	}
+
+	void Renderer::onInit()
+	{
+		m_transform = getTransform();
+		m_lighting = getLighting();
+	}
+
 	void Renderer::onTick()
 	{
 		m_shader->resetChecks();
@@ -66,11 +70,6 @@ namespace cobebe
 		{
 			if (!m_shader->getUniformCheck())
 			{
-				//m_shader->setEmissive(m_lighting->getGlobalLightEmissive());
-				//m_shader->setAmbient(m_lighting->getGlobalLightAmbient());
-				//m_shader->setLightDir(m_lighting->getGlobalLightDir());
-				//m_shader->setLightPos(m_lighting->getGlobalLightPos());
-
 				m_shader->setUniformCheck(true);
 			}
 		}

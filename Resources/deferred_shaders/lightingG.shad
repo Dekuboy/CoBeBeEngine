@@ -38,6 +38,7 @@ varying vec2 ex_TexCoord;
 
 vec4 lightSpaceFragPos;
 vec3 fragPos;
+float gSpec;
 
 // array of random offset direction for sampling 2D
 vec2 poissonDisk[16] = vec2[]( 
@@ -115,7 +116,7 @@ vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
 	vec3 halfDir = normalize(lightDir + _viewDir);
 	float spec = pow(max(dot(_viewDir, halfDir), 0.0), 1);
 
-	vec3 specular = spec * vec3(in_GlobalLightCol);
+	vec3 specular = spec * gSpec * vec3(in_GlobalLightCol);
 
 	// check if position is in shadow
 	vec3 projCoords = lightSpaceFragPos.xyz / lightSpaceFragPos.w;
@@ -169,7 +170,7 @@ vec3 getPointShadow(vec3 _norm, vec3 _viewDir, float _viewDistance, int _id)
 	vec3 halfDir = normalize(lightDir + _viewDir);
 	float spec = pow(max(dot(_viewDir, halfDir), 0.0), 1);
 
-	vec3 specular = spec * vec3(in_LightCol[_id]);
+	vec3 specular = spec * gSpec * vec3(in_LightCol[_id]);
 
 	// check if position is in shadow
 	vec3 fragToLight = fragPos - in_LightPos[_id];
@@ -185,6 +186,7 @@ void main()
 	fragPos = texture(in_GPosition, ex_TexCoord).rgb;
 	vec3 norm = texture(in_GNormal, ex_TexCoord).rgb;
 	vec3 tex = texture(in_GAlbedoSpec, ex_TexCoord).rgb;
+	gSpec = texture(in_GAlbedoSpec, ex_TexCoord).a;
 
 	lightSpaceFragPos = in_GlobalLightSpace * vec4(fragPos, 1.0);
 

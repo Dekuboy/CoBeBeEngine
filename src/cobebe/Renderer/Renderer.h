@@ -2,6 +2,7 @@
 #define _COBEBE_RENDERER
 #include <GL/glew.h>
 #include <SDL2/SDL.h>
+#include <glwrap/glwrap.h>
 #include <cobebe/Core/Component.h>
 #include <string>
 
@@ -61,6 +62,11 @@ namespace cobebe
 		std::shared_ptr<Mesh> m_mesh; ///< Loaded Mesh to draw
 		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
+
+		/**
+		* \brief Returns texture internal, useful for renderer inheritance
+		*/
+		std::shared_ptr<glwrap::Texture> getTextureInternal(std::shared_ptr<Texture> _texture);
 
 		void onInit();
 		void onTick();
