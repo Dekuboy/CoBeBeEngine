@@ -15,16 +15,17 @@ int main()
 
 	entity->addComponent<Bloom>();
 
-	entity->addComponent<cobebe::Speaker>("dixie_horn.ogg");
+	//entity->addComponent<cobebe::Speaker>("oggs\\dixie_horn.ogg");
 
 	entity->addComponent<cobebe::StaticModelCollider>();
 
 	entity = App->addEntity();
-	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
+	entity->getTransform()->m_position = glm::vec3(-12.0f, 1.7f, -12.0f);
 	std::shared_ptr<cobebe::PBRenderer> pbRenderer = entity->addComponent<cobebe::PBRenderer>();
-	pbRenderer->setMesh("sphere_bot\\sphere-bot-with-hydraulics-(Wavefront OBJ).obj");
-	pbRenderer->setTexture("sphere_bot\\Texture\\Sphere_Bot_color_2.png");
-	pbRenderer->setMetalMap("sphere_bot\\Texture\\Sphere_Bot_metalness.png");
+	pbRenderer->setMesh("spaceship\\Intergalactic_Spaceship-(Wavefront).obj");
+	pbRenderer->setTexture("spaceship\\textures\\Intergalactic Spaceship_color_4.png");
+	pbRenderer->setNormalMap("spaceship\\textures\\Intergalactic Spaceship_nmap_2_Tris.png");
+	pbRenderer->setMetalMap("spaceship\\textures\\Intergalactic Spaceship_metalness.png");
 	pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
 
 	entity = App->addEntity();

@@ -4,6 +4,8 @@ attribute vec3 in_Position;
 attribute vec4 in_Color;
 attribute vec2 in_TexCoord;
 attribute vec3 in_Normal;
+attribute vec3 in_Tangent;
+attribute vec3 in_Bitangent;
 
 uniform mat4 in_Projection;
 uniform mat4 in_View;
@@ -12,7 +14,7 @@ uniform mat4 in_Model;
 varying vec4 ex_Color;
 varying vec2 ex_TexCoord;
 varying vec3 ex_FragPos;
-varying vec3 ex_Normal;
+varying mat3 ex_TBN;
 
 void main()
 {
@@ -20,7 +22,11 @@ void main()
 	ex_Color = in_Color;
 	ex_TexCoord = in_TexCoord;
 
-	ex_Normal = mat3(in_Model) * in_Normal;
+	vec3 T = normalize(mat3(in_Model) * in_Tangent);
+	vec3 B = normalize(mat3(in_Model) * in_Bitangent);
+	vec3 N = normalize(mat3(in_Model) * in_Normal);
+	ex_TBN = mat3(T, B, N);
+
 	ex_FragPos = vec3(in_Model * vec4(in_Position, 1.0));
 }
 
@@ -41,13 +47,15 @@ uniform sampler2D in_AoMap;
 varying vec4 ex_Color;
 varying vec2 ex_TexCoord;
 varying vec3 ex_FragPos;
-varying vec3 ex_Normal;
+varying mat3 ex_TBN;
 
 void main()
 {
 	g_Position = ex_FragPos;
 
-	g_Normal = normalize(ex_Normal);
+	vec3 normal = texture(in_NormMap, ex_TexCoord).rgb;
+
+	g_Normal = normalize(ex_TBN * normalize(normal * 2.0 - 1.0));
 
 	g_AlbedoSpec.rgb = texture(in_Texture, ex_TexCoord).rgb;
 

@@ -19,6 +19,9 @@ namespace glwrap
 		glm::vec3 nb;
 		glm::vec3 nc;
 
+		glm::vec3 tan;
+		glm::vec3 bitan;
+
 		glm::vec2 lmca;
 		glm::vec2 lmcb;
 		glm::vec2 lmcc;

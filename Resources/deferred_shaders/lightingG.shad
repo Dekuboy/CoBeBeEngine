@@ -114,7 +114,7 @@ vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
 	vec3 diffuse = diff * vec3(in_GlobalLightCol);
 
 	vec3 halfDir = normalize(lightDir + _viewDir);
-	float spec = pow(max(dot(_viewDir, halfDir), 0.0), 1);
+	float spec = pow(max(dot(_viewDir, halfDir), 0.0), 16);
 
 	vec3 specular = spec * gSpec * vec3(in_GlobalLightCol);
 
@@ -168,7 +168,7 @@ vec3 getPointShadow(vec3 _norm, vec3 _viewDir, float _viewDistance, int _id)
 	vec3 diffuse = diff * vec3(in_LightCol[_id]);
 
 	vec3 halfDir = normalize(lightDir + _viewDir);
-	float spec = pow(max(dot(_viewDir, halfDir), 0.0), 1);
+	float spec = pow(max(dot(_viewDir, halfDir), 0.0), 16);
 
 	vec3 specular = spec * gSpec * vec3(in_LightCol[_id]);
 
