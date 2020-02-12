@@ -123,11 +123,25 @@ add_executable(lightDemo
 	src/lightDemo/main.cpp
 )
 
+add_executable(rhythmTech
+	src/rhythmTech/BeatController.h
+	src/rhythmTech/BeatController.cpp
+	src/rhythmTech/EnemyTemplate.h
+	src/rhythmTech/EnemyTemplate.cpp
+	src/rhythmTech/PlayerController.h
+	src/rhythmTech/PlayerController.cpp
+	src/rhythmTech/main.cpp
+)
+
 target_link_libraries(dungeon 
 	cobebe
 )
 
 target_link_libraries(lightDemo
+	cobebe
+)
+
+target_link_libraries(rhythmTech
 	cobebe
 )
 	
