@@ -6,6 +6,8 @@ int main()
 {
 	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 
+	App->getLighting()->addPointLight(glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
+
 	std::shared_ptr<cobebe::Entity> entity = App->addEntity();
 
 	std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();

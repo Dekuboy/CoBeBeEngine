@@ -129,8 +129,8 @@ vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
 //	else
 //	{
 		
-		//float bias = max(0.05 * (1.0 - dot(_norm, lightDir)), 0.005); 
-		float bias = max(0.05 * tan(dot(_norm, lightDir)), 0.005);
+		float bias = max(0.05 * (1.0 - dot(_norm, lightDir)), 0.005); 
+		bias = min(0.05 * tan(dot(_norm, lightDir)), bias);
 		//vec2 texelSize = 1.0 / textureSize(in_DepthMap, 0);
 		
 		shadow = spsGlobalShadow(projCoords, bias);

@@ -26,10 +26,10 @@ void SceneController::addCrate()
 	{
 		std::shared_ptr<cobebe::Entity> entity = getCore()->addEntity();
 
-		std::shared_ptr<cobebe::ShadowRenderer> renderer = entity->addComponent<cobebe::ShadowRenderer>();
+		std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
 		renderer->setMesh("objs\\Crate1.obj");
 		renderer->setTexture("images\\crate_1.png");
-		renderer->setShader("shadows\\cubemap.shad");
+		renderer->setShader("deferred_shaders\\renderG.shad");
 
 		m_crates.push_back(entity);
 
@@ -111,9 +111,8 @@ void SceneController::onInit()
 	m_lighting.lock()->setGlobalLightPos(glm::vec3(4, -4, -20));
 	m_lighting.lock()->setGlobalLightDir(glm::vec3(0, 0, -1));
 
-	m_pointLight = *m_lighting.lock()->getPointLights().begin();
-
-	m_pointLight.lock()->setPosition(glm::vec3(0, -2, -20));
+	m_pointLight = m_lighting.lock()->
+		addPointLight(glm::vec3(0, -2, -20), glm::vec3(0.5f), 25.0f);
 
 	m_keyboard = getKeyboard();
 

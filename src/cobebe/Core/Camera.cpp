@@ -62,10 +62,13 @@ namespace cobebe
 			_shader->setLightSpace(m_lighting->getGlobalLightSpace());
 
 			m_lighting->setPointLightRCount(_shader);
-			m_lighting->setDepthCubes(_shader);
-			m_lighting->setPointPositions(_shader);
-			m_lighting->setPointColours(_shader);
-			m_lighting->setFarPlanes(_shader);
+			if (m_lighting->getPointLights().size() > 0)
+			{
+				m_lighting->setDepthCubes(_shader);
+				m_lighting->setPointPositions(_shader);
+				m_lighting->setPointColours(_shader);
+				m_lighting->setFarPlanes(_shader);
+			}
 
 			temp->setUniform(m_gBuffer);
 

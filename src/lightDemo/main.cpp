@@ -8,10 +8,10 @@ int main()
 
 	std::shared_ptr<cobebe::Entity> entity = App->addEntity();
 
-	std::shared_ptr<cobebe::ShadowRenderer> renderer = entity->addComponent<cobebe::ShadowRenderer>();
+	std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\re_hall_baked.obj");
 	renderer->setTexture("images\\re_hall_diffuse.png");
-	renderer->setShader("shadows\\cubemap.shad");
+	renderer->setShader("deferred_shaders\\renderG.shad");
 
 	entity->getTransform()->m_position = glm::vec3(2.0f, -2.0f, -16.0f);
 	entity->getTransform()->m_rotation = glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(0, 1, 0));

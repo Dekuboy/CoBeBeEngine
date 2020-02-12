@@ -240,10 +240,6 @@ namespace cobebe
 		m_globalLightSpace = lightProjection * lightView;
 
 		m_depthShader->setLightSpace(m_globalLightSpace);
-
-		// Lighting must have 1 PointLight, even if it has no colour
-		std::shared_ptr<PointLight> light = addPointLight(
-			glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
 	}
 
 	void Lighting::drawLighting()
