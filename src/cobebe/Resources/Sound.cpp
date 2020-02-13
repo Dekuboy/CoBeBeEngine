@@ -28,6 +28,24 @@ namespace cobebe
 
 		alBufferData(m_bufferId, format, &bufferData.at(0),
 			static_cast<ALsizei>(bufferData.size()), freq);
+
+		// Used to test the length of the ogg file
+
+		//ALint sizeInBytes;
+		//ALint channels;
+		//ALint bits;
+
+		//alGetBufferi(m_bufferId, AL_SIZE, &sizeInBytes);
+		//alGetBufferi(m_bufferId, AL_CHANNELS, &channels);
+		//alGetBufferi(m_bufferId, AL_BITS, &bits);
+
+		//int lengthInSamples = sizeInBytes * 8 / (channels * bits);
+
+		//ALint frequency;
+
+		//alGetBufferi(m_bufferId, AL_FREQUENCY, &frequency);
+
+		//float durationInSeconds = (float)lengthInSamples / (float)frequency;
 	}
 
 	void Sound::loadOgg(const std::string& _path, std::vector<char>& _buffer,

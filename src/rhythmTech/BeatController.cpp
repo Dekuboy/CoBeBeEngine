@@ -23,7 +23,7 @@ int BeatController::getCurrentInterval()
 void BeatController::resetCurrentInterval()
 {
 	m_currentInterval = 0;
-	m_startingTime = m_environment->getCurrentTick();
+	m_startingTime = SDL_GetTicks();
 
 	m_isBeatFrame = true;
 
@@ -47,9 +47,18 @@ void BeatController::onInit()
 
 void BeatController::onTick()
 {
+	m_isBeatFrame = false;
 	int dTime = m_environment->getCurrentTick() - m_startingTime;
 
-	float interval = 60000.0f / m_bpm;
+	int interval = 60000 / m_bpm;
+	int beat = dTime / interval;
+	m_currentInterval = dTime % interval;
 
-	float currentIntervalF = dTime;
+	if (beat > m_beatCount)
+	{
+		m_beatCount = beat;
+		m_isBeatFrame = true;
+	}
+
+	m_bpp = 100.0f * (float)m_currentInterval / (float)interval;
 }
