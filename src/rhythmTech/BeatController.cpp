@@ -8,9 +8,6 @@ float BeatController::getBpm()
 void BeatController::setBpm(float _bpm)
 {
 	m_bpm = _bpm;
-	m_beatInterval = 60.0f / m_bpm;
-
-	m_currentInterval *= m_bpp / 100.0f;
 }
 
 bool BeatController::checkBeatFrame()
@@ -18,19 +15,15 @@ bool BeatController::checkBeatFrame()
 	return m_isBeatFrame;
 }
 
-float BeatController::getBeatInterval()
+int BeatController::getCurrentInterval()
 {
-	return m_beatInterval;
-}
-
-float BeatController::getCurrentInterval()
-{
-	return m_currentInterval;
+	return (int)m_currentInterval;
 }
 
 void BeatController::resetCurrentInterval()
 {
 	m_currentInterval = 0;
+	m_startingTime = m_environment->getCurrentTick();
 
 	m_isBeatFrame = true;
 
@@ -46,22 +39,17 @@ void BeatController::onInit()
 {
 	m_environment = getEnvironment();
 	m_bpm = 80;
-	m_beatInterval = 60.0f / m_bpm;
 	m_currentInterval = 0;
+	m_startingTime = m_environment->getCurrentTick();
+	m_beatCount = 0;
 	m_bpp = 0;
 }
 
 void BeatController::onTick()
 {
-	m_currentInterval += m_environment->getDeltaTime();
+	int dTime = m_environment->getCurrentTick() - m_startingTime;
 
-	m_isBeatFrame = false;
+	float interval = 60000.0f / m_bpm;
 
-	if (m_currentInterval > m_beatInterval)
-	{
-		m_currentInterval -= m_beatInterval;
-		m_isBeatFrame = true;
-	}
-
-	m_bpp = 100.0f * (m_currentInterval / m_beatInterval);
+	float currentIntervalF = dTime;
 }

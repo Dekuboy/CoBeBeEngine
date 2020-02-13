@@ -14,6 +14,11 @@ namespace cobebe
 		return m_deltaTime;
 	}
 
+	const int Environment::getCurrentTick()
+	{
+		return m_currentTick;
+	}
+
 	const int Environment::getWidth()
 	{
 		return m_width;

@@ -11,6 +11,11 @@ namespace cobebe
 		m_texture = getCore()->loadAsset<Texture>(_path);
 	}
 
+	void ImageGUI::setTexture(std::shared_ptr<Texture> _texture)
+	{
+		m_texture = _texture;
+	}
+
 	void ImageGUI::onInit()
 	{
 		m_transform = getTransform();

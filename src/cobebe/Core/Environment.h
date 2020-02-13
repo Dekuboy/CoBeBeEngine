@@ -15,6 +15,10 @@ namespace cobebe
 		*/
 		const float getDeltaTime();
 		/**
+		* \brief Retrieve current tick of frame
+		*/
+		const int getCurrentTick();
+		/**
 		* \brief Retrieves screen width
 		*/
 		const int getWidth();
@@ -27,6 +31,7 @@ namespace cobebe
 		friend class Core;
 
 		float m_deltaTime; ///< Maintains framerate
+		int m_currentTick; ///< Current tick of frame;
 		int m_width; ///< Screen width
 		int m_height; ///< Screen height
 

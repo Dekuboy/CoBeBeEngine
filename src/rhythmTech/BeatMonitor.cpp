@@ -17,15 +17,16 @@ void BeatMonitor::onInit()
 
 	tempEntity = getCore()->addEntity();
 	m_monitorFG = tempEntity->addComponent<cobebe::ImageGUI>();
-	m_monitorFG.lock()->setTexture("images\\BeatMonitorFG.png");
+	m_fGBlank = getCore()->loadAsset<cobebe::Texture>("images\\BeatMonitorFG.png");
+	m_fGHit = getCore()->loadAsset<cobebe::Texture>("images\\BeatMonitorFGHit.png");
+	m_monitorFG.lock()->setTexture(m_fGBlank);
 	tempTransform = tempEntity->getTransform();
 	tempTransform->m_position = glm::vec3(0.5f, 0.1f, 0.0f);
 	tempTransform->m_scale = glm::vec3(0.14f, 0.035f, 1.0f);
 
 	std::shared_ptr<cobebe::ImageGUI> tempGUI;
 
-	int blockTotal = 0.14f / (m_bc.lock()->getBeatInterval() / 5.0f);
-	blockTotal++;
+	int blockTotal = 1;
 
 	for (int i = 0; i < blockTotal * 2; i++)
 	{
@@ -47,6 +48,8 @@ void BeatMonitor::onTick()
 	float increment = 1.0f / ((float)m_blocks.size() / 2.0f);
 
 	glm::vec3 displacement(0.133f, 0.0f, 0.0f);
+
+	m_monitorFG.lock()->setTexture(m_fGBlank);
 
 	for (std::list<std::weak_ptr<cobebe::ImageGUI>>::iterator itr = m_blocks.begin(); 
 			itr != m_blocks.end(); itr++)
@@ -71,6 +74,11 @@ void BeatMonitor::onTick()
 				bpp -= 1.0f;
 			}
 			sign = true;
+		}
+		if ((bpp < 0.15f && bpp > 0.0f) || bpp > 0.85f ||
+			bpp < -0.85f || bpp > -0.15f && bpp < 0.0f)
+		{
+			m_monitorFG.lock()->setTexture(m_fGHit);
 		}
 	}
 }

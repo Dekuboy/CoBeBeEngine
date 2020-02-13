@@ -17,6 +17,10 @@ namespace cobebe
 		* \brief Sets texture to draw as GUI
 		*/
 		void setTexture(std::string _path);
+		/**
+		* \brief Sets texture to draw as GUI
+		*/
+		void setTexture(std::shared_ptr<Texture> _texture);
 
 	private:
 		std::weak_ptr<Transform> m_transform; ///< Pointer to position and scale for drawing
