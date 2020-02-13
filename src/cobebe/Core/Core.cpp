@@ -128,7 +128,7 @@ namespace cobebe
 		m_running = true;
 		SDL_ShowCursor(false);
 
-		float currentTime, lastTime = SDL_GetTicks();
+		Uint32 currentTime, lastTime = SDL_GetTicks();
 		while (m_running)
 		{
 			// Tick each Entity, if an error occurs destroy the Entity
@@ -161,7 +161,6 @@ namespace cobebe
 			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
 			glEnable(GL_CULL_FACE);
-			glEnable(GL_DEPTH_TEST);
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
@@ -200,6 +199,8 @@ namespace cobebe
 				(*it)->postDisplay();
 			}
 
+			glEnable(GL_DEPTH_TEST);
+
 			// GUI each Entity
 			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
@@ -211,11 +212,11 @@ namespace cobebe
 
 			// Update deltaTime
 			currentTime = SDL_GetTicks();
-			m_environment->m_deltaTime = (currentTime - lastTime) / 1000.0f;
+			m_environment->m_deltaTime = (float)(currentTime - lastTime) / 1000.0f;
 			lastTime = currentTime;
 			if (m_environment->m_deltaTime < (1.0f / 60.0f))
 			{
-				SDL_Delay((unsigned int)(((1.0f / 60.0f) - m_environment->m_deltaTime)*1000.0f));
+				SDL_Delay((unsigned int)(((1.0f / 60.0f) - m_environment->m_deltaTime) * 1000.0f));
 				m_environment->m_deltaTime = 1.0f / 60.0f;
 			}
 

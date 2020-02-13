@@ -17,8 +17,11 @@ namespace cobebe
 	{
 	public:
 		Speaker(const std::string _path);
+		Speaker(const std::string _path, bool _isLooping);
 
 		~Speaker();
+
+		void stop();
 
 	private:
 		ALuint m_sourceId; ///< Sound source added to OpenAL
@@ -27,6 +30,7 @@ namespace cobebe
 		std::string m_path; ///< Folder path to asset
 		std::shared_ptr<Sound> m_soundSrc; ///< Loaded asset using path
 		bool m_isPlaying; ///< Check if the sound is currently playing
+		bool m_isLooping; ///< Sets the sound as a loop
 
 		void onInit();
 		void onTick();

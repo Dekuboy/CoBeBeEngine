@@ -126,6 +126,10 @@ add_executable(lightDemo
 add_executable(rhythmTech
 	src/rhythmTech/BeatController.h
 	src/rhythmTech/BeatController.cpp
+	src/rhythmTech/Beatmonitor.h
+	src/rhythmTech/BeatMonitor.cpp
+	src/rhythmTech/BGMusic.h
+	src/rhythmTech/BGMusic.cpp
 	src/rhythmTech/EnemyTemplate.h
 	src/rhythmTech/EnemyTemplate.cpp
 	src/rhythmTech/PlayerController.h

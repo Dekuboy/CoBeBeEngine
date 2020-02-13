@@ -13,11 +13,24 @@ namespace cobebe
 	{
 		m_isPlaying = false;
 		m_path = _path;
+		m_isLooping = false;
+	}
+
+	Speaker::Speaker(const std::string _path, bool _isLooping)
+	{
+		m_isPlaying = false;
+		m_path = _path;
+		m_isLooping = _isLooping;
 	}
 
 	Speaker::~Speaker()
 	{
 		alDeleteSources(1, &m_sourceId);
+	}
+
+	void Speaker::stop()
+	{
+		m_kill = true;
 	}
 
 	void Speaker::onInit()
@@ -47,6 +60,10 @@ namespace cobebe
 	{
 		if (!m_isPlaying)
 		{
+			if (m_isLooping)
+			{
+				alSourcei(m_sourceId, AL_LOOPING, AL_TRUE);
+			}
 			alSourcePlay(m_sourceId);
 			m_isPlaying = true;
 		}
@@ -63,7 +80,7 @@ namespace cobebe
 		{
 			glm::vec3 pos = m_transform.lock()->m_position;
 			std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
-			glm::vec4 res = cam->getView() * glm::vec4(pos, 1.0f);
+			glm::vec4 res = glm::inverse(cam->getView()) * glm::vec4(pos, 1.0f);
 			alSource3f(m_sourceId, AL_POSITION, res.x, res.y, res.z);
 		}
 	}
