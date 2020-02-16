@@ -26,6 +26,10 @@ public:
 	*/
 	void resetCurrentInterval();
 	/**
+	* \brief Get the total beats passed
+	*/
+	int getBeatCount();
+	/**
 	* \brief Get beat percentage passed
 	*/
 	float getBpp();

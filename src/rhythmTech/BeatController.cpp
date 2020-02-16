@@ -30,6 +30,11 @@ void BeatController::resetCurrentInterval()
 	m_bpp = 0;
 }
 
+int BeatController::getBeatCount()
+{
+	return m_beatCount;
+}
+
 float BeatController::getBpp()
 {
 	return m_bpp;
