@@ -84,6 +84,9 @@ namespace cobebe
 			tempEntity->m_transform = tempTransform;
 			tempEntity->m_self = tempEntity;
 			tempEntity->m_core = m_self;
+
+			tempEntity->init();
+
 			m_entities.push_back(tempEntity);
 			return tempEntity;
 		}
@@ -101,6 +104,9 @@ namespace cobebe
 			tempEntity->m_transform = tempTransform;
 			tempEntity->m_self = tempEntity;
 			tempEntity->m_core = m_self;
+
+			tempEntity->init();
+
 			m_entities.push_back(tempEntity);
 			return tempEntity;
 		}
@@ -118,6 +124,9 @@ namespace cobebe
 			tempEntity->m_transform = tempTransform;
 			tempEntity->m_self = tempEntity;
 			tempEntity->m_core = m_self;
+
+			tempEntity->init();
+
 			m_entities.push_back(tempEntity);
 			return tempEntity;
 		}

@@ -49,10 +49,9 @@ namespace cobebe
 		m_transform = getTransform();
 		glm::vec3 pos = m_transform.lock()->m_position;
 		std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
-		glm::vec4 res = cam->getView() * glm::vec4(pos, 1.0f);
+		glm::vec4 res = glm::inverse(cam->getView()) * glm::vec4(pos, 1.0f);
 		alSource3f(m_sourceId, AL_POSITION, res.x, res.y, res.z);
 
-		alSource3f(m_sourceId, AL_POSITION, 0.0f, 0.0f, 0.0f);
 		alSourcei(m_sourceId, AL_BUFFER, m_soundSrc->m_bufferId);
 	}
 

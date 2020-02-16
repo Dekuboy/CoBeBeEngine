@@ -18,6 +18,11 @@ namespace cobebe
 		*/
 		void drawTexture(std::shared_ptr<Texture> _image,
 			glm::vec3 _position, glm::vec3 _size);
+		/**
+		* \brief Draws texture to screen using perspective
+		*/
+		void drawTextureInWorld(std::shared_ptr<Texture> _image,
+			glm::vec3 _position, glm::vec3 _size);
 
 	private:
 		friend class Core;

@@ -215,7 +215,7 @@ namespace cobebe
 			m_environment->m_deltaTime = (float)(currentTime - lastTime) / 1000.0f;
 			if (m_environment->m_deltaTime < (1.0f / 60.0f))
 			{
-				float waitTime = 1000 / 60 - currentTime + lastTime;
+				waitTime = 1000 / 60 - currentTime + lastTime;
 				SDL_Delay(waitTime);
 				m_environment->m_deltaTime = 1.0f / 60.0f;
 			}
@@ -248,6 +248,9 @@ namespace cobebe
 		tempEntity->m_transform = tempTransform;
 		tempEntity->m_self = tempEntity;
 		tempEntity->m_core = m_self;
+
+		tempEntity->init();
+
 		m_entities.push_back(tempEntity);
 		return tempEntity;
 	}
@@ -266,8 +269,8 @@ namespace cobebe
 		tempCamera->m_texture = m_context->createRenderTexture(width, height);
 		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
 		tempCamera->m_lighting = m_lighting;
-		tempCamera->m_projection = glm::perspective(glm::radians(45.0f),
-			(float)width / (float)height, 0.1f, 100.f);
+		tempCamera->setPerspective(45.0f,
+			(float)width, (float)height, 0.1f, 100.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;
@@ -280,8 +283,8 @@ namespace cobebe
 		tempCamera->m_texture = m_context->createRenderTexture(_renderWidth, _renderHeight);
 		tempCamera->m_gBuffer = m_context->createGBuffer(_renderWidth, _renderHeight);
 		tempCamera->m_lighting = m_lighting;
-		tempCamera->m_projection = glm::perspective(glm::radians(45.0f),
-			(float)_renderWidth / (float)_renderHeight, 0.1f, 100.f);
+		tempCamera->setPerspective(45.0f,
+			(float)_renderWidth, (float)_renderHeight, 0.1f, 100.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;

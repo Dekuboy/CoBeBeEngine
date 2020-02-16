@@ -178,6 +178,11 @@ namespace cobebe
 		std::weak_ptr<Transform> m_transform; ///< Pointer to attached Transform Component
 
 		/**
+		* \brief Initialise the Entity when created by the Core
+		*/
+		virtual void init();
+
+		/**
 		* \brief Calls on all components once per frame
 		*/
 		void tick();

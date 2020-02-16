@@ -38,6 +38,14 @@ namespace cobebe
 		* \brief Sets projection matrix to perspective
 		*/
 		void setPerspective(float _angle, float _width, float _height, float _near, float _far);
+		/**
+		* \brief Get the near plane
+		*/
+		float getNearPlane();
+		/**
+		* \brief Get the far plane
+		*/
+		float getFarPlane();
 
 		/**
 		* \brief Draws to cameras RenderTexture
@@ -71,5 +79,7 @@ namespace cobebe
 		std::shared_ptr<Lighting> m_lighting; ///< Holds all variables regarding Lighting
 
 		glm::mat4 m_projection; ///< The projection matrix for passing to shader
+		float m_near; ///< The near plane used in perspective
+		float m_far; ///< The far plane used in perspective
 	};
 }

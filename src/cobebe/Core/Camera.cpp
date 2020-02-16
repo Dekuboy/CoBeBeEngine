@@ -29,6 +29,18 @@ namespace cobebe
 	void Camera::setPerspective(float _angle, float _width, float _height, float _near, float _far)
 	{
 		m_projection = glm::perspective(glm::radians(_angle), _width / _height, _near, _far);
+		m_near = _near;
+		m_far = _far;
+	}
+
+	float Camera::getNearPlane()
+	{
+		return m_near;
+	}
+
+	float Camera::getFarPlane()
+	{
+		return m_far;
 	}
 
 	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::VertexArray> _meshInternal)

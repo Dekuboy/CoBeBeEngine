@@ -1,6 +1,7 @@
 #include <cobebe/GUI/Canvas.h>
 #include <cobebe/Core/Environment.h>
 #include <cobebe/Core/Core.h>
+#include <cobebe/Core/Camera.h>
 #include <cobebe/Resources/Resources.h>
 #include <cobebe/Resources/RendAssets.h>
 #include <glm/ext.hpp>
@@ -27,6 +28,37 @@ namespace cobebe
 			glm::vec3(_position.x * m_currentWidth, _position.y * m_currentHeight, _position.z));
 		model = glm::scale(model, 
 			glm::vec3(_size.x * m_currentWidth, _size.y * m_currentHeight, 1));
+
+		m_staticShader->m_internal->setUniform("in_Model", model);
+		m_staticShader->m_internal->setUniform("in_Texture", _image->m_internal);
+
+		m_staticShader->m_internal->draw();
+	}
+
+	void Canvas::drawTextureInWorld(std::shared_ptr<Texture> _image, glm::vec3 _position, glm::vec3 _size)
+	{
+		int newWidth = m_environment.lock()->getWidth();
+		int newHeight = m_environment.lock()->getHeight();
+
+		if (!(m_currentWidth == newWidth && m_currentHeight == newHeight))
+		{
+			m_currentWidth = newWidth;
+			m_currentHeight = newHeight;
+
+			setProjection();
+		}
+
+		glm::mat4 model(1.0f);
+
+		std::shared_ptr<Camera> currentCam = m_core.lock()->getCurrentCamera();
+
+		model = glm::translate(model,
+			glm::vec3(_position.x, _position.y, _position.z));
+		model = model * glm::mat4(currentCam->m_rotation);
+		model = glm::scale(model,
+			glm::vec3(_size.x, _size.y, 1));
+
+		model = glm::inverse(m_projection) * currentCam->getProjection() * glm::inverse(currentCam->getView()) * model;
 
 		m_staticShader->m_internal->setUniform("in_Model", model);
 		m_staticShader->m_internal->setUniform("in_Texture", _image->m_internal);
