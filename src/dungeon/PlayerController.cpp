@@ -79,6 +79,7 @@ void PlayerController::onTick()
 	bwd = 7.0f * glm::normalize(bwd);
 
 	m_camera.lock()->m_position = m_transform.lock()->m_position + bwd;
+	getEntity()->getComponent<cobebe::AnimationController>()->incrementAnimations(0.1);
 }
 
 float PlayerController::ClampAngle(float _angle, float _min, float _max)

@@ -21,6 +21,8 @@ namespace cobebe
 
 		~Speaker();
 
+		bool m_isGlobal; ///< Determine if Sound should play regardless of position
+
 		void stop();
 
 	private:
@@ -33,7 +35,7 @@ namespace cobebe
 		bool m_isLooping; ///< Sets the sound as a loop
 
 		void onInit();
-		void onTick();
+		void onPreDisplay();
 
 	};
 }

@@ -1,0 +1,23 @@
+#ifdef VERTEX
+
+attribute vec3 in_Position;
+
+uniform mat4 in_GlobalLightSpace;
+uniform mat4 in_Model;
+uniform mat4 in_Animate;
+
+void main()
+{
+	gl_Position = in_GlobalLightSpace * in_Model * in_Animate * vec4(in_Position, 1.0);
+}
+
+#endif
+
+#ifdef FRAGMENT
+
+void main()
+{
+
+}
+
+#endif

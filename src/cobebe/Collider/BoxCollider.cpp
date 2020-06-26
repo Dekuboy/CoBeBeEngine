@@ -6,6 +6,11 @@
 
 namespace cobebe
 {
+	glm::vec3 BoxCollider::getSize()
+	{
+		return m_size;
+	}
+
 	void BoxCollider::setSize(glm::vec3 _size)
 	{
 		m_size = _size;
@@ -203,7 +208,11 @@ namespace cobebe
 
 	void BoxCollider::onTick()
 	{
-		collideStaticModel();
+		m_colliders.clear();
+		if (!m_isTrigger && !m_isStatic)
+		{
+			collideStaticModel();
+		}
 		collideBox();
 	}
 }

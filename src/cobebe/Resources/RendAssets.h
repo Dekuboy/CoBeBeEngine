@@ -10,6 +10,7 @@ namespace cobebe
 	class Canvas;
 	class Lighting;
 	class Camera;
+	class AnimationController;
 
 	/**
 	* \brief Stores a VertexArray to set in Renderer
@@ -141,6 +142,19 @@ namespace cobebe
 		bool m_shadowCheck; ///< Checks if shadow uniforms need to be set
 
 		std::shared_ptr<Camera> m_camSet; ///< Stores current camera view active
+
+		void onLoad(const std::string& _path);
+
+	};
+
+	class PartAnimation : public Asset
+	{
+	public:
+
+	private:
+		friend class AnimationController;
+
+		std::shared_ptr<glwrap::Animation> m_internal; ///< Pointer to OpenGL PartAnimation
 
 		void onLoad(const std::string& _path);
 

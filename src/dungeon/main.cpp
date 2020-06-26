@@ -13,7 +13,7 @@ int main()
 	std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\graveyard.obj");
 	renderer->setTexture("images\\graveyard.png");
-	renderer->setShader("deferred_shaders\\renderG.shad");
+	renderer->setShader("deferred_shaders\\renderGAni.shad");
 
 	entity->addComponent<Bloom>();
 
@@ -36,7 +36,11 @@ int main()
 	renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\curuthers.obj");
 	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("deferred_shaders\\renderG.shad");
+	renderer->setShader("deferred_shaders\\renderGAni.shad");
+	std::shared_ptr<cobebe::AnimationController> anm = renderer->addAnimationController();
+	renderer->loadAnimation("animations\\run.anm");
+
+	anm->playAnimation(0, 1);
 
 	std::shared_ptr<cobebe::BoxCollider> tmp = entity->addComponent<cobebe::BoxCollider>();
 	tmp->setSize(glm::vec3(0.7f));

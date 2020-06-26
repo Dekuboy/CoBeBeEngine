@@ -37,6 +37,8 @@ namespace glwrap
 		ShaderProgram();
 		ShaderProgram(std::string _path);
 
+		void parse(std::string _path);
+
 		void draw();
 		void draw(std::shared_ptr<RenderTexture> _renderTexture);
 		void draw(std::shared_ptr<VertexArray> _vertexArray);
@@ -66,6 +68,7 @@ namespace glwrap
 		std::vector <Sampler> m_samplers;
 		glm::vec4 m_viewport;
 		std::shared_ptr<VertexArray> m_simpleShape;
+		std::weak_ptr<ShaderProgram> m_self;
 		std::weak_ptr<Context> m_context;
 
 	};

@@ -40,100 +40,7 @@ namespace glwrap
 
 	ShaderProgram::ShaderProgram()
 	{
-		std::string vertShader;
-		std::string fragShader;
-		std::string geomShader;
-
-		std::string src = FileManager::loadWin("\\shaders\\phong.shad");
-
-		bool geometry = src.compare(0, 8, "#version");
-		if (geometry)
-		{
-			vertShader = "#define VERTEX\n" + src;
-
-			fragShader = "#define FRAGMENT\n" + src;
-
-			geomShader = "#define GEOMETRY\n" + src;
-		}
-		else
-		{
-			vertShader = "#version 140\n#define VERTEX\n" + src;
-
-			fragShader = "#version 140\n#define FRAGMENT\n" + src;
-		}
-
-		const char *vertex = vertShader.c_str();
-		const char *fragment = fragShader.c_str();
-
-		GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShaderId, 1, &vertex, NULL);
-		glCompileShader(vertexShaderId);
-		GLint success = 0;
-		glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			throw std::exception();
-		}
-
-		GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShaderId, 1, &fragment, NULL);
-		glCompileShader(fragmentShaderId);
-		success = 0;
-		glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			throw std::exception();
-		}
-
-		GLuint geometryShaderId;
-		if (geometry)
-		{
-			const char *geom = geomShader.c_str();
-			GLuint geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
-			glShaderSource(geometryShaderId, 1, &geom, NULL);
-			glCompileShader(geometryShaderId);
-			success = 0;
-			glGetShaderiv(geometryShaderId, GL_COMPILE_STATUS, &success);
-			if (!success)
-			{
-				throw std::exception();
-			}
-		}
-
-		m_id = glCreateProgram();
-		glAttachShader(m_id, vertexShaderId);
-		glAttachShader(m_id, fragmentShaderId);
-		if (geometry)
-		{
-			glAttachShader(m_id, geometryShaderId);
-		}
-
-		// Ensure the VAO "Position" attribute stream gets set as the first position
-		// during the link.
-		glBindAttribLocation(m_id, 0, "in_Position");
-		glBindAttribLocation(m_id, 1, "in_Color");
-		glBindAttribLocation(m_id, 2, "in_TexCoord");
-		glBindAttribLocation(m_id, 3, "in_Normal");
-
-
-		// Perform the link and check for failure
-		glLinkProgram(m_id);
-		glGetProgramiv(m_id, GL_LINK_STATUS, &success);
-
-		if (!success)
-		{
-			throw std::exception();
-		}
-
-		glDetachShader(m_id, vertexShaderId);
-		glDeleteShader(vertexShaderId);
-		glDetachShader(m_id, fragmentShaderId);
-		glDeleteShader(fragmentShaderId);
-		if (geometry)
-		{
-			glDetachShader(m_id, geometryShaderId);
-			glDeleteShader(geometryShaderId);
-		}
+		
 	}
 
 	ShaderProgram::ShaderProgram(std::string _path)
@@ -254,7 +161,130 @@ namespace glwrap
 		texCoords->add(glm::vec2(1.0f, 0.0f));
 		texCoords->add(glm::vec2(0.0f, 0.0f));
 
-		m_simpleShape = std::make_shared<VertexArray>();
+		m_simpleShape = m_context.lock()->createMesh();
+		m_simpleShape->setBuffer("in_Position", positions);
+		m_simpleShape->setBuffer("in_TexCoord", texCoords);
+	}
+
+	void ShaderProgram::parse(std::string _path)
+	{
+		std::string vertShader;
+		std::string fragShader;
+		std::string geomShader;
+
+		std::string src = FileManager::loadWin(_path);
+
+		bool geometry = (src.compare(0, 8, "#version") == 0);
+		if (geometry)
+		{
+			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
+
+			fragShader = src.substr(0, 12) + "\n#define FRAGMENT\n" + src.substr(12, std::string::npos);
+
+			geomShader = src.substr(0, 12) + "\n#define GEOMETRY\n" + src.substr(12, std::string::npos);
+		}
+		else
+		{
+			vertShader = "#version 140\n#define VERTEX\n" + src;
+
+			fragShader = "#version 140\n#define FRAGMENT\n" + src;
+		}
+
+		const char* vertex = vertShader.c_str();
+		const char* fragment = fragShader.c_str();
+
+		GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
+		glShaderSource(vertexShaderId, 1, &vertex, NULL);
+		glCompileShader(vertexShaderId);
+		GLint success = 0;
+		glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			printShaderInfoLog(vertexShaderId);
+			printProgramInfoLog(vertexShaderId);
+			throw std::exception();
+		}
+
+		GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
+		glShaderSource(fragmentShaderId, 1, &fragment, NULL);
+		glCompileShader(fragmentShaderId);
+		success = 0;
+		glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			printShaderInfoLog(fragmentShaderId);
+			printProgramInfoLog(fragmentShaderId);
+			throw std::exception();
+		}
+
+		GLuint geometryShaderId;
+		if (geometry)
+		{
+			const char* geom = geomShader.c_str();
+			geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
+			glShaderSource(geometryShaderId, 1, &geom, NULL);
+			glCompileShader(geometryShaderId);
+			success = 0;
+			glGetShaderiv(geometryShaderId, GL_COMPILE_STATUS, &success);
+			if (!success)
+			{
+				throw std::exception();
+			}
+		}
+
+		m_id = glCreateProgram();
+		glAttachShader(m_id, vertexShaderId);
+		glAttachShader(m_id, fragmentShaderId);
+		if (geometry)
+		{
+			glAttachShader(m_id, geometryShaderId);
+		}
+
+		// Ensure the VAO "Position" attribute stream gets set as the first position
+		// during the link.
+		glBindAttribLocation(m_id, 0, "in_Position");
+		glBindAttribLocation(m_id, 1, "in_Color");
+		glBindAttribLocation(m_id, 2, "in_TexCoord");
+		glBindAttribLocation(m_id, 3, "in_Normal");
+		glBindAttribLocation(m_id, 4, "in_Tangent");
+		glBindAttribLocation(m_id, 5, "in_Bitangent");
+
+		// Perform the link and check for failure
+		glLinkProgram(m_id);
+		glGetProgramiv(m_id, GL_LINK_STATUS, &success);
+
+		if (!success)
+		{
+			throw std::exception();
+		}
+
+		glDetachShader(m_id, vertexShaderId);
+		glDeleteShader(vertexShaderId);
+		glDetachShader(m_id, fragmentShaderId);
+		glDeleteShader(fragmentShaderId);
+		if (geometry)
+		{
+			glDetachShader(m_id, geometryShaderId);
+			glDeleteShader(geometryShaderId);
+		}
+
+		std::shared_ptr<VertexBuffer> positions = std::make_shared<VertexBuffer>();
+		positions->add(glm::vec2(-1.0f, 1.0f));
+		positions->add(glm::vec2(-1.0f, -1.0f));
+		positions->add(glm::vec2(1.0f, -1.0f));
+		positions->add(glm::vec2(1.0f, -1.0f));
+		positions->add(glm::vec2(1.0f, 1.0f));
+		positions->add(glm::vec2(-1.0f, 1.0f));
+
+		std::shared_ptr<VertexBuffer> texCoords = std::make_shared<VertexBuffer>();
+		texCoords->add(glm::vec2(0.0f, 0.0f));
+		texCoords->add(glm::vec2(0.0f, -1.0f));
+		texCoords->add(glm::vec2(1.0f, -1.0f));
+		texCoords->add(glm::vec2(1.0f, -1.0f));
+		texCoords->add(glm::vec2(1.0f, 0.0f));
+		texCoords->add(glm::vec2(0.0f, 0.0f));
+
+		m_simpleShape = m_context.lock()->createMesh();
 		m_simpleShape->setBuffer("in_Position", positions);
 		m_simpleShape->setBuffer("in_TexCoord", texCoords);
 	}
@@ -279,8 +309,7 @@ namespace glwrap
 		//  glBindVertexArray(0);
 		//  glUseProgram(0);
 		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
-		glUseProgram(m_id);
-		glBindVertexArray(_vertexArray->getId());
+		m_context.lock()->setCurrentShader(m_self.lock());
 
 		gType check;
 
@@ -323,7 +352,9 @@ namespace glwrap
 			}
 		}
 
-		glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
+		_vertexArray->draw();
+		//glBindVertexArray(_vertexArray->getId());
+		//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
 		for (size_t i = 0; i < m_samplers.size(); i++)
 		{
@@ -340,7 +371,6 @@ namespace glwrap
 		}
 
 		glBindVertexArray(0);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray)
@@ -362,9 +392,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform1i(uniformId, _value);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::vec4 _value)
@@ -376,9 +405,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform4f(uniformId, _value.x, _value.y, _value.z, _value.w);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::vec3 _value)
@@ -390,9 +418,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform3f(uniformId, _value.x, _value.y, _value.z);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3> _vectors)
@@ -404,9 +431,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform3fv(uniformId, _vectors.size(), glm::value_ptr(_vectors.at(0)));
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, float _value)
@@ -418,9 +444,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform1f(uniformId, _value);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<float> _floats)
@@ -432,9 +457,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform1fv(uniformId, _floats.size(), reinterpret_cast<GLfloat *>(_floats.data()));
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<Texture> _texture)
@@ -446,6 +470,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
+		m_context.lock()->setCurrentShader(m_self.lock());
+
 		for (int i = 0; i < m_samplers.size(); i++)
 		{
 			if (m_samplers.at(i).m_id == uniformId)
@@ -454,9 +480,7 @@ namespace glwrap
 				m_samplers.at(i).m_depthCube = NULL;
 				m_samplers.at(i).m_gBuffer = NULL;
 
-				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
-				glUseProgram(0);
 				return;
 			}
 		}
@@ -466,9 +490,7 @@ namespace glwrap
 		s.m_texture = _texture;
 		m_samplers.push_back(s);
 
-		glUseProgram(m_id);
 		glUniform1i(uniformId, m_samplers.size() - 1);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::mat4 _value)
@@ -480,9 +502,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniformMatrix4fv(uniformId, 1, 0, glm::value_ptr(_value));
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::mat4> _matrices)
@@ -494,9 +515,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniformMatrix4fv(uniformId, _matrices.size(), 0, glm::value_ptr(_matrices.at(0)));
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthBuffer> _depth)
@@ -508,6 +528,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
+		m_context.lock()->setCurrentShader(m_self.lock());
+
 		for (int i = 0; i < m_samplers.size(); i++)
 		{
 			if (m_samplers.at(i).m_id == uniformId)
@@ -516,9 +538,7 @@ namespace glwrap
 				m_samplers.at(i).m_depthCube = NULL;
 				m_samplers.at(i).m_gBuffer = NULL;
 
-				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
-				glUseProgram(0);
 				return;
 			}
 		}
@@ -528,9 +548,7 @@ namespace glwrap
 		s.m_texture = _depth;
 		m_samplers.push_back(s);
 
-		glUseProgram(m_id);
 		glUniform1i(uniformId, m_samplers.size() - 1);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthCube> _depthCube)
@@ -542,6 +560,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
+		m_context.lock()->setCurrentShader(m_self.lock());
+
 		for (int i = 0; i < m_samplers.size(); i++)
 		{
 			if (m_samplers.at(i).m_id == uniformId)
@@ -550,9 +570,7 @@ namespace glwrap
 				m_samplers.at(i).m_texture = NULL;
 				m_samplers.at(i).m_gBuffer = NULL;
 
-				glUseProgram(m_id);
 				glUniform1i(uniformId, i);
-				glUseProgram(0);
 				return;
 			}
 		}
@@ -562,9 +580,7 @@ namespace glwrap
 		s.m_depthCube = _depthCube;
 		m_samplers.push_back(s);
 
-		glUseProgram(m_id);
 		glUniform1i(uniformId, m_samplers.size() - 1);
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube>> _cubes)
@@ -579,7 +595,7 @@ namespace glwrap
 		bool skip = false;
 		int count = 0;
 		std::string temp;
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 
 		for (std::vector<std::shared_ptr<DepthCube>>::iterator itr = _cubes.begin();
 			itr != _cubes.end(); itr++)
@@ -611,7 +627,6 @@ namespace glwrap
 			}
 			count++;
 		}
-		glUseProgram(0);
 	}
 
 	void ShaderProgram::setUniform(std::shared_ptr<GBuffer> _gBuffer)
@@ -619,7 +634,7 @@ namespace glwrap
 		int buffer = 0;
 		bool skip = false;
 		GLint uniformId;
-		glUseProgram(m_id);
+		m_context.lock()->setCurrentShader(m_self.lock());
 		while (buffer < 3)
 		{
 			if (buffer == 0) uniformId = glGetUniformLocation(m_id, "in_GPosition");
@@ -657,7 +672,6 @@ namespace glwrap
 			}
 			buffer++;
 		}
-		glUseProgram(0);
 	}
 
 	GLuint ShaderProgram::getId()

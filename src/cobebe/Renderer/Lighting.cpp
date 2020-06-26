@@ -2,6 +2,7 @@
 #include <cobebe/Renderer/PointLight.h>
 #include <cobebe/Resources/Resources.h>
 #include <cobebe/Resources/RendAssets.h>
+#include <cobebe/Renderer/AnimationController.h>
 #include <cobebe/Core/Core.h>
 #include <cobebe/Core/Camera.h>
 #include <glm/ext.hpp>
@@ -168,10 +169,11 @@ namespace cobebe
 	}
 
 	void Lighting::draw(std::shared_ptr<glwrap::VertexArray> _meshInternal,
-		glm::mat4 _modelMat)
+		std::shared_ptr<AnimationController> _animation, glm::mat4 _modelMat)
 	{
 		ShadowModel tempModel;
 		tempModel.m_mesh = _meshInternal;
+		tempModel.m_animation = _animation;
 		tempModel.m_model = _modelMat;
 		m_shadowModels.push_back(tempModel);
 	}
@@ -224,14 +226,14 @@ namespace cobebe
 
 		// Set depth map ready for rendering
 		m_depthMap = std::make_shared<glwrap::DepthBuffer>(512, 512);
-		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadow.shad");
-		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowCube.shad");
+		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAni.shad");
+		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAniCube.shad");
 
 		// Set light space matrix
 		glm::mat4 lightProjection = glm::ortho(-m_globalLightScale, m_globalLightScale,
 			-m_globalLightScale, m_globalLightScale, 1.0f, m_globalLightRenderDistance);
 
-		m_globalLightPos = glm::vec3(-12, 2, -10);
+		m_globalLightPos = glm::vec3(0, 2, -10);
 
 		glm::mat4 lightView = glm::lookAt(m_globalLightPos,
 			m_globalLightPos + m_globalLightDir,
@@ -249,6 +251,11 @@ namespace cobebe
 			it != m_shadowModels.end(); it++)
 		{
 			m_depthShader->m_internal->setUniform("in_Model", (*it).m_model);
+			m_depthShader->m_internal->setUniform("in_Animate", glm::mat4(1));
+			if ((*it).m_animation.lock())
+			{
+				(*it).m_animation.lock()->setToDraw();
+			}
 			m_depthShader->m_internal->draw(m_depthMap, (*it).m_mesh.lock());
 		}
 
@@ -273,6 +280,11 @@ namespace cobebe
 				it != m_shadowModels.end(); it++)
 			{
 				m_cubeShader->m_internal->setUniform("in_Model", (*it).m_model);
+				m_cubeShader->m_internal->setUniform("in_Animate", glm::mat4(1));
+				if ((*it).m_animation.lock())
+				{
+					(*it).m_animation.lock()->setToDraw();
+				}
 				m_cubeShader->m_internal->draw((*pointIt)->m_depthCube, (*it).m_mesh.lock());
 			}
 		}

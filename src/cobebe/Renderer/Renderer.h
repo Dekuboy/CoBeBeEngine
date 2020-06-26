@@ -14,6 +14,7 @@ namespace cobebe
 	class Texture;
 	class Shader;
 	class Lighting;
+	class AnimationController;
 
 	/**
 	* \brief Displays an Entity to the screen via loaded assets
@@ -55,6 +56,9 @@ namespace cobebe
 		*/
 		std::shared_ptr<Mesh> getMesh();
 
+		std::shared_ptr<AnimationController> addAnimationController();
+		void loadAnimation(std::string _path);
+
 	protected:
 		std::shared_ptr<Camera> m_camera; ///< Stores Camera to draw to when set
 		std::weak_ptr<Transform> m_transform; ///< Pointer to Transform component
@@ -62,6 +66,8 @@ namespace cobebe
 		std::shared_ptr<Mesh> m_mesh; ///< Loaded Mesh to draw
 		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
+
+		std::shared_ptr<AnimationController> m_animationController;
 
 		/**
 		* \brief Returns texture internal, useful for renderer inheritance

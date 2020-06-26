@@ -32,7 +32,10 @@ namespace cobebe
 	{
 		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
 		{
-			(*it)->onTick();
+			if (!(*it)->m_kill)
+			{
+				(*it)->onTick();
+			}
 		}
 
 		// Iterate through each Component and delete any marked as killed

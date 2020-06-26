@@ -7,7 +7,7 @@ namespace cobebe
 		return m_hasCollided;
 	}
 
-	const std::list<std::shared_ptr<Entity>> Collider::getColliders()
+	const std::list<std::weak_ptr<Entity>>& Collider::getColliders()
 	{
 		return m_colliders;
 	}

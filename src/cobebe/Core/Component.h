@@ -66,7 +66,7 @@ namespace cobebe
 
 	protected:
 		friend class Entity;
-		bool m_kill; ///< Marks Component for destruction
+		bool m_kill; ///< Marks Component for destruction after tick
 
 	private:
 		std::weak_ptr<Entity> m_entity; ///< Pointer to entity

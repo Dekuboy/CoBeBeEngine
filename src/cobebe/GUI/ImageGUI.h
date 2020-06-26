@@ -16,11 +16,12 @@ namespace cobebe
 		/**
 		* \brief Sets texture to draw as GUI
 		*/
-		virtual void setTexture(std::string _path);
+		void setTexture(std::string _path);
 		/**
 		* \brief Sets texture to draw as GUI
 		*/
-		virtual void setTexture(std::shared_ptr<Texture> _texture);
+		void setTexture(std::shared_ptr<Texture> _texture);
+
 		/**
 		* \brief Sets the GUI in Screen or World space
 		*/

@@ -1,7 +1,9 @@
-#include <glwrap/VertexArray.h>
+	#include <glwrap/VertexArray.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
 #include <glwrap/Part.h>
+#include <glwrap/Animation.h>
+#include <glwrap/Context.h>
 
 #include <fstream>
 #include <iostream>
@@ -64,16 +66,18 @@ namespace glwrap
 		}
 	}
 
+	VertexArray::VertexArray() : m_dirty(false)
+	{
+
+	}
+
 	VertexArray::VertexArray(std::string _path) : m_dirty(false)
 	{
-		glGenVertexArrays(1, &m_id);
+		parse(_path);
+	}
 
-		if (!m_id)
-		{
-			throw std::exception();
-		}
-
-		m_buffers.resize(10);
+	void VertexArray::parse(std::string _path)
+	{
 		std::ifstream file(FileManager::returnPath(_path).c_str());
 
 		if (!file.is_open())
@@ -86,14 +90,16 @@ namespace glwrap
 		std::vector<glm::vec3> positions;
 		std::vector<glm::vec2> texCoords;
 		std::vector<glm::vec3> normals;
-		std::vector<glm::vec2> lightMaps;
+		//std::vector<glm::vec2> lightMaps;
+
+		std::shared_ptr<Part> currentPart;
 
 		std::shared_ptr<VertexBuffer> positionBuffer;
 		std::shared_ptr<VertexBuffer> texCoordBuffer;
 		std::shared_ptr<VertexBuffer> normalBuffer;
 		std::shared_ptr<VertexBuffer> tangentBuffer;
 		std::shared_ptr<VertexBuffer> bitangentBuffer;
-		std::shared_ptr<VertexBuffer> lightMapBuffer;
+		//std::shared_ptr<VertexBuffer> lightMapBuffer;
 
 		Face f;
 		Face fq;
@@ -109,7 +115,33 @@ namespace glwrap
 			splitStringWhitespace(line, splitLine);
 			if (splitLine.size() < 1) continue;
 
-			if (splitLine.at(0) == "v")
+			if (splitLine.at(0) == "o" || splitLine.at(0) == "g")
+			{
+				if (currentPart)
+				{
+					currentPart->setBuffer("in_Position", positionBuffer);
+					positionBuffer = std::make_shared<VertexBuffer>();
+					if (texCoordBuffer)
+					{
+						currentPart->setBuffer("in_TexCoord", texCoordBuffer);
+						texCoordBuffer = std::make_shared<VertexBuffer>();
+					}
+					if (normalBuffer)
+					{
+						currentPart->setBuffer("in_Normal", normalBuffer);
+						normalBuffer = std::make_shared<VertexBuffer>();
+						currentPart->setBuffer("in_Tangent", tangentBuffer);
+						tangentBuffer = std::make_shared<VertexBuffer>();
+						currentPart->setBuffer("in_Bitangent", bitangentBuffer);
+						bitangentBuffer = std::make_shared<VertexBuffer>();
+					}
+					//if (lightMapBuffer) currentPart->setBuffer("in_LightMapCoord", lightMapBuffer);
+
+					m_parts.push_back(currentPart);
+				}
+				currentPart = m_context.lock()->createPart(m_self.lock(), splitLine.at(1));
+			}
+			else if (splitLine.at(0) == "v")
 			{
 				if (!positionBuffer) positionBuffer = std::make_shared<VertexBuffer>();
 
@@ -160,13 +192,13 @@ namespace glwrap
 					f.na = normals.at(atoi(subsplit.at(2).c_str()) - 1);
 					normalBuffer->add(f.na);
 				}
-				if (subsplit.size() >= 4)
-				{
-					f.lmca = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
-					lightMapBuffer->add(f.lmca);
-				}
+				//if (subsplit.size() >= 4)
+				//{
+				//	f.lmca = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+				//	lightMapBuffer->add(f.lmca);
+				//}
 				splitString(splitLine.at(2), '/', subsplit);
-				if (subsplit.size() >= 1) 
+				if (subsplit.size() >= 1)
 				{
 					f.pb = positions.at(atoi(subsplit.at(0).c_str()) - 1);
 					positionBuffer->add(f.pb);
@@ -181,11 +213,11 @@ namespace glwrap
 					f.nb = normals.at(atoi(subsplit.at(2).c_str()) - 1);
 					normalBuffer->add(f.nb);
 				}
-				if (subsplit.size() >= 4) 
-				{
-					f.lmcb = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
-					lightMapBuffer->add(f.lmcb);
-				}
+				//if (subsplit.size() >= 4)
+				//{
+				//	f.lmcb = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+				//	lightMapBuffer->add(f.lmcb);
+				//}
 				splitString(splitLine.at(3), '/', subsplit);
 				if (subsplit.size() >= 1)
 				{
@@ -228,13 +260,19 @@ namespace glwrap
 					tangentBuffer->add(f.tan);
 					bitangentBuffer->add(f.bitan);
 				}
-				if (subsplit.size() >= 4)
-				{
-					f.lmcc = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
-					lightMapBuffer->add(f.lmcc);
-				}
+				//if (subsplit.size() >= 4)
+				//{
+				//	f.lmcc = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+				//	lightMapBuffer->add(f.lmcc);
+				//}
 
 				m_faces.push_back(std::make_shared<Face>(f));
+				if (!currentPart)
+				{
+					currentPart = m_context.lock()->createPart(m_self.lock(), "Default");
+				}
+				currentPart->addFace(*(m_faces.end() - 1));
+
 				if (splitLine.size() < 5) continue;
 
 				fq.pa = f.pc;
@@ -243,8 +281,8 @@ namespace glwrap
 				texCoordBuffer->add(fq.tca);
 				fq.na = f.nc;
 				if (normalBuffer) normalBuffer->add(fq.na);
-				fq.lmca = f.lmcc;
-				if (lightMapBuffer) lightMapBuffer->add(fq.lmca);
+				//fq.lmca = f.lmcc;
+				//if (lightMapBuffer) lightMapBuffer->add(fq.lmca);
 
 				splitString(splitLine.at(4), '/', subsplit);
 				if (subsplit.size() >= 1)
@@ -262,11 +300,11 @@ namespace glwrap
 					fq.nb = normals.at(atoi(subsplit.at(2).c_str()) - 1);
 					normalBuffer->add(fq.nb);
 				}
-				if (subsplit.size() >= 4)
-				{
-					fq.lmcb = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
-					lightMapBuffer->add(fq.lmcb);
-				}
+				//if (subsplit.size() >= 4)
+				//{
+				//	fq.lmcb = lightMaps.at(atoi(subsplit.at(3).c_str()) - 1);
+				//	lightMapBuffer->add(fq.lmcb);
+				//}
 
 				splitString(splitLine.at(1), '/', subsplit);
 				fq.pc = f.pa;
@@ -304,113 +342,211 @@ namespace glwrap
 					tangentBuffer->add(fq.tan);
 					bitangentBuffer->add(fq.bitan);
 				}
-				fq.lmcc = f.lmca;
-				if (lightMapBuffer) lightMapBuffer->add(fq.lmcc);
+				//fq.lmcc = f.lmca;
+				//if (lightMapBuffer) lightMapBuffer->add(fq.lmcc);
 
 				m_faces.push_back(std::make_shared<Face>(fq));
+				currentPart->addFace(*(m_faces.end() - 1));
 			}
 		}
 
-		setBuffer("in_Position", positionBuffer);
-		if (texCoordBuffer) setBuffer("in_TexCoord", texCoordBuffer);
+		currentPart->setBuffer("in_Position", positionBuffer);
+		if (texCoordBuffer) currentPart->setBuffer("in_TexCoord", texCoordBuffer);
 		if (normalBuffer)
 		{
-			setBuffer("in_Normal", normalBuffer);
-			setBuffer("in_Tangent", tangentBuffer);
-			setBuffer("in_Bitangent", bitangentBuffer);
+			currentPart->setBuffer("in_Normal", normalBuffer);
+			currentPart->setBuffer("in_Tangent", tangentBuffer);
+			currentPart->setBuffer("in_Bitangent", bitangentBuffer);
 		}
-		if (lightMapBuffer) setBuffer("in_LightMapCoord", lightMapBuffer);
-	}
+		//if (lightMapBuffer) currentPart->setBuffer("in_LightMapCoord", lightMapBuffer);
 
-	VertexArray::VertexArray() : m_dirty(false)
-	{
-		glGenVertexArrays(1, &m_id);
-
-		if (!m_id)
-		{
-			throw std::exception();
-		}
-
-		m_buffers.resize(10);
+		m_parts.push_back(currentPart);
 	}
 
 	void VertexArray::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer)
 	{
-		if (_attribute == "in_Position")
+		if (m_parts.size() == 0)
 		{
-			m_buffers.at(0) = _buffer;
-		}
-		else if (_attribute == "in_Color")
-		{
-			m_buffers.at(1) = _buffer;
-		}
-		else if (_attribute == "in_TexCoord")
-		{
-			m_buffers.at(2) = _buffer;
-		}
-		else if (_attribute == "in_Normal")
-		{
-			m_buffers.at(3) = _buffer;
-		}
-		else if (_attribute == "in_Tangent")
-		{
-			m_buffers.at(4) = _buffer;
-		}
-		else if (_attribute == "in_Bitangent")
-		{
-			m_buffers.at(5) = _buffer;
-		}
-		else
-		{
-			throw std::exception();
+			m_parts.push_back(m_context.lock()->createPart(m_self.lock(), "Default"));
 		}
 
-		m_dirty = true;
+		if (m_parts.at(0)->getName() == "Default")
+		{
+			m_parts.at(0)->setBuffer(_attribute, _buffer);
+		}
 	}
 
-	int VertexArray::getVertexCount()
+	void VertexArray::draw()
 	{
-		if (!m_buffers.at(0))
+		for (std::vector<std::shared_ptr<Part>>::iterator itr = m_parts.begin();
+			itr != m_parts.end(); itr++)
 		{
-			throw std::exception();
+			(*itr)->draw();
 		}
-
-		return m_buffers.at(0)->getDataSize() / m_buffers.at(0)->getComponents();
 	}
 
-	GLuint VertexArray::getId()
+	void VertexArray::drawPart(std::string _partName)
 	{
-		if (m_dirty)
+		for (std::vector<std::shared_ptr<Part>>::iterator itr = m_parts.begin();
+			itr != m_parts.end(); itr++)
 		{
-			glBindVertexArray(m_id);
-
-			for (size_t i = 0; i < m_buffers.size(); i++)
+			if ((*itr)->getName() == _partName)
 			{
-				if (m_buffers.at(i))
-				{
-					glBindBuffer(GL_ARRAY_BUFFER, m_buffers.at(i)->getId());
-
-					glVertexAttribPointer(i, m_buffers.at(i)->getComponents(), GL_FLOAT, GL_FALSE,
-						m_buffers.at(i)->getComponents() * sizeof(GLfloat), (void *)0);
-
-					glEnableVertexAttribArray(i);
-				}
-				else
-				{
-					glDisableVertexAttribArray(i);
-				}
+				(*itr)->draw();
 			}
+		}
+	}
 
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindVertexArray(0);
-			m_dirty = false;
+	std::shared_ptr<Animation> VertexArray::addAnimation(std::string _path)
+	{
+		std::shared_ptr<Animation> anim = m_context.lock()->createAnimation(
+			m_self.lock(), _path);
+		m_animations.push_back(anim);
+		return anim;
+	}
+
+	int VertexArray::playAnimationOnce(std::string _name)
+	{
+		bool found = false;
+
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setRepeating(false);
+				m_animations.at(index)->setEnabled(true);
+				return index;
+			}
 		}
 
-		return m_id;
+		throw std::exception();
+	}
+
+	void VertexArray::playAnimationOnce(int _index)
+	{
+		if (_index < m_animations.size())
+		{
+			m_animations.at(_index)->setRepeating(false);
+			m_animations.at(_index)->setEnabled(true);
+		}
+	}
+
+	int VertexArray::enableAnimation(std::string _name)
+	{
+		bool found = false;
+
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setRepeating(true);
+				m_animations.at(index)->setEnabled(true);
+				return index;
+			}
+		}
+
+		throw std::exception();
+	}
+
+	void VertexArray::enableAnimation(int _index)
+	{
+		if (_index < m_animations.size())
+		{
+			m_animations.at(_index)->setRepeating(true);
+			m_animations.at(_index)->setEnabled(true);
+		}
+	}
+
+	int VertexArray::enableOnlyAnimation(std::string _name)
+	{
+		bool found = false;
+
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setEnabled(true);
+				return index;
+			}
+			else
+			{
+				m_animations.at(index)->setEnabled(false);
+			}
+		}
+
+		throw std::exception();
+	}
+
+	void VertexArray::enableOnlyAnimation(int _index)
+	{
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (index == _index)
+			{
+				m_animations.at(index)->setEnabled(true);
+			}
+			else
+			{
+				m_animations.at(index)->setEnabled(false);
+			}
+		}
+	}
+
+	int VertexArray::disableAnimation(std::string _name)
+	{
+		bool found = false;
+
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setEnabled(false);
+				return index;
+			}
+		}
+
+		throw std::exception();
+	}
+
+	void VertexArray::disableAnimation(int _index)
+	{
+		if (_index < m_animations.size())
+		{
+			m_animations.at(_index)->setEnabled(false);
+		}
+	}
+
+	void VertexArray::disableAllAnimations()
+	{
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			m_animations.at(index)->setEnabled(false);
+		}
 	}
 
 	std::vector<std::shared_ptr<Face>> VertexArray::getFaces()
 	{
 		return m_faces;
+	}
+
+	std::vector<std::shared_ptr<Part>> VertexArray::getParts()
+	{
+		return m_parts;
+	}
+
+	std::shared_ptr<Part> VertexArray::getPart(std::string _name)
+	{
+		for (int partIndex = 0; partIndex < m_parts.size(); partIndex++)
+		{
+			if (m_parts.at(partIndex)->getName() == _name)
+			{
+				return m_parts.at(partIndex);
+			}
+		}
+	}
+
+	std::vector<std::shared_ptr<Animation>> VertexArray::getAnimations()
+	{
+		return m_animations;
 	}
 }

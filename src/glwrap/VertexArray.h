@@ -9,24 +9,45 @@ namespace glwrap
 
 	class Context;
 	class VertexBuffer;
+	class Part;
+	class Animation;
 
 	class VertexArray
 	{
 	public:
 		VertexArray();
 		VertexArray(std::string _path);
+
+		void parse(std::string _path);
+
 		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
-		int getVertexCount();
-		GLuint getId();
+		void draw();
+		void drawPart(std::string _partName);
+
+		std::shared_ptr<Animation> addAnimation(std::string _path);
+		int playAnimationOnce(std::string _name);
+		void playAnimationOnce(int _index);
+		int enableAnimation(std::string _name);
+		void enableAnimation(int _index);
+		int enableOnlyAnimation(std::string _name);
+		void enableOnlyAnimation(int _index);
+		int disableAnimation(std::string _name);
+		void disableAnimation(int _index);
+		void disableAllAnimations();
+
 		std::vector<std::shared_ptr<Face>> getFaces();
+		std::vector<std::shared_ptr<Part>> getParts();
+		std::shared_ptr<Part> getPart(std::string _name);
+		std::vector<std::shared_ptr<Animation>> getAnimations();
 
 	private:
 		friend class Context;
 
-		GLuint m_id;
 		bool m_dirty;
 		std::vector<std::shared_ptr<Face>> m_faces;
-		std::vector<std::shared_ptr<VertexBuffer>> m_buffers;
+		std::vector<std::shared_ptr<Part>> m_parts;
+		std::vector<std::shared_ptr<Animation>> m_animations;
+		std::weak_ptr<VertexArray> m_self;
 		std::weak_ptr<Context> m_context;
 
 		void splitStringWhitespace(std::string& _input, std::vector<std::string>& _output);

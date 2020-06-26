@@ -32,6 +32,11 @@ namespace cobebe
 		alcCloseDevice(m_device);
 
 		/*
+		* Clean up Entities
+		*/
+		m_entities.clear();
+
+		/*
 		* Clean up input Devices
 		*/
 		m_gamepad = NULL;
@@ -98,6 +103,7 @@ namespace cobebe
 		temp->m_keyboard->onInit();
 
 		temp->m_mouse = std::make_shared<Mouse>();
+		temp->m_mouse->m_core = temp;
 
 		temp->m_gamepad = std::make_shared<Gamepad>();
 
@@ -224,6 +230,7 @@ namespace cobebe
 
 			// Reset inputs for next tick
 			m_keyboard->resetKeys();
+			m_mouse->resetButtons();
 			m_gamepad->resetButtons();
 
 			// Poll SDL Events
@@ -344,6 +351,14 @@ namespace cobebe
 				code = event.key.keysym.scancode;
 				m_keyboard->m_keysReleased.push_back
 				(code);
+			}
+			else if (event.type == SDL_MOUSEBUTTONDOWN)
+			{
+				m_mouse->pressButton(cobebeInput::MouseButton(event.button.button));
+			}
+			else if (event.type == SDL_MOUSEBUTTONUP)
+			{
+				m_mouse->pressButton(cobebeInput::MouseButton(event.button.button));
 			}
 			else if (event.type == SDL_CONTROLLERBUTTONDOWN)
 			{

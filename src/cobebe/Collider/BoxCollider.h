@@ -10,6 +10,10 @@ namespace cobebe
 	{
 	public:
 		/**
+		* \brief Gets the scale of the BoxCollider
+		*/
+		glm::vec3 getSize();
+		/**
 		* \brief Sets the scale of the BoxCollider
 		*/
 		void setSize(glm::vec3 _size);

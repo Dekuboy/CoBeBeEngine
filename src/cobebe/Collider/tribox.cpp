@@ -14,6 +14,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#ifndef _COBEBE_VECTOR_MACROS
+#define _COBEBE_VECTOR_MACROS
+
 #define X 0
 #define Y 1
 #define Z 2
@@ -36,6 +39,8 @@
   if(x1>max) max=x1;\
   if(x2<min) min=x2;\
   if(x2>max) max=x2;
+
+#endif
 
 int planeBoxOverlap(float normal[3], float vert[3], float maxbox[3])	// -NJMP-
 {

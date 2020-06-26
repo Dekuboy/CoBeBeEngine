@@ -29,6 +29,8 @@ add_library(glwrap
 	src/glwrap/GBuffer.cpp
 	src/glwrap/Animation.h
 	src/glwrap/Animation.cpp
+	src/glwrap/Frame.h
+	src/glwrap/Frame.cpp
 	src/glwrap/Part.h
 	src/glwrap/Part.cpp
 	src/glwrap/stb_image.h
@@ -56,6 +58,8 @@ add_library(cobebe
 	src/cobebe/Core/Transform.cpp
 
 	src/cobebe/Collider/tribox.cpp
+	src/cobebe/Collider/raytri.cpp
+	src/cobebe/Collider/aabb.cpp
 	src/cobebe/Collider/Collider.h
 	src/cobebe/Collider/Collider.cpp
 	src/cobebe/Collider/BoxCollider.h
@@ -93,11 +97,15 @@ add_library(cobebe
 	src/cobebe/Renderer/Lighting.cpp
 	src/cobebe/Renderer/PointLight.h
 	src/cobebe/Renderer/PointLight.cpp
+	src/cobebe/Renderer/AnimationController.h
+	src/cobebe/Renderer/AnimationController.cpp
 
 	src/cobebe/GUI/Canvas.h
 	src/cobebe/GUI/Canvas.cpp
 	src/cobebe/GUI/ImageGUI.h
 	src/cobebe/GUI/ImageGUI.cpp
+	src/cobebe/GUI/ButtonGUI.h
+	src/cobebe/GUI/ButtonGUI.cpp
 
 	src/cobebe/Speaker/Speaker.h
 	src/cobebe/Speaker/Speaker.cpp
@@ -117,35 +125,7 @@ add_executable(dungeon
 	src/dungeon/main.cpp
 )
 
-add_executable(lightDemo
-	src/lightDemo/SceneController.h
-	src/lightDemo/SceneController.cpp
-	src/lightDemo/main.cpp
-)
-
-add_executable(rhythmTech
-	src/rhythmTech/BeatController.h
-	src/rhythmTech/BeatController.cpp
-	src/rhythmTech/Beatmonitor.h
-	src/rhythmTech/BeatMonitor.cpp
-	src/rhythmTech/BGMusic.h
-	src/rhythmTech/BGMusic.cpp
-	src/rhythmTech/EnemyTemplate.h
-	src/rhythmTech/EnemyTemplate.cpp
-	src/rhythmTech/PlayerController.h
-	src/rhythmTech/PlayerController.cpp
-	src/rhythmTech/main.cpp
-)
-
 target_link_libraries(dungeon 
-	cobebe
-)
-
-target_link_libraries(lightDemo
-	cobebe
-)
-
-target_link_libraries(rhythmTech
 	cobebe
 )
 	

@@ -5,6 +5,7 @@
 #include <cobebe/Core/Core.h>
 #include <cobebe/Resources/RendAssets.h>
 #include <cobebe/Core/Camera.h>
+#include <cobebe/Renderer/AnimationController.h>
 
 namespace cobebe
 {
@@ -48,6 +49,23 @@ namespace cobebe
 		return m_mesh;
 	}
 
+	std::shared_ptr<AnimationController> Renderer::addAnimationController()
+	{
+		if (m_mesh)
+		{
+			m_animationController = getEntity()->addComponent<AnimationController>(m_mesh->m_internal);
+			return m_animationController;
+		}
+	}
+
+	void Renderer::loadAnimation(std::string _path)
+	{
+		if (m_animationController)
+		{
+			m_animationController->loadAnimation(_path);
+		}
+	}
+
 	std::shared_ptr<glwrap::Texture> Renderer::getTextureInternal(std::shared_ptr<Texture> _texture)
 	{
 		return _texture->m_internal;
@@ -61,7 +79,10 @@ namespace cobebe
 
 	void Renderer::onTick()
 	{
-		m_shader->resetChecks();
+		if (m_shader)
+		{
+			m_shader->resetChecks();
+		}
 	}
 
 	void Renderer::onPreDisplay()
@@ -72,11 +93,11 @@ namespace cobebe
 			{
 				m_shader->setUniformCheck(true);
 			}
-		}
-		if (m_mesh && m_texture && m_shader)
-		{
-			glm::mat4 model = m_transform.lock()->getModel();
-			m_lighting->draw(m_mesh->m_internal, model);
+			if (m_mesh && m_texture)
+			{
+				glm::mat4 model = m_transform.lock()->getModel();
+				m_lighting->draw(m_mesh->m_internal, m_animationController, model);
+			}
 		}
 	}
 
@@ -87,6 +108,11 @@ namespace cobebe
 			glm::mat4 model = m_transform.lock()->getModel();
 			m_shader->m_internal->setUniform("in_Model", model);
 			m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
+			m_shader->m_internal->setUniform("in_Animate", glm::mat4(1));
+			if (m_animationController)
+			{
+				m_animationController->setToDraw();
+			}
 			if (m_camera)
 			{
 				m_shader->setCam(m_camera);

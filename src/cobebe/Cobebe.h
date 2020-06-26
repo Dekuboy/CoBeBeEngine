@@ -30,6 +30,7 @@
 #include <cobebe/Renderer/PBRenderer.h>
 #include <cobebe/Renderer/Lighting.h>
 #include <cobebe/Renderer/PointLight.h>
+#include <cobebe/Renderer/AnimationController.h>
 
 #include <cobebe/GUI/Canvas.h>
 #include <cobebe/GUI/ImageGUI.h>

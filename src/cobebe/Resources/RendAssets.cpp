@@ -125,4 +125,9 @@ namespace cobebe
 		m_uniformCheck = false;
 		m_shadowCheck = false;
 	}
+
+	void PartAnimation::onLoad(const std::string& _path)
+	{
+		m_path = _path;
+	}
 }

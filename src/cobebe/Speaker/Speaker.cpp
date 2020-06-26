@@ -14,6 +14,8 @@ namespace cobebe
 		m_isPlaying = false;
 		m_path = _path;
 		m_isLooping = false;
+
+		m_isGlobal = false;
 	}
 
 	Speaker::Speaker(const std::string _path, bool _isLooping)
@@ -21,6 +23,8 @@ namespace cobebe
 		m_isPlaying = false;
 		m_path = _path;
 		m_isLooping = _isLooping;
+
+		m_isGlobal = false;
 	}
 
 	Speaker::~Speaker()
@@ -47,15 +51,22 @@ namespace cobebe
 		alGenSources(1, &m_sourceId);
 
 		m_transform = getTransform();
-		glm::vec3 pos = m_transform.lock()->m_position;
-		std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
-		glm::vec4 res = glm::inverse(cam->getView()) * glm::vec4(pos, 1.0f);
-		alSource3f(m_sourceId, AL_POSITION, res.x, res.y, res.z);
+		if (m_isGlobal)
+		{
+			alSource3f(m_sourceId, AL_POSITION, 0, 0, 0);
+		}
+		else
+		{
+			glm::vec3 pos = m_transform.lock()->m_position;
+			std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
+			glm::vec4 res = glm::inverse(cam->getView()) * glm::vec4(pos, 1.0f);
+			alSource3f(m_sourceId, AL_POSITION, res.x, res.y, res.z);
+		}
 
 		alSourcei(m_sourceId, AL_BUFFER, m_soundSrc->m_bufferId);
 	}
 
-	void Speaker::onTick()
+	void Speaker::onPreDisplay()
 	{
 		if (!m_isPlaying)
 		{
@@ -77,10 +88,17 @@ namespace cobebe
 		}
 		else
 		{
-			glm::vec3 pos = m_transform.lock()->m_position;
-			std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
-			glm::vec4 res = glm::inverse(cam->getView()) * glm::vec4(pos, 1.0f);
-			alSource3f(m_sourceId, AL_POSITION, res.x, res.y, res.z);
+			if (m_isGlobal)
+			{
+				alSource3f(m_sourceId, AL_POSITION, 0, 0, 0);
+			}
+			else
+			{
+				glm::vec3 pos = m_transform.lock()->m_position;
+				std::shared_ptr<Camera> cam = getCore()->getCurrentCamera();
+				glm::vec4 res = glm::inverse(cam->getView()) * glm::vec4(pos, 1.0f);
+				alSource3f(m_sourceId, AL_POSITION, res.x, res.y, res.z);
+			}
 		}
 	}
 }
