@@ -272,7 +272,7 @@ namespace cobebe
 		std::vector<glm::vec3> positions;
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		std::shared_ptr<Mesh> model = mr->getMesh();
-		std::vector<std::shared_ptr<glwrap::Face>> faces = model->getFaces();
+		std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
 
 		for (size_t f = 0; f < faces.size(); f++)
 		{
@@ -364,7 +364,7 @@ namespace cobebe
 
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		std::shared_ptr<Mesh> model = mr->getMesh();
-		std::vector<std::shared_ptr<glwrap::Face>> faces = model->getFaces();
+		std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
 		generateExtent();
 
 		// Create collision columns

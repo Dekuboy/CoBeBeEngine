@@ -47,7 +47,7 @@ namespace glwrap
 		~Part();
 
 		std::string getName();
-		std::vector<std::shared_ptr<Face>> getFaces();
+		std::vector<std::shared_ptr<Face> > getFaces();
 		void addFace(std::shared_ptr<Face> _face);
 
 		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
@@ -66,8 +66,8 @@ namespace glwrap
 
 		bool m_dirty;
 		std::weak_ptr<VertexArray> m_model;
-		std::vector<std::shared_ptr<Face>> m_faces;
-		std::vector<std::shared_ptr<VertexBuffer>> m_buffers;
+		std::vector<std::shared_ptr<Face> > m_faces;
+		std::vector<std::shared_ptr<VertexBuffer> > m_buffers;
 		glm::mat4 m_animationUniform;
 
 		std::weak_ptr<Part> m_self;

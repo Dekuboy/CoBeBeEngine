@@ -33,14 +33,14 @@ namespace cobebe
 
 	void BoxCollider::collideBox()
 	{
-		std::list<std::shared_ptr<Entity>> boxEntities;
+		std::list<std::shared_ptr<Entity> > boxEntities;
 		boxEntities = getCore()->getAllEntitiesByComponent<BoxCollider>();
 		std::shared_ptr<BoxCollider> bc;
 
 		glm::vec3 np = getTransform()->m_position + m_offset;
 		glm::vec3 sp;
 
-		for (std::list<std::shared_ptr<Entity>>::iterator it = boxEntities.begin();
+		for (std::list<std::shared_ptr<Entity> >::iterator it = boxEntities.begin();
 			it != boxEntities.end(); it++)
 		{
 			if (*it == getEntity())
@@ -76,13 +76,13 @@ namespace cobebe
 
 	void BoxCollider::collideStaticModel()
 	{
-		std::list<std::shared_ptr<Entity>> smces;
+		std::list<std::shared_ptr<Entity> > smces;
 
 		smces = getCore()->getAllEntitiesByComponent<StaticModelCollider>();
 
 		glm::vec3 np = getTransform()->m_position + m_offset;
 
-		for (std::list<std::shared_ptr<Entity>>::iterator it = smces.begin();
+		for (std::list<std::shared_ptr<Entity> >::iterator it = smces.begin();
 			it != smces.end(); it++)
 		{
 			std::shared_ptr<StaticModelCollider> smc =

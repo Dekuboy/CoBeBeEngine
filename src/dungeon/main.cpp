@@ -1,4 +1,4 @@
-#include <cobebe/cobebe.h>
+#include <cobebe/Cobebe.h>
 #include "PlayerController.h"
 #include "Bloom.h"
 
@@ -21,14 +21,14 @@ int main()
 
 	entity->addComponent<cobebe::StaticModelCollider>();
 
-	entity = App->addEntity();
-	entity->getTransform()->m_position = glm::vec3(-12.0f, 1.7f, -12.0f);
-	std::shared_ptr<cobebe::PBRenderer> pbRenderer = entity->addComponent<cobebe::PBRenderer>();
-	pbRenderer->setMesh("spaceship\\Intergalactic_Spaceship-(Wavefront).obj");
-	pbRenderer->setTexture("spaceship\\textures\\Intergalactic Spaceship_color_4.png");
-	pbRenderer->setNormalMap("spaceship\\textures\\Intergalactic Spaceship_nmap_2_Tris.png");
-	pbRenderer->setMetalMap("spaceship\\textures\\Intergalactic Spaceship_metalness.png");
-	pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
+	//entity = App->addEntity();
+	//entity->getTransform()->m_position = glm::vec3(-12.0f, 1.7f, -12.0f);
+	//std::shared_ptr<cobebe::PBRenderer> pbRenderer = entity->addComponent<cobebe::PBRenderer>();
+	//pbRenderer->setMesh("spaceship\\Intergalactic_Spaceship-(Wavefront).obj");
+	//pbRenderer->setTexture("spaceship\\textures\\Intergalactic Spaceship_color_4.png");
+	//pbRenderer->setNormalMap("spaceship\\textures\\Intergalactic Spaceship_nmap_2_Tris.png");
+	//pbRenderer->setMetalMap("spaceship\\textures\\Intergalactic Spaceship_metalness.png");
+	//pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
 
 	entity = App->addEntity();
 	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);

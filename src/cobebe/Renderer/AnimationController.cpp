@@ -8,9 +8,9 @@ namespace cobebe
 	{
 		m_model = _model;
 
-		std::vector<std::shared_ptr<glwrap::Animation>> animations = m_model->getAnimations();
+		std::vector<std::shared_ptr<glwrap::Animation> > animations = m_model->getAnimations();
 
-		for (std::vector<std::shared_ptr<glwrap::Animation>>::iterator itr = animations.begin();
+		for (std::vector<std::shared_ptr<glwrap::Animation> >::iterator itr = animations.begin();
 			itr != animations.end(); itr++)
 		{
 			m_animationTimes.push_back(0);
@@ -28,7 +28,7 @@ namespace cobebe
 	void AnimationController::loadAnimation(std::string _path)
 	{
 		std::shared_ptr<PartAnimation> temp = getCore()->loadAsset<PartAnimation>(_path);
-		for (std::list<std::shared_ptr<PartAnimation>>::iterator itr = m_animations.begin();
+		for (std::list<std::shared_ptr<PartAnimation> >::iterator itr = m_animations.begin();
 			itr != m_animations.end(); itr++)
 		{
 			if ((*itr) == temp)
@@ -252,7 +252,7 @@ namespace cobebe
 
 	void AnimationController::incrementAnimations(float _deltaTime)
 	{
-		std::vector<std::shared_ptr<glwrap::Animation>> animations = m_model->getAnimations();
+		std::vector<std::shared_ptr<glwrap::Animation> > animations = m_model->getAnimations();
 
 		if (m_animationTimes.size() != animations.size())
 		{
@@ -268,7 +268,7 @@ namespace cobebe
 		std::vector<double>::iterator timeItr = m_animationTimes.begin();
 		std::vector<double>::iterator speedItr = m_speeds.begin();
 
-		for (std::vector<std::shared_ptr<glwrap::Animation>>::iterator itr = animations.begin();
+		for (std::vector<std::shared_ptr<glwrap::Animation> >::iterator itr = animations.begin();
 			itr != animations.end(); itr++)
 		{
 			if (*enableItr)
@@ -290,7 +290,7 @@ namespace cobebe
 
 	void AnimationController::setToDraw()
 	{
-		std::vector<std::shared_ptr<glwrap::Animation>> animations = m_model->getAnimations();
+		std::vector<std::shared_ptr<glwrap::Animation> > animations = m_model->getAnimations();
 
 		if (m_animationTimes.size() != animations.size())
 		{
@@ -305,7 +305,7 @@ namespace cobebe
 		std::vector<bool>::iterator repeatItr = m_repeating.begin();
 		std::vector<double>::iterator timeItr = m_animationTimes.begin();
 
-		for (std::vector<std::shared_ptr<glwrap::Animation>>::iterator itr = animations.begin();
+		for (std::vector<std::shared_ptr<glwrap::Animation> >::iterator itr = animations.begin();
 			itr != animations.end(); itr++)
 		{
 			(*itr)->setEnabled(*enableItr);
@@ -320,7 +320,7 @@ namespace cobebe
 
 	void AnimationController::updateValues()
 	{
-		std::vector<std::shared_ptr<glwrap::Animation>> animations = m_model->getAnimations();
+		std::vector<std::shared_ptr<glwrap::Animation> > animations = m_model->getAnimations();
 		for (int i = m_animationTimes.size(); i < animations.size(); i++)
 		{
 			m_animationTimes.push_back(0);

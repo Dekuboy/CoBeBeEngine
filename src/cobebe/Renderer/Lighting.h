@@ -106,7 +106,7 @@ namespace cobebe
 		/**
 		* \brief Retrieves PointLights
 		*/
-		std::list<std::shared_ptr<PointLight>> getPointLights();
+		std::list<std::shared_ptr<PointLight> > getPointLights();
 		/**
 		* \brief Removes input PointLight from Engine
 		*/
@@ -146,9 +146,9 @@ namespace cobebe
 		std::shared_ptr<glwrap::DepthBuffer> m_depthMap; ///< Directional light depth map
 
 		std::shared_ptr<Shader> m_cubeShader; ///< PointLight depth shader
-		std::list<std::shared_ptr<PointLight>> m_pointLights; ///< All PointLights available in engine
+		std::list<std::shared_ptr<PointLight> > m_pointLights; ///< All PointLights available in engine
 		int m_maxPointLights; ///< Max possible PointLights
-		std::vector<std::shared_ptr<glwrap::DepthCube>> m_depthCubes; ///< Stored DepthCubes for applying PointLights
+		std::vector<std::shared_ptr<glwrap::DepthCube> > m_depthCubes; ///< Stored DepthCubes for applying PointLights
 		std::vector<glm::vec3> m_pointLightPositions; ///< PointLight positions to pass into shader
 		std::vector<glm::vec3> m_pointColours; ///< PointLight colours to pass into shader
 		std::vector<float> m_farPlanes; ///< PointLight ranges to pass into shader

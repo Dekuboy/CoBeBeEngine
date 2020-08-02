@@ -35,18 +35,18 @@ namespace glwrap
 		void disableAnimation(int _index);
 		void disableAllAnimations();
 
-		std::vector<std::shared_ptr<Face>> getFaces();
-		std::vector<std::shared_ptr<Part>> getParts();
+		std::vector<std::shared_ptr<Face> > getFaces();
+		std::vector<std::shared_ptr<Part> > getParts();
 		std::shared_ptr<Part> getPart(std::string _name);
-		std::vector<std::shared_ptr<Animation>> getAnimations();
+		std::vector<std::shared_ptr<Animation> > getAnimations();
 
 	private:
 		friend class Context;
 
 		bool m_dirty;
-		std::vector<std::shared_ptr<Face>> m_faces;
-		std::vector<std::shared_ptr<Part>> m_parts;
-		std::vector<std::shared_ptr<Animation>> m_animations;
+		std::vector<std::shared_ptr<Face> > m_faces;
+		std::vector<std::shared_ptr<Part> > m_parts;
+		std::vector<std::shared_ptr<Animation> > m_animations;
 		std::weak_ptr<VertexArray> m_self;
 		std::weak_ptr<Context> m_context;
 

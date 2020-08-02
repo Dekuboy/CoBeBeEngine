@@ -1,4 +1,4 @@
-#include "Rendertexture.h"
+#include <glwrap/RenderTexture.h>
 
 namespace glwrap
 {

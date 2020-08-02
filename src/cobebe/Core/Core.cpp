@@ -12,11 +12,26 @@
 #include <glm/ext.hpp>
 #include <iostream>
 
+#if defined(__EMSCRIPTEN__)
+#include <emscripten.h>
+#include <emscripten/html5.h>
+
+std::shared_ptr<cobebe::Core> COBEBE_EM_PTR;
+
+EM_BOOL one_iter(double time, void* userData)
+{
+	COBEBE_EM_PTR->iterateCoreLoop();
+
+	return EM_TRUE;
+}
+#endif
+
 namespace cobebe
 {
 	Core::Core()
 	{
 		m_running = false;
+		m_inLoop = false;
 	}
 
 	Core::~Core()
@@ -131,20 +146,61 @@ namespace cobebe
 
 	void Core::run()
 	{
-		m_running = true;
-		SDL_ShowCursor(false);
-
-		Uint32 currentTime, waitTime, lastTime = SDL_GetTicks();
-		while (m_running)
+		if (!m_running)
 		{
+			m_running = true;
+			SDL_ShowCursor(false);
+
+#if defined(__EMSCRIPTEN__)
+			COBEBE_EM_PTR = m_self.lock();
+
+			emscripten_request_animation_frame_loop(one_iter, 0);
+#else
+			Uint32 currentTime, waitTime, lastTime = SDL_GetTicks();
+
+			while (m_running)
+			{
+
+				// Perform Iteration
+				iterateCoreLoop();
+
+				// Update deltaTime
+				currentTime = SDL_GetTicks();
+				m_environment->m_deltaTime = (float)(currentTime - lastTime) / 1000.0f;
+				if (m_environment->m_deltaTime < (1.0f / 60.0f))
+				{
+					waitTime = 1000 / 60 - currentTime + lastTime;
+					SDL_Delay(waitTime);
+					m_environment->m_deltaTime = 1.0f / 60.0f;
+				}
+				lastTime = SDL_GetTicks();
+				m_environment->m_currentTick = lastTime;
+
+				// TEMPORARY MOUSE LOCK SYSTEM
+				if (m_keyboard->isKeyPressed(SDL_SCANCODE_Q) || m_gamepad->isButtonPressed(0, cobebeInput::aButton))
+				{
+					m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
+				}
+			}
+#endif
+		}
+	}
+
+	void Core::iterateCoreLoop()
+	{
+		// Stop loop from being called within itself
+		if (!m_inLoop)
+		{
+			m_inLoop = true;
+
 			// Tick each Entity, if an error occurs destroy the Entity
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				try
 				{
 					(*it)->tick();
 				}
-				catch (const Exception& e)
+				catch (const Exception & e)
 				{
 					std::cout << e.what();
 					(*it)->m_kill = true;
@@ -152,7 +208,7 @@ namespace cobebe
 			}
 
 			// Iterate through entities and delete any marked as killed
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end();)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end();)
 			{
 				if ((*it)->m_kill)
 				{
@@ -178,7 +234,7 @@ namespace cobebe
 			// PreDisplay each Entity
 			// Renders to DepthMaps in Lighting
 			//glCullFace(GL_FRONT);
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->preDisplay();
 			}
@@ -187,7 +243,7 @@ namespace cobebe
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			// Display each Entity
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->display();
 			}
@@ -200,7 +256,7 @@ namespace cobebe
 			drawToScreen();
 
 			// PostDisplay each Entity
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->postDisplay();
 			}
@@ -208,7 +264,7 @@ namespace cobebe
 			glEnable(GL_DEPTH_TEST);
 
 			// GUI each Entity
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->gui();
 			}
@@ -216,29 +272,14 @@ namespace cobebe
 			// Draw to window
 			SDL_GL_SwapWindow(m_window);
 
-			// Update deltaTime
-			currentTime = SDL_GetTicks();
-			m_environment->m_deltaTime = (float)(currentTime - lastTime) / 1000.0f;
-			if (m_environment->m_deltaTime < (1.0f / 60.0f))
-			{
-				waitTime = 1000 / 60 - currentTime + lastTime;
-				SDL_Delay(waitTime);
-				m_environment->m_deltaTime = 1.0f / 60.0f;
-			}
-			lastTime = SDL_GetTicks();
-			m_environment->m_currentTick = lastTime;
-
 			// Reset inputs for next tick
 			m_keyboard->resetKeys();
 			m_mouse->resetButtons();
 			m_gamepad->resetButtons();
 
-			// Poll SDL Events
 			pollSDLEvent();
-			if (m_keyboard->isKeyPressed(SDL_SCANCODE_Q) || m_gamepad->isButtonPressed(0, cobebeInput::GamepadButton::aButton))
-			{
-				m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
-			}
+
+			m_inLoop = false;
 		}
 	}
 
@@ -453,8 +494,9 @@ namespace cobebe
 
 		nullInternal->setViewport(glm::vec4(0, 0,
 			m_environment->m_width, m_environment->m_height));
+		std::shared_ptr<glwrap::Texture> texture = m_currentCamera.lock()->m_texture;
 		nullInternal->setUniform("in_Texture",
-			m_currentCamera.lock()->m_texture);
+			texture);
 		nullInternal->draw();
 	}
 }

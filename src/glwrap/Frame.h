@@ -1,5 +1,6 @@
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace glwrap
 {
@@ -9,8 +10,8 @@ namespace glwrap
 	class Translation
 	{
 	public:
-		Translation(std::shared_ptr<Part> _part, float _x, float _y, float _z,
-			float _xRotation, float _yRotation, float _zRotation);
+		Translation(std::shared_ptr<Part> _part, glm::vec3 _position,
+			glm::vec3 _rotation);
 		~Translation();
 
 		std::shared_ptr<Part> getPart();
@@ -59,14 +60,14 @@ namespace glwrap
 		static void merge(std::shared_ptr<Frame> _source, std::shared_ptr<Frame> _destination,
 			double _weight = 0.5f);
 
-		std::vector<std::shared_ptr<Translation>> getTranslations();
+		std::vector<std::shared_ptr<Translation> > getTranslations();
 		std::shared_ptr<Translation> getTranslation(std::shared_ptr<Part> _part, bool _add = false);
 
 	private:
 		friend class Animation;
 
 		std::shared_ptr<Animation> m_animation;
-		std::vector<std::shared_ptr<Translation>> m_translations;
+		std::vector<std::shared_ptr<Translation> > m_translations;
 
 	};
 }

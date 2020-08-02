@@ -30,7 +30,7 @@ namespace cobebe
 
 	void Entity::tick()
 	{
-		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
+		for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); ++it)
 		{
 			if (!(*it)->m_kill)
 			{
@@ -39,7 +39,7 @@ namespace cobebe
 		}
 
 		// Iterate through each Component and delete any marked as killed
-		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end();)
+		for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end();)
 		{
 			if ((*it)->m_kill)
 			{
@@ -54,7 +54,7 @@ namespace cobebe
 
 	void Entity::preDisplay()
 	{
-		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
+		for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); ++it)
 		{
 			(*it)->onPreDisplay();
 		}
@@ -62,14 +62,14 @@ namespace cobebe
 
 	void Entity::display()
 	{
-		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
+		for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); ++it)
 		{
 			(*it)->onDisplay();
 		}
 	}
 	void Entity::postDisplay()
 	{
-		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
+		for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); ++it)
 		{
 			(*it)->onPostDisplay();
 		}
@@ -77,7 +77,7 @@ namespace cobebe
 
 	void Entity::gui()
 	{
-		for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
+		for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); ++it)
 		{
 			(*it)->onGUI();
 		}

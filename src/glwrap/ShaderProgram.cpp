@@ -583,7 +583,7 @@ namespace glwrap
 		glUniform1i(uniformId, m_samplers.size() - 1);
 	}
 
-	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube>> _cubes)
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube> > _cubes)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
@@ -597,7 +597,7 @@ namespace glwrap
 		std::string temp;
 		m_context.lock()->setCurrentShader(m_self.lock());
 
-		for (std::vector<std::shared_ptr<DepthCube>>::iterator itr = _cubes.begin();
+		for (std::vector<std::shared_ptr<DepthCube> >::iterator itr = _cubes.begin();
 			itr != _cubes.end(); itr++)
 		{
 			temp = _uniform + "[" + std::to_string(count) + "]";

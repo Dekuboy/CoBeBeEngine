@@ -3,28 +3,34 @@
 void Bloom::blur()
 {
 	std::shared_ptr<glwrap::ShaderProgram> shader = m_lightKeyShader->getInternal();
+	std::shared_ptr<glwrap::Texture> texture;
 	m_camera->setRtUniform("in_Texture", shader);
 	shader->draw(m_lightKeyRt);
 
 	shader = m_blurShader->getInternal();
-	shader->setUniform("in_Texture", m_lightKeyRt);
+	texture = m_lightKeyRt;
+	shader->setUniform("in_Texture", texture);
 	shader->draw(m_blurRt);
 
 	for (int i = 0; i < 2; i++)
 	{
-		shader->setUniform("in_Texture", m_blurRt);
+		texture = m_blurRt;
+		shader->setUniform("in_Texture", texture);
 		shader->draw(m_blur2Rt);
 
-		shader->setUniform("in_Texture", m_blur2Rt);
+		texture = m_blur2Rt;
+		shader->setUniform("in_Texture", texture);
 		shader->draw(m_blurRt);
 	}
 
 	shader = m_mergeShader->getInternal();
 	m_camera->setRtUniform("in_TextureA", shader);
-	shader->setUniform("in_TextureB", m_blurRt);
+	texture = m_blurRt;
+	shader->setUniform("in_TextureB", texture);
 	shader->draw(m_mergeRt);
 
-	m_nullShader->setUniform("in_Texture", m_mergeRt);
+	texture = m_mergeRt;
+	m_nullShader->setUniform("in_Texture", texture);
 
 	m_nullShader->draw();
 }

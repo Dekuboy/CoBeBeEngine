@@ -3,7 +3,7 @@
 
 namespace cobebe
 {
-	std::vector<std::shared_ptr<glwrap::Face>> Mesh::getFaces()
+	std::vector<std::shared_ptr<glwrap::Face> > Mesh::getFaces()
 	{
 		return m_internal->getFaces();
 	}
@@ -68,7 +68,7 @@ namespace cobebe
 		m_internal->setUniform("in_PointTotal", _count);
 	}
 
-	void Shader::setDepthCubes(std::vector<std::shared_ptr<glwrap::DepthCube>> _depthCubes)
+	void Shader::setDepthCubes(std::vector<std::shared_ptr<glwrap::DepthCube> > _depthCubes)
 	{
 		m_internal->setUniform("in_DepthMap", _depthCubes);
 	}

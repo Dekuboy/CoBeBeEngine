@@ -34,7 +34,7 @@ namespace cobebe
 	private:
 		friend class Renderer;
 
-		std::list<std::shared_ptr<PartAnimation>> m_animations;
+		std::list<std::shared_ptr<PartAnimation> > m_animations;
 		std::shared_ptr<glwrap::VertexArray> m_model;
 
 		std::vector<double> m_animationTimes;

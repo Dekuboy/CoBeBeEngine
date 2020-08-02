@@ -78,7 +78,7 @@ namespace cobebe
 		std::shared_ptr<ButtonGUI> btn = _button->getComponent<ButtonGUI>();
 		if (btn)
 		{
-			for (std::list<std::weak_ptr<Entity>>::iterator itr = m_buttonList.begin();
+			for (std::list<std::weak_ptr<Entity> >::iterator itr = m_buttonList.begin();
 				itr != m_buttonList.end(); itr++)
 			{
 				if ((*itr).lock() == _button)
@@ -96,7 +96,7 @@ namespace cobebe
 		std::shared_ptr<ButtonGUI> btn = _button->getComponent<ButtonGUI>();
 		if (btn)
 		{
-			for (std::list<std::weak_ptr<Entity>>::iterator itr = m_buttonList.begin();
+			for (std::list<std::weak_ptr<Entity> >::iterator itr = m_buttonList.begin();
 				itr != m_buttonList.end(); itr++)
 			{
 				if ((*itr).lock() == _button)
@@ -156,7 +156,7 @@ namespace cobebe
 		float shortestDistance = -1;
 		std::shared_ptr<Entity> currentButton;
 
-		for (std::list<std::weak_ptr<Entity>>::iterator itr = m_buttonList.begin();
+		for (std::list<std::weak_ptr<Entity> >::iterator itr = m_buttonList.begin();
 			itr != m_buttonList.end(); itr++)
 		{
 			button = (*itr).lock()->getComponent<ButtonGUI>();
@@ -239,7 +239,7 @@ namespace cobebe
 
 	void Canvas::switchButton(std::shared_ptr<Entity> _button)
 	{
-		for (std::list<std::weak_ptr<Entity>>::iterator itr = m_buttonList.begin();
+		for (std::list<std::weak_ptr<Entity> >::iterator itr = m_buttonList.begin();
 			itr != m_buttonList.end(); itr++)
 		{
 			if ((*itr).lock() == _button)
@@ -262,7 +262,7 @@ namespace cobebe
 	{
 		bool found = false;
 
-		for (std::list<std::weak_ptr<Entity>>::iterator itr = m_buttonList.begin();
+		for (std::list<std::weak_ptr<Entity> >::iterator itr = m_buttonList.begin();
 			itr != m_buttonList.end(); itr++)
 		{
 			if (_toNext && found)

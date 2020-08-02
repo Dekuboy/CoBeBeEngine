@@ -9,7 +9,8 @@ namespace cobebe
 		m_position = glm::vec3(0.0f);
 		m_colour = glm::vec3(0.1f);
 
-		float aspect = (float)1024 / (float)1024;
+		int size = 1024;
+		float aspect = (float)size / (float)size;
 		float near = 1.0f;
 		m_radius = 25.0f;
 		glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), aspect, near, m_radius);
@@ -27,7 +28,7 @@ namespace cobebe
 		m_lightSpaces.push_back(shadowProj *
 			glm::lookAt(m_position, m_position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 
-		m_depthCube = std::make_shared<glwrap::DepthCube>(1024, 1024);
+		m_depthCube = std::make_shared<glwrap::DepthCube>(size, size);
 	}
 
 	glm::vec3 PointLight::getPosition()

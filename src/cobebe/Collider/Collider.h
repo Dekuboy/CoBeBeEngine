@@ -18,11 +18,11 @@ namespace cobebe
 		/**
 		* \brief Return list of all collided Entities
 		*/
-		const std::list<std::weak_ptr<Entity>>& getColliders();
+		const std::list<std::weak_ptr<Entity> >& getColliders();
 
 	protected:
 		bool m_hasCollided; ///< Has the object collided this tick?
-		std::list<std::weak_ptr<Entity>> m_colliders; ///< List of collided entities
+		std::list<std::weak_ptr<Entity> > m_colliders; ///< List of collided entities
 
 	private:
 		virtual void onGUI();

@@ -2,6 +2,8 @@
 #include <list>
 #include <SDL2/SDL.h>
 #include <cobebe/NonCopyable.h>
+#include <cobebe/Core/Entity.h>
+#include <cobebe/Resources/Resources.h>
 #include <glwrap/glwrap.h>
 #include <AL/al.h>
 #include <AL/alc.h>
@@ -9,7 +11,6 @@
 namespace cobebe
 {
 	class Environment;
-	class Entity;
 	class Transform;
 	class Camera;
 	class Lighting;
@@ -17,7 +18,6 @@ namespace cobebe
 	class Keyboard;
 	class Mouse;
 	class Gamepad;
-	class Resources;
 	class Shader;
 
 	/**
@@ -43,6 +43,11 @@ namespace cobebe
 		* \brief Use to run the Core gameplay loop
 		*/
 		void run();
+
+		/**
+		* \brief Pass through the Core gameplay loop once
+		*/
+		void iterateCoreLoop();
 
 		/**
 		* \brief Use to stop the gameplay loop
@@ -139,7 +144,7 @@ namespace cobebe
 		{
 			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				try
 				{
@@ -160,12 +165,12 @@ namespace cobebe
 		* \brief Returns all entities with the input Component
 		*/
 		template <class T>
-		std::list<std::shared_ptr<Entity>> getAllEntitiesByComponent()
+		std::list<std::shared_ptr<Entity> > getAllEntitiesByComponent()
 		{
-			std::list<std::shared_ptr<Entity>> rtn;
+			std::list<std::shared_ptr<Entity> > rtn;
 			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Entity>>::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				cmp = (*it)->getComponent<T>();
 				if (cmp)
@@ -256,8 +261,8 @@ namespace cobebe
 		ALCcontext * m_alContext; ///< Engine sound context
 
 		std::shared_ptr<glwrap::Context> m_context; ///< Safely instantiates OpenGL objects
-		std::list<std::shared_ptr<Entity>> m_entities; ///< List of entities in game loop
-		std::list<std::shared_ptr<Camera>> m_cameras; ///< List of cameras in game loop
+		std::list<std::shared_ptr<Entity> > m_entities; ///< List of entities in game loop
+		std::list<std::shared_ptr<Camera> > m_cameras; ///< List of cameras in game loop
 		std::weak_ptr<Camera> m_currentCamera; ///< Holds Camera currently drawing to the screen
 		std::shared_ptr<Lighting> m_lighting; ///< Holds all variables regarding Lighting
 		std::shared_ptr<Canvas> m_canvas; ///< Draws GUI to screen
@@ -271,6 +276,7 @@ namespace cobebe
 		std::shared_ptr<Resources> m_resources; ///< Holds loaded file paths
 
 		bool m_running; ///< Controls the game loop
+		bool m_inLoop; ///< Controls within single loop
 
 		/**
 		* \brief Passes current Cameras RenderTexture to screen

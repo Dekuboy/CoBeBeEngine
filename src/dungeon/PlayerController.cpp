@@ -1,4 +1,5 @@
 #include "PlayerController.h"
+#include <glm/gtx/quaternion.hpp>
 #include <glm/ext.hpp>
 
 void PlayerController::onInit()
@@ -36,8 +37,8 @@ void PlayerController::onTick()
 	rotateX = glm::rotate(rotateX, m_camAngle.x,
 		glm::vec3(0, 1, 0));
 
-	m_camera.lock()->m_rotation = glm::mat3(glm::quat(m_originalOrientation) * rotateX * rotateY);
-	m_transform.lock()->m_rotation = glm::mat3(rotateX);
+	m_camera.lock()->m_rotation = glm::toMat3(glm::quat(m_originalOrientation) * rotateX * rotateY);
+	m_transform.lock()->m_rotation = glm::toMat3(rotateX);
 
 	// Update camPosition using Input
 	glm::mat4 tempMat(1.0f);

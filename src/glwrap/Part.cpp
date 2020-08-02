@@ -139,7 +139,7 @@ namespace glwrap
 		return m_name;
 	}
 
-	std::vector<std::shared_ptr<Face>> Part::getFaces()
+	std::vector<std::shared_ptr<Face> > Part::getFaces()
 	{
 		return m_faces;
 	}
@@ -307,14 +307,14 @@ namespace glwrap
 
 	void Part::translate(int _undo)
 	{
-		std::vector<std::shared_ptr<Animation>> animations =
+		std::vector<std::shared_ptr<Animation> > animations =
 			m_model.lock()->getAnimations();
 		std::shared_ptr<Frame> frame;
 		std::shared_ptr<Translation> translation;
 
 		glm::vec3 translateVector(0);
 
-		for (std::vector<std::shared_ptr<Animation>>::iterator itr = animations.begin();
+		for (std::vector<std::shared_ptr<Animation> >::iterator itr = animations.begin();
 			itr != animations.end(); itr++)
 		{
 			if ((*itr)->getEnabled())
@@ -322,7 +322,7 @@ namespace glwrap
 				frame = (*itr)->getMergeFrame();
 				translation = frame->getTranslation(m_self.lock());
 
-				if (translation != NULL)
+				if (translation != nullptr)
 				{
 					if (_undo == -1)
 					{

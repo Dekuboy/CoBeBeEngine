@@ -39,7 +39,7 @@ namespace glwrap
 		double m_frame;
 		bool m_enabled;
 		bool m_repeating;
-		std::vector<std::shared_ptr<Frame>> m_frames;
+		std::vector<std::shared_ptr<Frame> > m_frames;
 		std::shared_ptr<Frame> m_mergeFrame;
 		std::weak_ptr<Animation> m_self;
 		std::weak_ptr<Context> m_context;

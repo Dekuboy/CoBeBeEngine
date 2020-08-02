@@ -1,11 +1,13 @@
+#ifndef _COBEBE_ENTITY
+#define _COBEBE_ENTITY
 #include <memory>
 #include <list>
 #include <cobebe/Exception.h>
+#include <cobebe/Core/Component.h>
 
 namespace cobebe
 {
 	class Core;
-	class Component;
 	class Transform;
 
 	/**
@@ -86,7 +88,7 @@ namespace cobebe
 		{
 			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); ++it)
+			for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); ++it)
 			{
 				cmp = std::dynamic_pointer_cast<T>(*it);
 				if (cmp)
@@ -108,7 +110,7 @@ namespace cobebe
 			cmp = std::dynamic_pointer_cast<T>(m_transform.lock());
 			if (!cmp)
 			{
-				for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
+				for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); it++)
 				{
 					cmp = std::dynamic_pointer_cast<T>(*it);
 					if (cmp)
@@ -137,7 +139,7 @@ namespace cobebe
 			cmp = std::dynamic_pointer_cast<T>(m_transform.lock());
 			if (!cmp)
 			{
-				for (std::list<std::shared_ptr<Component>>::iterator it = m_components.begin(); it != m_components.end(); it++)
+				for (std::list<std::shared_ptr<Component> >::iterator it = m_components.begin(); it != m_components.end(); it++)
 				{
 					cmp = std::dynamic_pointer_cast<T>(*it);
 					if (cmp)
@@ -172,7 +174,7 @@ namespace cobebe
 		friend class Core;
 		bool m_kill; ///< Marks Entity for destruction
 
-		std::list<std::shared_ptr<Component>> m_components; ///< List of components attached to entity
+		std::list<std::shared_ptr<Component> > m_components; ///< List of components attached to entity
 		std::weak_ptr<Core> m_core; ///< Pointer to games Core
 		std::weak_ptr<Entity> m_self; ///< Pointer to self to be placed in attached components
 		std::weak_ptr<Transform> m_transform; ///< Pointer to attached Transform Component
@@ -204,3 +206,5 @@ namespace cobebe
 		void gui();
 	};
 }
+
+#endif

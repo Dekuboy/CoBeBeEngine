@@ -1,4 +1,4 @@
-#include "DepthCube.h"
+#include <glwrap/DepthCube.h>
 
 namespace glwrap
 {

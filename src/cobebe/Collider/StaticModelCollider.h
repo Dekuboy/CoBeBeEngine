@@ -73,7 +73,7 @@ namespace cobebe
 			glm::vec3 _size, bool& _solved);
 
 	private:
-		std::vector<std::shared_ptr<ColliderColumn>> m_cols; ///< Partitions of model containing faces
+		std::vector<std::shared_ptr<ColliderColumn> > m_cols; ///< Partitions of model containing faces
 		Extent m_extent; ///< Max and min xyz values
 
 		float m_resolution; ///< Partition divisor for allocating size

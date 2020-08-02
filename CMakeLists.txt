@@ -35,10 +35,13 @@ add_library(glwrap
 	src/glwrap/Part.cpp
 	src/glwrap/stb_image.h
 )
+
 if(MSVC)
-	target_link_libraries(glwrap glew32 opengl32)
+	target_link_libraries(glwrap glew32 SDL2 opengl32 OpenAL32)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	target_link_libraries(glwrap SDL2)
 else()
-	target_link_libraries(glwrap GLEW GL)
+	target_link_libraries(glwrap GLEW SDL2 GL)
 endif()
 
 add_library(cobebe
@@ -114,7 +117,7 @@ add_library(cobebe
 )
 
 target_link_libraries(cobebe 
-	SDL2 glwrap OpenAL32
+	glwrap
 )
 
 add_executable(dungeon
@@ -124,6 +127,12 @@ add_executable(dungeon
 	src/dungeon/Bloom.cpp
 	src/dungeon/main.cpp
 )
+
+if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	set(CMAKE_EXECUTABLE_SUFFIX ".html")
+
+	set_target_properties(dungeon PROPERTIES LINK_FLAGS "-o dungeon.js --preload-file Resources -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DISABLE_EXCEPTION_CATCHING=0")
+endif()
 
 target_link_libraries(dungeon 
 	cobebe

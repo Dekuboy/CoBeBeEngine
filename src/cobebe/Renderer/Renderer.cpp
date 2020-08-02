@@ -56,6 +56,7 @@ namespace cobebe
 			m_animationController = getEntity()->addComponent<AnimationController>(m_mesh->m_internal);
 			return m_animationController;
 		}
+		return nullptr;
 	}
 
 	void Renderer::loadAnimation(std::string _path)

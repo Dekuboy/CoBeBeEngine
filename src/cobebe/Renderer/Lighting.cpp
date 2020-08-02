@@ -130,7 +130,7 @@ namespace cobebe
 		return NULL;
 	}
 
-	std::list<std::shared_ptr<PointLight>> Lighting::getPointLights()
+	std::list<std::shared_ptr<PointLight> > Lighting::getPointLights()
 	{
 		return m_pointLights;
 	}
@@ -140,13 +140,13 @@ namespace cobebe
 		if (_light)
 		{
 			int count = 0;
-			for (std::list<std::shared_ptr<PointLight>>::iterator it = m_pointLights.begin();
+			for (std::list<std::shared_ptr<PointLight> >::iterator it = m_pointLights.begin();
 				it != m_pointLights.end();)
 			{
 				if (_light == (*it))
 				{
 					it = m_pointLights.erase(it);
-					std::vector<std::shared_ptr<glwrap::DepthCube>>::iterator
+					std::vector<std::shared_ptr<glwrap::DepthCube> >::iterator
 						dc = m_depthCubes.begin() + count;
 					m_depthCubes.erase(dc);
 					return;
@@ -198,7 +198,7 @@ namespace cobebe
 	{
 		m_depthMap->clear();
 
-		for (std::list<std::shared_ptr<PointLight>>::iterator it = m_pointLights.begin();
+		for (std::list<std::shared_ptr<PointLight> >::iterator it = m_pointLights.begin();
 			it != m_pointLights.end(); it++)
 		{
 			(*it)->m_depthCube->clear();
@@ -224,8 +224,10 @@ namespace cobebe
 		m_globalLightRenderDistance = 25.0f;
 		m_globalLightScale = 10.0f;
 
+		int size = 512;
+
 		// Set depth map ready for rendering
-		m_depthMap = std::make_shared<glwrap::DepthBuffer>(512, 512);
+		m_depthMap = std::make_shared<glwrap::DepthBuffer>(size, size);
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAni.shad");
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAniCube.shad");
 
@@ -262,7 +264,7 @@ namespace cobebe
 		// Iterates through each PointLight
 		// Sets cube light space matrices once per shader
 		// -avoids setting once per shader per model
-		for (std::list<std::shared_ptr<PointLight>>::iterator pointIt = m_pointLights.begin();
+		for (std::list<std::shared_ptr<PointLight> >::iterator pointIt = m_pointLights.begin();
 			pointIt != m_pointLights.end(); pointIt++)
 		{
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

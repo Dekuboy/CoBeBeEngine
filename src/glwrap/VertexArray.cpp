@@ -378,7 +378,7 @@ namespace glwrap
 
 	void VertexArray::draw()
 	{
-		for (std::vector<std::shared_ptr<Part>>::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->draw();
@@ -387,7 +387,7 @@ namespace glwrap
 
 	void VertexArray::drawPart(std::string _partName)
 	{
-		for (std::vector<std::shared_ptr<Part>>::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			if ((*itr)->getName() == _partName)
@@ -524,12 +524,12 @@ namespace glwrap
 		}
 	}
 
-	std::vector<std::shared_ptr<Face>> VertexArray::getFaces()
+	std::vector<std::shared_ptr<Face> > VertexArray::getFaces()
 	{
 		return m_faces;
 	}
 
-	std::vector<std::shared_ptr<Part>> VertexArray::getParts()
+	std::vector<std::shared_ptr<Part> > VertexArray::getParts()
 	{
 		return m_parts;
 	}
@@ -543,9 +543,11 @@ namespace glwrap
 				return m_parts.at(partIndex);
 			}
 		}
+
+		throw std::exception();
 	}
 
-	std::vector<std::shared_ptr<Animation>> VertexArray::getAnimations()
+	std::vector<std::shared_ptr<Animation> > VertexArray::getAnimations()
 	{
 		return m_animations;
 	}

@@ -64,7 +64,7 @@ namespace cobebe
 		int m_currentHeight; ///< Current matrix height to scale to screen
 		std::shared_ptr<Shader> m_staticShader; ///< Minimal Shader draws without a view matrix
 
-		std::list<std::weak_ptr<Entity>> m_buttonList; ///< List of buttons in scene
+		std::list<std::weak_ptr<Entity> > m_buttonList; ///< List of buttons in scene
 		std::weak_ptr<Entity> m_currentButton; ///< Current button highlighted
 		std::weak_ptr<Entity> m_clickedButton; ///< Current button clicked
 

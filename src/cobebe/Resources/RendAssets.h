@@ -21,7 +21,7 @@ namespace cobebe
 		/**
 		* \brief Retrieves all VertexArray faces
 		*/
-		std::vector<std::shared_ptr<glwrap::Face>> getFaces();
+		std::vector<std::shared_ptr<glwrap::Face> > getFaces();
 
 	private:
 		friend class Renderer;
@@ -99,7 +99,7 @@ namespace cobebe
 		/**
 		* \brief Set depthcubes to use in Lighting Shader
 		*/
-		void setDepthCubes(std::vector<std::shared_ptr<glwrap::DepthCube>> _depthCubes);
+		void setDepthCubes(std::vector<std::shared_ptr<glwrap::DepthCube> > _depthCubes);
 		/**
 		* \brief Set light positions for depth shading in Lighting Shader
 		*/

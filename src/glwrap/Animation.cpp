@@ -19,9 +19,10 @@ namespace glwrap
 
 	void Animation::parse(std::string _path)
 	{
+		std::shared_ptr<Animation> aniPtr = m_self.lock();
 		if (_path == "")
 		{
-			m_frames.push_back(std::make_shared<Frame>(m_self.lock()));
+			m_frames.push_back(std::make_shared<Frame>(aniPtr));
 			m_name = "Default";
 			m_frame = 0;
 			m_enabled = false;
@@ -33,7 +34,8 @@ namespace glwrap
 			std::ifstream file(FileManager::returnPath(_path).c_str());
 			std::string line;
 			std::vector<std::string> parameters;
-			std::vector<std::shared_ptr<Part>> parts = m_model->getParts();
+			std::vector<std::shared_ptr<Part> > parts = m_model->getParts();
+			glm::vec3 v, rotation;
 			bool found = false;
 			m_mergeFrame.reset(new Frame(m_self.lock()));
 
@@ -61,7 +63,7 @@ namespace glwrap
 
 					if (parameters.at(0) == "f")
 					{
-						m_frames.push_back(std::make_shared<Frame>(m_self.lock()));
+						m_frames.push_back(std::make_shared<Frame>(aniPtr));
 					}
 
 					if (parameters.at(0) == "t")
@@ -72,21 +74,20 @@ namespace glwrap
 						for (int partIndex = 0; partIndex < parts.size(); partIndex++)
 						{
 							std::shared_ptr<Part> cp = parts.at(partIndex);
-							glm::vec3 v;
 							v.x = cp->getSize().x * (atof(parameters.at(2).c_str()) / 100.0f);
 							v.y = cp->getSize().y * (atof(parameters.at(3).c_str()) / 100.0f);
 							v.z = cp->getSize().z * (atof(parameters.at(4).c_str()) / 100.0f);
+
+							rotation.x = glm::radians(atof(parameters.at(5).c_str()));
+							rotation.y = glm::radians(atof(parameters.at(6).c_str()));
+							rotation.z = glm::radians(atof(parameters.at(7).c_str()));
 
 							if (parts.at(partIndex)->getName() == parameters.at(1))
 							{
 								m_frames.at(m_frames.size() - 1)->m_translations.push_back(
 									std::make_shared<Translation>(parts.at(partIndex),
-										v.x/* * scale*/,
-										v.y/* * scale*/,
-										v.z/* * scale*/,
-										glm::radians(atof(parameters.at(5).c_str())),
-										glm::radians(atof(parameters.at(6).c_str())),
-										glm::radians(atof(parameters.at(7).c_str()))));
+										v,
+										rotation));
 								found = true;
 							}
 						}

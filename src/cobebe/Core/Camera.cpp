@@ -91,7 +91,8 @@ namespace cobebe
 
 	void Camera::setRtUniform(std::string _uniform, std::shared_ptr<glwrap::ShaderProgram> _shaderInternal)
 	{
-		_shaderInternal->setUniform(_uniform, m_texture);
+		std::shared_ptr<glwrap::Texture> texture = m_texture;
+		_shaderInternal->setUniform(_uniform, texture);
 	}
 
 	void Camera::setGbUniform(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal)

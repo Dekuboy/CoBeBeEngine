@@ -3,18 +3,18 @@
 
 namespace glwrap
 {
-	Translation::Translation(std::shared_ptr<Part> _part, float _x, float _y, float _z,
-		float _xRotation, float _yRotation, float _zRotation)
+	Translation::Translation(std::shared_ptr<Part> _part, glm::vec3 _position,
+		glm::vec3 _rotation)
 	{
 		m_part = _part;
 		
-		m_x = _x;
-		m_y = _y;
-		m_z = _z;
+		m_x = _position.x;
+		m_y = _position.y;
+		m_z = _position.z;
 
-		m_xRotation = _xRotation;
-		m_yRotation = _yRotation;
-		m_zRotation = _zRotation;
+		m_xRotation = _rotation.x;
+		m_yRotation = _rotation.y;
+		m_zRotation = _rotation.z;
 	}
 
 	Translation::~Translation()
@@ -119,15 +119,20 @@ namespace glwrap
 	void Frame::copy(std::shared_ptr<Frame> _source, std::shared_ptr<Frame> _destination)
 	{
 		std::shared_ptr<Translation> translation;
+		std::shared_ptr<Part> part;
+		glm::vec3 position, rotation;
 		_destination->m_translations.clear();
 
-		for (std::vector<std::shared_ptr<Translation>>::iterator itr = _source->m_translations.begin();
+		for (std::vector<std::shared_ptr<Translation> >::iterator itr = _source->m_translations.begin();
 			itr != _source->m_translations.end(); itr++)
 		{
 			translation = (*itr);
-			_destination->m_translations.push_back(std::make_shared<Translation>(translation->getPart(),
-				translation->getX(), translation->getY(), translation->getZ(),
-				translation->getXRotation(), translation->getYRotation(), translation->getZRotation()));
+			part = translation->getPart();
+			position = glm::vec3(translation->getX(), translation->getY(), translation->getZ());
+			rotation = glm::vec3(translation->getXRotation(), translation->getYRotation(), translation->getZRotation());
+			_destination->m_translations.push_back(std::make_shared<Translation>(part,
+				position,
+				rotation));
 		}
 	}
 
@@ -135,14 +140,17 @@ namespace glwrap
 	{
 		std::shared_ptr<Translation> translation;
 		std::shared_ptr<Translation> to;
+		std::shared_ptr<Part> part;
 
-		for (std::vector<std::shared_ptr<Translation>>::iterator itr = _source->m_translations.begin();
+		glm::vec3 empty(0);
+
+		for (std::vector<std::shared_ptr<Translation> >::iterator itr = _source->m_translations.begin();
 			itr != _source->m_translations.end(); itr++)
 		{
 			to = NULL;
 			translation = (*itr);
 
-			for (std::vector<std::shared_ptr<Translation>>::iterator second = _destination->m_translations.begin();
+			for (std::vector<std::shared_ptr<Translation> >::iterator second = _destination->m_translations.begin();
 				second != _destination->m_translations.end(); second++)
 			{
 				if (translation->getPart() == (*second)->getPart())
@@ -151,10 +159,11 @@ namespace glwrap
 				}
 			}
 
-			if (to == NULL)
+			if (to == nullptr)
 			{
+				part = translation->getPart();
 				_destination->m_translations.push_back(std::make_shared<Translation>
-					(translation->getPart(), 0, 0, 0, 0, 0, 0));
+					(part, empty, empty));
 
 				to = _destination->m_translations.at(_destination->m_translations.size() - 1);
 			}
@@ -177,14 +186,14 @@ namespace glwrap
 		}
 	}
 
-	std::vector<std::shared_ptr<Translation>> Frame::getTranslations()
+	std::vector<std::shared_ptr<Translation> > Frame::getTranslations()
 	{
 		return m_translations;
 	}
 
 	std::shared_ptr<Translation> Frame::getTranslation(std::shared_ptr<Part> _part, bool _add)
 	{
-		for (std::vector<std::shared_ptr<Translation>>::iterator itr = m_translations.begin();
+		for (std::vector<std::shared_ptr<Translation> >::iterator itr = m_translations.begin();
 			itr != m_translations.end(); itr++)
 		{
 			if ((*itr)->getPart() == _part)
@@ -195,7 +204,8 @@ namespace glwrap
 
 		if (_add == true)
 		{
-			m_translations.push_back(std::make_shared<Translation>(_part, 0, 0, 0, 0, 0, 0));
+			glm::vec3 empty(0);
+			m_translations.push_back(std::make_shared<Translation>(_part, empty, empty));
 
 			return m_translations.at(m_translations.size() - 1);
 		}
