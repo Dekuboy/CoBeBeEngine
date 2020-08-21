@@ -53,7 +53,7 @@ int main()
 
 	std::shared_ptr<cobebe::ImageGUI> gui = entity->addComponent<cobebe::ImageGUI>();
 	gui->setTexture("images\\health_bar.png");
-	
+
 	App->run();
 
 	return 0;
