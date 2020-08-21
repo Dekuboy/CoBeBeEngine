@@ -60,7 +60,7 @@ namespace cobebe
 		std::shared_ptr<Entity> addEntity();
 
 		/**
-		* \brief Adds class inheriting Entity to the game loop 
+		* \brief Adds class inheriting Entity to the game loop
 		*/
 		template <class T>
 		std::shared_ptr<T> addEntity()
@@ -142,21 +142,17 @@ namespace cobebe
 		template <class T>
 		std::shared_ptr<Entity> getEntityByComponent()
 		{
-			std::shared_ptr<T> cmp;
-
-			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			if (!m_entities.empty())
 			{
-				try
+				std::shared_ptr<T> cmp;
+
+				for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 				{
 					cmp = (*it)->getComponent<T>();
 					if (cmp)
 					{
 						return (*it);
 					}
-				}
-				catch (const Exception& e)
-				{
-
 				}
 			}
 			return NULL;
@@ -168,14 +164,18 @@ namespace cobebe
 		std::list<std::shared_ptr<Entity> > getAllEntitiesByComponent()
 		{
 			std::list<std::shared_ptr<Entity> > rtn;
-			std::shared_ptr<T> cmp;
 
-			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
+			if (!m_entities.empty())
 			{
-				cmp = (*it)->getComponent<T>();
-				if (cmp)
+				std::shared_ptr<T> cmp;
+
+				for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 				{
-					rtn.push_back(*it);
+					cmp = (*it)->getComponent<T>();
+					if (cmp)
+					{
+						rtn.push_back(*it);
+					}
 				}
 			}
 			return rtn;
@@ -206,7 +206,7 @@ namespace cobebe
 		*/
 		std::shared_ptr<glwrap::ShaderProgram> getNullPassShader();
 		/**
-		* \brief 
+		* \brief
 		*/
 		std::shared_ptr<glwrap::ShaderProgram> getLightPassShader();
 		/**
@@ -253,12 +253,12 @@ namespace cobebe
 
 		std::weak_ptr<Core> m_self; ///< Pointer to self to be placed in added entities
 
-		SDL_Window *m_window; ///< Engine window
+		SDL_Window* m_window; ///< Engine window
 		std::shared_ptr<Shader> m_nullShader; ///< Draws RenderTexture
 		std::shared_ptr<Shader> m_lightPassShader; ///< Draws deferred lighting
 
-		ALCdevice * m_device; ///< Engine sound device
-		ALCcontext * m_alContext; ///< Engine sound context
+		ALCdevice* m_device; ///< Engine sound device
+		ALCcontext* m_alContext; ///< Engine sound context
 
 		std::shared_ptr<glwrap::Context> m_context; ///< Safely instantiates OpenGL objects
 		std::list<std::shared_ptr<Entity> > m_entities; ///< List of entities in game loop

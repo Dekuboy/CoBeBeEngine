@@ -22,15 +22,17 @@ namespace cobebe
 		std::shared_ptr<T> load(std::string _path)
 		{
 			std::shared_ptr<T> asset;
-
-			for (std::list<std::shared_ptr<Asset> >::iterator it = m_resources.begin(); it != m_resources.end(); ++it)
+			if (!m_resources.empty())
 			{
-				asset = std::dynamic_pointer_cast<T>(*it);
-				if (asset)
+				for (std::list<std::shared_ptr<Asset> >::iterator it = m_resources.begin(); it != m_resources.end(); ++it)
 				{
-					if (asset->m_path == _path)
+					asset = std::dynamic_pointer_cast<T>(*it);
+					if (asset)
 					{
-						return asset;
+						if (asset->m_path == _path)
+						{
+							return asset;
+						}
 					}
 				}
 			}

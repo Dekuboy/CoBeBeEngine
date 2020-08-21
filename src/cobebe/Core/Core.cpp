@@ -127,6 +127,7 @@ namespace cobebe
 
 		temp->m_nullShader = temp->loadAsset<Shader>("shaders\\nullpass.shad");
 		temp->m_lightPassShader = temp->loadAsset<Shader>("deferred_shaders\\lightingG.shad");
+		printf("Initialise\n");
 
 		temp->m_lighting = std::make_shared<Lighting>();
 		temp->m_lighting->m_core = temp;

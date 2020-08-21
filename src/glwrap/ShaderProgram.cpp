@@ -54,17 +54,31 @@ namespace glwrap
 		bool geometry = (src.compare(0, 8, "#version") == 0);
 		if (geometry)
 		{
+#if defined(__EMSCRIPTEN__)
+			vertShader = "#define VERTEX\n" + src.substr(12, std::string::npos);
+
+			fragShader = "#define FRAGMENT\n" + src.substr(12, std::string::npos);
+
+			geomShader = "#define GEOMETRY\n" + src.substr(12, std::string::npos);
+#else
 			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
 
 			fragShader = src.substr(0, 12) + "\n#define FRAGMENT\n" + src.substr(12, std::string::npos);
 
 			geomShader = src.substr(0, 12) + "\n#define GEOMETRY\n" + src.substr(12, std::string::npos);
+#endif
 		}
 		else
 		{
+#if defined (__EMSCRIPTEN__)
+			vertShader = "#define VERTEX\n" + src;
+
+			fragShader = "#define FRAGMENT\n" + src;
+#else
 			vertShader = "#version 140\n#define VERTEX\n" + src;
 
 			fragShader = "#version 140\n#define FRAGMENT\n" + src;
+#endif
 		}
 
 		const char *vertex = vertShader.c_str();
@@ -185,9 +199,9 @@ namespace glwrap
 		}
 		else
 		{
-			vertShader = "#version 140\n#define VERTEX\n" + src;
+			vertShader = "#define VERTEX\n" + src;
 
-			fragShader = "#version 140\n#define FRAGMENT\n" + src;
+			fragShader = "#define FRAGMENT\n" + src;
 		}
 
 		const char* vertex = vertShader.c_str();
