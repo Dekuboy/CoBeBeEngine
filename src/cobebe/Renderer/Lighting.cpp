@@ -224,10 +224,10 @@ namespace cobebe
 		m_globalLightRenderDistance = 25.0f;
 		m_globalLightScale = 10.0f;
 
-		int size = 512;
+		m_depthMapSize = 512;
 
 		// Set depth map ready for rendering
-		m_depthMap = std::make_shared<glwrap::DepthBuffer>(size, size);
+		m_depthMap = std::make_shared<glwrap::DepthBuffer>(m_depthMapSize, m_depthMapSize);
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAni.shad");
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAniCube.shad");
 

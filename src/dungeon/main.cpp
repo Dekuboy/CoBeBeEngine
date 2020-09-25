@@ -52,9 +52,8 @@ int main()
 
 	std::shared_ptr<glwrap::GBuffer> gbuff = context->createGBuffer(1080, 720);
 
-	std::shared_ptr<glwrap::ShaderProgram> nullShader = context->createShader("shaders\\nullpass.shad");
-	printf("Initialise\n");
-	std::shared_ptr<glwrap::ShaderProgram> lightPassShader = context->createShader("deferred_shaders\\lightingG.shad");
+	std::shared_ptr<glwrap::ShaderProgram> nullShader = context->createShader("emscripten_shaders\\nullpass.shad");
+	std::shared_ptr<glwrap::ShaderProgram> lightPassShader = context->createShader("emscripten_shaders\\lightingG.shad");
 
 	//std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 	//printf("Initialise\n");

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(COBEBE)
 
 include_directories(
-	src
+	src lib
 )
 
 add_library(glwrap
@@ -129,10 +129,11 @@ add_executable(dungeon
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	
 	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 	set_target_properties(dungeon PROPERTIES LINK_FLAGS 
-	"-o dungeon.js --preload-file Resources -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
+	"-o dungeon.js --preload-file Resources -s USE_SDL=2 -s MAX_WEBGL_VERSION=2 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
 endif()
 
 target_link_libraries(dungeon 

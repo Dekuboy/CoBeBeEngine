@@ -144,6 +144,7 @@ namespace cobebe
 
 		std::shared_ptr<Shader> m_depthShader; ///< Directional light depth shader
 		std::shared_ptr<glwrap::DepthBuffer> m_depthMap; ///< Directional light depth map
+		float m_depthMapSize;
 
 		std::shared_ptr<Shader> m_cubeShader; ///< PointLight depth shader
 		std::list<std::shared_ptr<PointLight> > m_pointLights; ///< All PointLights available in engine
