@@ -10,10 +10,10 @@ uniform mat4 in_View;
 uniform mat4 in_Model;
 uniform mat4 in_Animate;
 
-varying vec4 ex_Color;
-varying vec2 ex_TexCoord;
-varying vec3 ex_FragPos;
-varying vec3 ex_Normal;
+varying highp vec4 ex_Color;
+varying highp vec2 ex_TexCoord;
+varying highp vec3 ex_FragPos;
+varying highp vec3 ex_Normal;
 
 void main()
 {
@@ -35,10 +35,10 @@ out vec4 g_AlbedoSpec;
 
 uniform sampler2D in_Texture;
 
-varying vec4 ex_Color;
-varying vec2 ex_TexCoord;
-varying vec3 ex_FragPos;
-varying vec3 ex_Normal;
+varying highp vec4 ex_Color;
+varying highp vec2 ex_TexCoord;
+varying highp vec3 ex_FragPos;
+varying highp vec3 ex_Normal;
 
 void main()
 {
@@ -48,7 +48,7 @@ void main()
 
 	g_AlbedoSpec.rgb = texture(in_Texture, ex_TexCoord).rgb;
 
-	g_AlbedoSpec.a = 0;
+	g_AlbedoSpec.a = 0.0;
 }
 
 #endif

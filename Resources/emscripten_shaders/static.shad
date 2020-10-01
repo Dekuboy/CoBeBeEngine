@@ -4,10 +4,10 @@ attribute vec3 in_Position;
 attribute vec4 in_Color;
 attribute vec2 in_TexCoord;
 
-uniform mat4 in_Projection;
-uniform mat4 in_Model;
+uniform highp mat4 in_Projection;
+uniform highp mat4 in_Model;
 
-varying vec2 ex_TexCoord;
+varying highp vec2 ex_TexCoord;
 
 void main()
 {
@@ -20,10 +20,10 @@ void main()
 #ifdef FRAGMENT
 
 uniform sampler2D in_Texture;
-varying vec2 ex_TexCoord;
+varying highp vec2 ex_TexCoord;
 void main()
 {
-	vec4 tex = texture2D(in_Texture, ex_TexCoord);
+	highp vec4 tex = texture2D(in_Texture, ex_TexCoord);
 	if (tex.a <= 0)	discard;	
 	gl_FragColor = tex;
 }

@@ -3,11 +3,11 @@
 attribute vec2 in_Position;
 attribute vec2 in_TexCoord;
 
-varying vec2 ex_TexCoord;
+varying highp vec2 ex_TexCoord;
 
 void main()
 {
-  gl_Position = vec4(in_Position, 0, 1);
+  gl_Position = vec4(in_Position, 0.0, 1.0);
   ex_TexCoord = in_TexCoord;
 }
 
@@ -17,21 +17,21 @@ void main()
 
 uniform sampler2D in_Texture;
 
-varying vec2 ex_TexCoord;
+varying highp vec2 ex_TexCoord;
 
 void main()
 {
-  vec4 tex = texture2D(in_Texture, ex_TexCoord);
+  highp vec4 tex = texture2D(in_Texture, ex_TexCoord);
 
   if(tex.x > 0.3 || tex.y > 0.3 || tex.z > 0.3)
   {
     //tex = tex * vec4(1.2, 1.2, 1.2, 1);
     //tex = max(tex, vec4(1, 1, 1, 1));
-    tex = vec4(0.5, 0.5, 0.5, 1);
+    tex = vec4(0.5, 0.5, 0.5, 1.0);
   }
   else
   {
-    tex = vec4(0, 0, 0, 1);
+    tex = vec4(0.0, 0.0, 0.0, 1.0);
   }
 
   gl_FragColor = tex;
