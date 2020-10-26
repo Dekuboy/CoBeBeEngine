@@ -4,57 +4,6 @@
 
 int main()
 {
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
-	{
-		throw std::exception();
-	}
-
-	SDL_Window *window = SDL_CreateWindow("CoBeBe Window",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		1080, 720,
-		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
-	if (!SDL_GL_CreateContext(window))
-	{
-		throw std::exception();
-	}
-
-	/*
-	* Initialize OpenAL audio system
-	*/
-
-	// Open up the OpenAL device
-	ALCdevice *device = alcOpenDevice(NULL);
-
-	if (device == NULL)
-	{
-		throw std::exception();
-	}
-
-	// Create audio context
-	ALCcontext *alContext = alcCreateContext(device, NULL);
-
-	if (alContext == NULL)
-	{
-		alcCloseDevice(device);
-		throw std::exception();
-	}
-
-	// Set as current context
-	if (!alcMakeContextCurrent(alContext))
-	{
-		alcDestroyContext(alContext);
-		alcCloseDevice(device);
-		throw std::exception();
-	}
-
-	std::shared_ptr<glwrap::Context> context = glwrap::Context::initialise();
-
-	std::shared_ptr<glwrap::GBuffer> gbuff = context->createGBuffer(1080, 720);
-
-	std::shared_ptr<glwrap::ShaderProgram> nullShader = context->createShader("emscripten_shaders\\lightingG.shad");
-	std::shared_ptr<glwrap::ShaderProgram> lightPassShader = context->createShader("emscripten_shaders\\shadowAniCube.shad");
-
 	//std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 	//printf("Initialise\n");
 
@@ -110,3 +59,57 @@ int main()
 
 	//return 0;
 }
+
+/* Emscripten Testing
+
+if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
+{
+	throw std::exception();
+}
+
+SDL_Window* window = SDL_CreateWindow("CoBeBe Window",
+	SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+	1080, 720,
+	SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+
+if (!SDL_GL_CreateContext(window))
+{
+	throw std::exception();
+}
+
+
+// Initialize OpenAL audio system
+
+
+// Open up the OpenAL device
+ALCdevice* device = alcOpenDevice(NULL);
+
+if (device == NULL)
+{
+	throw std::exception();
+}
+
+// Create audio context
+ALCcontext* alContext = alcCreateContext(device, NULL);
+
+if (alContext == NULL)
+{
+	alcCloseDevice(device);
+	throw std::exception();
+}
+
+// Set as current context
+if (!alcMakeContextCurrent(alContext))
+{
+	alcDestroyContext(alContext);
+	alcCloseDevice(device);
+	throw std::exception();
+}
+
+std::shared_ptr<glwrap::Context> context = glwrap::Context::initialise();
+
+std::shared_ptr<glwrap::GBuffer> gbuff = context->createGBuffer(1080, 720);
+
+std::shared_ptr<glwrap::ShaderProgram> nullShader = context->createShader("emscripten_shaders\\lightingG.shad");
+std::shared_ptr<glwrap::ShaderProgram> lightPassShader = context->createShader("emscripten_shaders\\shadowAniCube.shad");
+*/

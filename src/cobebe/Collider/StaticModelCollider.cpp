@@ -2,6 +2,8 @@
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Renderer/Renderer.h>
 #include <cobebe/Resources/RendAssets.h>
+#include <cobebe/Core/Transform.h>
+#include <glm/ext.hpp>
 
 int triBoxOverlap(float boxcenter[3],
 	float boxhalfsize[3], float triverts[3][3]);
@@ -272,14 +274,15 @@ namespace cobebe
 		std::vector<glm::vec3> positions;
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		std::shared_ptr<Mesh> model = mr->getMesh();
+		glm::mat3 modelMatrix = getTransform()->getModel();
 		std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
 
 		for (size_t f = 0; f < faces.size(); f++)
 		{
 			glwrap::Face face = *faces.at(f);
-			positions.push_back(face.pa);
-			positions.push_back(face.pb);
-			positions.push_back(face.pc);
+			positions.push_back(modelMatrix * face.pa);
+			positions.push_back(modelMatrix * face.pb);
+			positions.push_back(modelMatrix * face.pc);
 		}
 
 		m_extent.m_max = positions.at(0);
@@ -301,16 +304,20 @@ namespace cobebe
 
 	void StaticModelCollider::addFace(glwrap::Face _face)
 	{
+		glm::mat3 modelMatrix = getTransform()->getModel();
+		glm::vec3 vertexPosition = modelMatrix * _face.pa;
 		float f[3][3] = { 0 };
-		f[0][0] = _face.pa.x;
-		f[0][1] = _face.pa.y;
-		f[0][2] = _face.pa.z;
-		f[1][0] = _face.pb.x;
-		f[1][1] = _face.pb.y;
-		f[1][2] = _face.pb.z;
-		f[2][0] = _face.pc.x;
-		f[2][1] = _face.pc.y;
-		f[2][2] = _face.pc.z;
+		f[0][0] = vertexPosition.x;
+		f[0][1] = vertexPosition.y;
+		f[0][2] = vertexPosition.z;
+		vertexPosition = modelMatrix * _face.pb;
+		f[1][0] = vertexPosition.x;
+		f[1][1] = vertexPosition.y;
+		f[1][2] = vertexPosition.z;
+		vertexPosition = modelMatrix * _face.pc;
+		f[2][0] = vertexPosition.x;
+		f[2][1] = vertexPosition.y;
+		f[2][2] = vertexPosition.z;
 
 		bool found = false;
 
@@ -363,43 +370,49 @@ namespace cobebe
 		m_maxInc = 0.5f;
 
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
-		std::shared_ptr<Mesh> model = mr->getMesh();
-		std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
-		generateExtent();
-
-		// Create collision columns
-		glm::vec3 size = m_extent.m_max - m_extent.m_min;
-		glm::vec3 colSize = size / m_resolution;
-		colSize.y = size.y;
-
-		for (size_t y = 0; y < m_resolution; y++)
+		if (mr)
 		{
-			glm::vec3 pos = m_extent.m_min + colSize / 2.0f;
-			pos.z += (float)y * colSize.z;
-
-			for (size_t x = 0; x < m_resolution; x++)
+			std::shared_ptr<Mesh> model = mr->getMesh();
+			if (model)
 			{
-				std::shared_ptr<ColliderColumn> cc = std::make_shared<ColliderColumn>();
-				cc->m_size = colSize;
+				std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
+				generateExtent();
 
-				// Overlap columns for sub column collision
-				//cc->size.x += 1.0f;
-				//cc->size.z += 1.0f;
-				// Conflicts with x / y index generation when matching column to collide with.
-				// Done when adding face instead.
+				// Create collision columns
+				glm::vec3 size = m_extent.m_max - m_extent.m_min;
+				glm::vec3 colSize = size / m_resolution;
+				colSize.y = size.y;
 
-				cc->m_position = pos;
-				m_cols.push_back(cc);
-				pos.x += colSize.x;
+				for (size_t y = 0; y < m_resolution; y++)
+				{
+					glm::vec3 pos = m_extent.m_min + colSize / 2.0f;
+					pos.z += (float)y * colSize.z;
+
+					for (size_t x = 0; x < m_resolution; x++)
+					{
+						std::shared_ptr<ColliderColumn> cc = std::make_shared<ColliderColumn>();
+						cc->m_size = colSize;
+
+						// Overlap columns for sub column collision
+						//cc->size.x += 1.0f;
+						//cc->size.z += 1.0f;
+						// Conflicts with x / y index generation when matching column to collide with.
+						// Done when adding face instead.
+
+						cc->m_position = pos;
+						m_cols.push_back(cc);
+						pos.x += colSize.x;
+					}
+				}
+
+				glwrap::Face face;
+
+				for (size_t f = 0; f < faces.size(); f++)
+				{
+					face = *faces.at(f);
+					addFace(face);
+				}
 			}
-		}
-
-		glwrap::Face face;
-
-		for (size_t f = 0; f < faces.size(); f++)
-		{
-			face = *faces.at(f);
-			addFace(face);
 		}
 	}
 }
