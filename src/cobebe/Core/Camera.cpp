@@ -61,6 +61,15 @@ namespace cobebe
 		}
 	}
 
+	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform)
+	{
+		if (m_isOn)
+		{
+			//_shaderInternal->draw(m_texture);
+			_shaderInternal->draw(m_gBuffer, _meshInternal, _textureUniform);
+		}
+	}
+
 	void Camera::drawLighting(std::shared_ptr<Shader> _shader)
 	{
 		if (m_isOn)

@@ -3,6 +3,7 @@
 #include <glwrap/VertexArray.h>
 #include <glwrap/Frame.h>
 #include <glwrap/Animation.h>
+#include <glwrap/Material.h>
 #include <glwrap/Context.h>
 #include <glwrap/ShaderProgram.h>
 #include <glm/ext.hpp>
@@ -118,15 +119,9 @@ namespace glwrap
 		m_name = _name;
 		m_model = _mesh;
 		m_animationUniform = glm::mat4(1);
+		m_useMaterial = false;
 
-		glGenVertexArrays(1, &m_id);
-
-		if (!m_id)
-		{
-			throw std::exception();
-		}
-
-		m_buffers.resize(10);
+		generateArrays();
 	}
 
 	Part::~Part()
@@ -196,31 +191,31 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	void Part::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer)
+	void Part::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
 	{
 		if (_attribute == "in_Position")
 		{
-			m_buffers.at(0) = _buffer;
+			m_buffers.at(_materialId).at(0) = _buffer;
 		}
 		else if (_attribute == "in_Color")
 		{
-			m_buffers.at(1) = _buffer;
+			m_buffers.at(_materialId).at(1) = _buffer;
 		}
 		else if (_attribute == "in_TexCoord")
 		{
-			m_buffers.at(2) = _buffer;
+			m_buffers.at(_materialId).at(2) = _buffer;
 		}
 		else if (_attribute == "in_Normal")
 		{
-			m_buffers.at(3) = _buffer;
+			m_buffers.at(_materialId).at(3) = _buffer;
 		}
 		else if (_attribute == "in_Tangent")
 		{
-			m_buffers.at(4) = _buffer;
+			m_buffers.at(_materialId).at(4) = _buffer;
 		}
 		else if (_attribute == "in_Bitangent")
 		{
-			m_buffers.at(5) = _buffer;
+			m_buffers.at(_materialId).at(5) = _buffer;
 		}
 		else
 		{
@@ -230,36 +225,38 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	int Part::getVertexCount()
+	int Part::getVertexCount(int _materialId)
 	{
-		if (!m_buffers.at(0))
+		if (m_buffers.size() < 1)
 		{
 			throw std::exception();
 		}
 
-		return m_buffers.at(0)->getDataSize() / m_buffers.at(0)->getComponents();
+		return m_buffers.at(_materialId).at(0)->getDataSize() / m_buffers.at(_materialId).at(0)->getComponents();
 	}
 
-	GLuint Part::getId()
+	GLuint Part::getId(int _materialId)
 	{
 		if (m_dirty)
 		{
-			glBindVertexArray(m_id);
-
-			for (size_t i = 0; i < m_buffers.size(); i++)
+			for (int matId = 0; matId < m_idList.size(); matId++)
 			{
-				if (m_buffers.at(i))
+				for (int i = 0; i < m_buffers.at(matId).size(); i++)
 				{
-					glBindBuffer(GL_ARRAY_BUFFER, m_buffers.at(i)->getId());
+					glBindVertexArray(m_idList.at(matId));
+					if (m_buffers.at(matId).at(i))
+					{
+						glBindBuffer(GL_ARRAY_BUFFER, m_buffers.at(matId).at(i)->getId());
 
-					glVertexAttribPointer(i, m_buffers.at(i)->getComponents(), GL_FLOAT, GL_FALSE,
-						m_buffers.at(i)->getComponents() * sizeof(GLfloat), (void*)0);
+						glVertexAttribPointer(i, m_buffers.at(matId).at(i)->getComponents(), GL_FLOAT, GL_FALSE,
+							m_buffers.at(matId).at(i)->getComponents() * sizeof(GLfloat), (void*)0);
 
-					glEnableVertexAttribArray(i);
-				}
-				else
-				{
-					glDisableVertexAttribArray(i);
+						glEnableVertexAttribArray(i);
+					}
+					else
+					{
+						glDisableVertexAttribArray(i);
+					}
 				}
 			}
 
@@ -268,7 +265,7 @@ namespace glwrap
 			m_dirty = false;
 		}
 
-		return m_id;
+		return m_idList.at(_materialId);
 	}
 
 	void Part::draw()
@@ -290,8 +287,60 @@ namespace glwrap
 			check = true;
 		}
 
-		glBindVertexArray(getId());
-		glDrawArrays(GL_TRIANGLES, 0, getVertexCount());
+		if (m_useMaterial)
+		{
+			int listItr = 0;
+			for (std::list<std::shared_ptr<Material>>::iterator itr = m_materials.begin();
+				itr != m_materials.end(); itr++)
+			{
+				glBindVertexArray(getId(listItr));
+				glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
+				listItr++;
+			}
+		}
+		else
+		{
+			glBindVertexArray(getId(0));
+			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(0));
+		}
+
+		if (check)
+		{
+			m_animationUniform = glm::mat4(1);
+			shader->setUniform("in_Animate", m_animationUniform);
+		}
+	}
+
+	void Part::draw(std::string _textureUniform)
+	{
+
+		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
+
+		m_animationUniform = glm::translate(m_animationUniform, translateVector);
+		translate(1);
+		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
+
+		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
+			getCurrentShader();
+
+		bool check = false;
+
+		if (m_animationUniform != glm::mat4(1))
+		{
+			shader->setUniform("in_Animate", m_animationUniform);
+			check = true;
+		}
+
+		int listItr = 0;
+		for (std::list<std::shared_ptr<Material>>::iterator itr = m_materials.begin();
+			itr != m_materials.end(); itr++)
+		{
+			m_context.lock()->getCurrentShader()->setUniform(_textureUniform, (*itr)->m_textureMap.lock());
+
+			glBindVertexArray(getId(listItr));
+			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
+			listItr++;
+		}
 
 		if (check)
 		{
@@ -350,5 +399,20 @@ namespace glwrap
 				}
 			}
 		}
+	}
+
+	void Part::generateArrays()
+	{
+		m_buffers.resize(m_buffers.size() + 1);
+		m_idList.resize(m_idList.size() + 1);
+
+		glGenVertexArrays(1, &m_idList.back());
+
+		if (!m_idList.back())
+		{
+			throw std::exception();
+		}
+
+		m_buffers.back().resize(10);
 	}
 }

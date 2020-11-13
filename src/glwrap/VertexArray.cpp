@@ -1,4 +1,4 @@
-	#include <glwrap/VertexArray.h>
+#include <glwrap/VertexArray.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
 #include <glwrap/Part.h>
@@ -119,24 +119,24 @@ namespace glwrap
 			{
 				if (currentPart)
 				{
-					currentPart->setBuffer("in_Position", positionBuffer);
+					currentPart->generateArrays();
+					currentPart->setBuffer("in_Position", positionBuffer, 0);
 					positionBuffer = std::make_shared<VertexBuffer>();
 					if (texCoordBuffer)
 					{
-						currentPart->setBuffer("in_TexCoord", texCoordBuffer);
+						currentPart->setBuffer("in_TexCoord", texCoordBuffer, 0);
 						texCoordBuffer = std::make_shared<VertexBuffer>();
 					}
 					if (normalBuffer)
 					{
-						currentPart->setBuffer("in_Normal", normalBuffer);
+						currentPart->setBuffer("in_Normal", normalBuffer, 0);
 						normalBuffer = std::make_shared<VertexBuffer>();
-						currentPart->setBuffer("in_Tangent", tangentBuffer);
+						currentPart->setBuffer("in_Tangent", tangentBuffer, 0);
 						tangentBuffer = std::make_shared<VertexBuffer>();
-						currentPart->setBuffer("in_Bitangent", bitangentBuffer);
+						currentPart->setBuffer("in_Bitangent", bitangentBuffer, 0);
 						bitangentBuffer = std::make_shared<VertexBuffer>();
 					}
 					//if (lightMapBuffer) currentPart->setBuffer("in_LightMapCoord", lightMapBuffer);
-
 					m_parts.push_back(currentPart);
 				}
 				currentPart = m_context.lock()->createPart(m_self.lock(), splitLine.at(1));
@@ -350,16 +350,15 @@ namespace glwrap
 			}
 		}
 
-		currentPart->setBuffer("in_Position", positionBuffer);
-		if (texCoordBuffer) currentPart->setBuffer("in_TexCoord", texCoordBuffer);
+		currentPart->setBuffer("in_Position", positionBuffer, 0);
+		if (texCoordBuffer) currentPart->setBuffer("in_TexCoord", texCoordBuffer, 0);
 		if (normalBuffer)
 		{
-			currentPart->setBuffer("in_Normal", normalBuffer);
-			currentPart->setBuffer("in_Tangent", tangentBuffer);
-			currentPart->setBuffer("in_Bitangent", bitangentBuffer);
+			currentPart->setBuffer("in_Normal", normalBuffer, 0);
+			currentPart->setBuffer("in_Tangent", tangentBuffer, 0);
+			currentPart->setBuffer("in_Bitangent", bitangentBuffer, 0);
 		}
 		//if (lightMapBuffer) currentPart->setBuffer("in_LightMapCoord", lightMapBuffer);
-
 		m_parts.push_back(currentPart);
 	}
 
@@ -372,7 +371,7 @@ namespace glwrap
 
 		if (m_parts.at(0)->getName() == "Default")
 		{
-			m_parts.at(0)->setBuffer(_attribute, _buffer);
+			m_parts.at(0)->setBuffer(_attribute, _buffer, 0);
 		}
 	}
 
@@ -393,6 +392,7 @@ namespace glwrap
 			if ((*itr)->getName() == _partName)
 			{
 				(*itr)->draw();
+				return;
 			}
 		}
 	}

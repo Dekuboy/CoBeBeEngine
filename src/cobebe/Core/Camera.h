@@ -55,6 +55,10 @@ namespace cobebe
 		* \brief Draws to cameras RenderTexture
 		*/
 		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
+		/**
+		* \brief Draws to cameras RenderTexture
+		*/
+		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform);
 
 		/**
 		* \brief Draw from GBuffer to RenderTexture

@@ -11,6 +11,17 @@ namespace cobebe
 	class Collider : public Component
 	{
 	public:
+		Collider(int _mask);
+
+		/**
+		* \brief Set to collide with a specific mask
+		*/
+		void setMask(int _mask);
+		/**
+		* \brief Get mask list
+		*/
+		std::list<int>& getMasks();
+
 		/**
 		* \brief Returns true if collision has occured
 		*/
@@ -18,11 +29,18 @@ namespace cobebe
 		/**
 		* \brief Return list of all collided Entities
 		*/
-		const std::list<std::weak_ptr<Entity> >& getColliders();
+		const std::list<std::weak_ptr<Entity>>& getColliders();
 
 	protected:
+		std::list<int> m_maskList; ///< Collision masks to limit collisions with objects
+
 		bool m_hasCollided; ///< Has the object collided this tick?
 		std::list<std::weak_ptr<Entity> > m_colliders; ///< List of collided entities
+
+		/**
+		* \brief Check for common masks
+		*/
+		bool checkMask(std::shared_ptr<Collider> _collider);
 
 	private:
 		virtual void onGUI();

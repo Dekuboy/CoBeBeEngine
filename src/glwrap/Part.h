@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <list>
 #include <string>
 
 namespace glwrap
@@ -39,6 +40,8 @@ namespace glwrap
 	class Context;
 	class VertexArray;
 	class VertexBuffer;
+	class Material;
+	class Model;
 
 	class Part
 	{
@@ -50,25 +53,36 @@ namespace glwrap
 		std::vector<std::shared_ptr<Face> > getFaces();
 		void addFace(std::shared_ptr<Face> _face);
 
-		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
-		int getVertexCount();
-		GLuint getId();
+		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId);
+		int getVertexCount(int _materialId);
+
+		GLuint getId(int _materialId);
 
 		void draw();
+		void draw(std::string _textureUniform);
 
 		glm::vec3 getSize();
 
 	private:
 		friend class Context;
+		friend class VertexArray;
+		friend class Model;
+
+		void translate(int _undo);
+
+		void generateArrays();
 
 		std::string m_name;
-		GLuint m_id;
+		std::vector<GLuint> m_idList;;
 
 		bool m_dirty;
 		std::weak_ptr<VertexArray> m_model;
 		std::vector<std::shared_ptr<Face> > m_faces;
-		std::vector<std::shared_ptr<VertexBuffer> > m_buffers;
+		std::vector<std::vector<std::shared_ptr<VertexBuffer>>> m_buffers;
 		glm::mat4 m_animationUniform;
+
+		bool m_useMaterial;
+		std::list<std::shared_ptr<Material>> m_materials;
 
 		std::weak_ptr<Part> m_self;
 		std::weak_ptr<Context> m_context;
@@ -83,8 +97,6 @@ namespace glwrap
 		float m_minX;
 		float m_minY;
 		float m_minZ;
-
-		void translate(int _undo);
 
 	};
 }

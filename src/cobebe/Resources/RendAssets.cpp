@@ -5,7 +5,11 @@ namespace cobebe
 {
 	std::vector<std::shared_ptr<glwrap::Face> > Mesh::getFaces()
 	{
-		return m_internal->getFaces();
+		if (m_internal)
+		{
+			return m_internal->getFaces();
+		}
+		return std::vector < std::shared_ptr<glwrap::Face>>();
 	}
 
 	void Mesh::onLoad(const std::string& _path)
@@ -18,6 +22,31 @@ namespace cobebe
 	{
 		m_path = _path;
 		m_internal = m_context.lock()->createTexture(_path);
+	}
+
+	std::vector<std::shared_ptr<glwrap::Face>> WavefrontModel::getFaces()
+	{
+		if (m_internal)
+		{
+			return m_internal->getFaces();
+		}
+		return std::vector < std::shared_ptr<glwrap::Face>>();
+	}
+
+	void WavefrontModel::onLoad(const std::string& _path)
+	{
+		m_path = _path;
+		m_internal = m_context.lock()->createObjMtlMesh(_path);
+
+		std::list<std::shared_ptr<glwrap::Material>> matList = m_internal->getMatList();
+		std::shared_ptr<Texture> currentTex;
+
+		for (std::list<std::shared_ptr<glwrap::Material>>::iterator itr = matList.begin();
+			itr != matList.end(); ++itr)
+		{
+			currentTex = m_resources.lock()->load<Texture>((*itr)->getTexturePath());
+			(*itr)->setTexture(currentTex->m_internal);
+		}
 	}
 
 	const std::shared_ptr<glwrap::ShaderProgram> Shader::getInternal()

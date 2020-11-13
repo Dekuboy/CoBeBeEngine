@@ -9,6 +9,7 @@ namespace glwrap
 {
 	class Context;
 	class VertexArray;
+	class Model;
 	class Texture;
 	class RenderTexture;
 	class GBuffer;
@@ -43,6 +44,8 @@ namespace glwrap
 		void draw(std::shared_ptr<RenderTexture> _renderTexture);
 		void draw(std::shared_ptr<VertexArray> _vertexArray);
 		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray);
+		void draw(std::shared_ptr<Model> _model, std::string _textureUniform);
+		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model> _model, std::string _textureUniform);
 
 		void setUniform(std::string _uniform, int _value);
 		void setUniform(std::string _uniform, glm::vec4 _value);
@@ -66,6 +69,7 @@ namespace glwrap
 
 		GLuint m_id;
 		std::vector <Sampler> m_samplers;
+		bool m_isDrawing;
 		glm::vec4 m_viewport;
 		std::shared_ptr<VertexArray> m_simpleShape;
 		std::weak_ptr<ShaderProgram> m_self;

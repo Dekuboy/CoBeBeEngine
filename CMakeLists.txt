@@ -33,6 +33,10 @@ add_library(glwrap
 	src/glwrap/Frame.cpp
 	src/glwrap/Part.h
 	src/glwrap/Part.cpp
+	src/glwrap/Model.h
+	src/glwrap/Model.cpp
+	src/glwrap/Material.h
+	src/glwrap/Material.cpp
 	src/glwrap/stb_image.h
 )
 
@@ -120,28 +124,44 @@ target_link_libraries(cobebe
 	glwrap
 )
 
-add_executable(dungeon
-	src/dungeon/PlayerController.h
-	src/dungeon/PlayerController.cpp
-	src/dungeon/Bloom.h
-	src/dungeon/Bloom.cpp
-	src/dungeon/main.cpp
-)
-
-add_executable(platformer
-	src/plat/main.cpp
-)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	include_directories(lib)
 	
 	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
+	add_executable(testCobebeEmscriptenExecutable1
+		src/dungeon/PlayerController.h
+		src/dungeon/PlayerController.cpp
+		src/dungeon/Bloom.h
+		src/dungeon/Bloom.cpp
+		src/dungeon/main.cpp
+	)
+
+	target_link_libraries(testCobebeEmscriptenExecutable1
+		cobebe
+	)
+
 	set_target_properties(testCobebeEmscriptenExecutable1 PROPERTIES LINK_FLAGS 
 	"-o testCobebeEmscriptenExecutable1.js --preload-file Resources -s USE_SDL=2 -s MAX_WEBGL_VERSION=2 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
-endif()
-
-target_link_libraries(platformer
-	cobebe
-)
+else()
+	add_executable(dungeon
+		src/dungeon/PlayerController.h
+		src/dungeon/PlayerController.cpp
+		src/dungeon/Bloom.h
+		src/dungeon/Bloom.cpp
+		src/dungeon/main.cpp
+	)
 	
+	add_executable(platformer
+		src/plat/main.cpp
+	)
+	
+	target_link_libraries(platformer
+		cobebe
+	)
+
+	target_link_libraries(dungeon
+		cobebe
+	)
+endif()

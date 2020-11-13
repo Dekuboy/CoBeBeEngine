@@ -11,6 +11,7 @@ namespace cobebe
 	class Camera;
 	class Transform;
 	class Mesh;
+	class WavefrontModel;
 	class Texture;
 	class Shader;
 	class Lighting;
@@ -35,6 +36,14 @@ namespace cobebe
 		*/
 		void setMesh(std::string _path);
 		/**
+		* \brief Sets WavefrontModel for Renderer to draw
+		*/
+		void setWavefrontModel(std::shared_ptr<WavefrontModel> _wavefrontModel);
+		/**
+		* \brief Sets WavefrontModel for Renderer to draw
+		*/
+		void setWavefrontModel(std::string _path);
+		/**
 		* \brief Sets Texture for Renderer to apply to Mesh
 		*/
 		void setTexture(std::shared_ptr<Texture> _texture);
@@ -55,6 +64,10 @@ namespace cobebe
 		* \brief Returns loaded mesh
 		*/
 		std::shared_ptr<Mesh> getMesh();
+		/**
+		* \brief Returns loaded model
+		*/
+		std::shared_ptr<WavefrontModel> getWavefrontModel();
 
 		std::shared_ptr<AnimationController> addAnimationController();
 		void loadAnimation(std::string _path);
@@ -64,6 +77,7 @@ namespace cobebe
 		std::weak_ptr<Transform> m_transform; ///< Pointer to Transform component
 		std::shared_ptr<Lighting> m_lighting; ///< Pointer to Lighting to get uniforms
 		std::shared_ptr<Mesh> m_mesh; ///< Loaded Mesh to draw
+		std::shared_ptr<WavefrontModel> m_objMtlModel; ///< Loaded WavefrontModel to draw
 		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
 

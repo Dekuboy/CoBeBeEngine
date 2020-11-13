@@ -5,6 +5,8 @@
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/VertexArray.h>
 #include <glwrap/Part.h>
+#include <glwrap/Model.h>
+#include <glwrap/Material.h>
 #include <glwrap/Animation.h>
 #include <glwrap/Frame.h>
 #include <glwrap/ShaderProgram.h>

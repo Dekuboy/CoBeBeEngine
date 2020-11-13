@@ -34,6 +34,27 @@ namespace cobebe
 
 
 	/**
+	* \brief Stores a Model to set in Renderer
+	*/
+	class WavefrontModel : public Asset
+	{
+	public:
+		/**
+		* \brief Retrieves all VertexArray faces
+		*/
+		std::vector<std::shared_ptr<glwrap::Face> > getFaces();
+
+	private:
+		friend class Renderer;
+
+		std::shared_ptr<glwrap::Model> m_internal; ///< Pointer to OpenGL Model
+
+		void onLoad(const std::string& _path);
+
+	};
+
+
+	/**
 	* \brief Stores a Texture to set for drawing in Shader
 	*/
 	class Texture : public Asset
@@ -43,6 +64,7 @@ namespace cobebe
 	private:
 		friend class Renderer;
 		friend class Canvas;
+		friend class WavefrontModel;
 
 		std::shared_ptr<glwrap::Texture> m_internal; ///< Pointer to OpenGL Texture
 

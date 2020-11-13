@@ -56,6 +56,15 @@ namespace glwrap
 		return rtn;
 	}
 
+	std::shared_ptr<Model> Context::createObjMtlMesh(std::string _path)
+	{
+		std::shared_ptr<Model> rtn = std::make_shared<Model>();
+		rtn->m_context = m_self;
+		rtn->m_self = rtn;
+		rtn->parse(_path);
+		return rtn;
+	}
+
 	std::shared_ptr<Part> Context::createPart(std::shared_ptr<VertexArray> _mesh, std::string _name)
 	{
 		std::shared_ptr<Part> rtn = std::make_shared<Part>(_mesh, _name);

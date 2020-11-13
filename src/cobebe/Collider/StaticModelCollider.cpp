@@ -75,13 +75,18 @@ namespace cobebe
 		}
 	}
 
-	StaticModelCollider::StaticModelCollider()
+	StaticModelCollider::StaticModelCollider() : Collider(0)
 	{
 		m_resolution = 0;
 		m_tryStep = 0;
 		m_maxStep = 0;
 		m_tryInc = 0;
 		m_maxInc = 0;
+	}
+
+	StaticModelCollider::StaticModelCollider(int _mask) : Collider(_mask)
+	{
+
 	}
 
 	Extent StaticModelCollider::getExtent()
@@ -272,10 +277,19 @@ namespace cobebe
 	void StaticModelCollider::generateExtent()
 	{
 		std::vector<glm::vec3> positions;
+		std::vector<std::shared_ptr<glwrap::Face> > faces;
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		std::shared_ptr<Mesh> model = mr->getMesh();
+		std::shared_ptr<WavefrontModel> objMtlModel = mr->getWavefrontModel();
 		glm::mat3 modelMatrix = getTransform()->getModel();
-		std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
+		if (model)
+		{
+			faces = model->getFaces();
+		}
+		else if (objMtlModel)
+		{
+			faces = objMtlModel->getFaces();
+		}
 
 		for (size_t f = 0; f < faces.size(); f++)
 		{
@@ -372,46 +386,56 @@ namespace cobebe
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		if (mr)
 		{
+			std::vector<std::shared_ptr<glwrap::Face> > faces;
 			std::shared_ptr<Mesh> model = mr->getMesh();
+			std::shared_ptr<WavefrontModel> objMtlModel = mr->getWavefrontModel();
 			if (model)
 			{
-				std::vector<std::shared_ptr<glwrap::Face> > faces = model->getFaces();
-				generateExtent();
+				faces = model->getFaces();
+			}
+			else if (objMtlModel)
+			{
+				faces = objMtlModel->getFaces();
+			}
+			else
+			{
+				return;
+			}
+			generateExtent();
 
-				// Create collision columns
-				glm::vec3 size = m_extent.m_max - m_extent.m_min;
-				glm::vec3 colSize = size / m_resolution;
-				colSize.y = size.y;
+			// Create collision columns
+			glm::vec3 size = m_extent.m_max - m_extent.m_min;
+			glm::vec3 colSize = size / m_resolution;
+			colSize.y = size.y;
 
-				for (size_t y = 0; y < m_resolution; y++)
+			for (size_t y = 0; y < m_resolution; y++)
+			{
+				glm::vec3 pos = m_extent.m_min + colSize / 2.0f;
+				pos.z += (float)y * colSize.z;
+
+				for (size_t x = 0; x < m_resolution; x++)
 				{
-					glm::vec3 pos = m_extent.m_min + colSize / 2.0f;
-					pos.z += (float)y * colSize.z;
+					std::shared_ptr<ColliderColumn> cc = std::make_shared<ColliderColumn>();
+					cc->m_size = colSize;
 
-					for (size_t x = 0; x < m_resolution; x++)
-					{
-						std::shared_ptr<ColliderColumn> cc = std::make_shared<ColliderColumn>();
-						cc->m_size = colSize;
+					// Overlap columns for sub column collision
+					//cc->size.x += 1.0f;
+					//cc->size.z += 1.0f;
+					// Conflicts with x / y index generation when matching column to collide with.
+					// Done when adding face instead.
 
-						// Overlap columns for sub column collision
-						//cc->size.x += 1.0f;
-						//cc->size.z += 1.0f;
-						// Conflicts with x / y index generation when matching column to collide with.
-						// Done when adding face instead.
-
-						cc->m_position = pos;
-						m_cols.push_back(cc);
-						pos.x += colSize.x;
-					}
+					cc->m_position = pos;
+					m_cols.push_back(cc);
+					pos.x += colSize.x;
 				}
+			}
 
-				glwrap::Face face;
+			glwrap::Face face;
 
-				for (size_t f = 0; f < faces.size(); f++)
-				{
-					face = *faces.at(f);
-					addFace(face);
-				}
+			for (size_t f = 0; f < faces.size(); f++)
+			{
+				face = *faces.at(f);
+				addFace(face);
 			}
 		}
 	}

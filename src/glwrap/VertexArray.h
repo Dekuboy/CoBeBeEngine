@@ -1,3 +1,5 @@
+#ifndef _GLWRAP_VERTEXARRAY
+#define _GLWRAP_VERTEXARRAY
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
@@ -18,7 +20,7 @@ namespace glwrap
 		VertexArray();
 		VertexArray(std::string _path);
 
-		void parse(std::string _path);
+		virtual void parse(std::string _path);
 
 		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
 		void draw();
@@ -40,7 +42,7 @@ namespace glwrap
 		std::shared_ptr<Part> getPart(std::string _name);
 		std::vector<std::shared_ptr<Animation> > getAnimations();
 
-	private:
+	protected:
 		friend class Context;
 
 		bool m_dirty;
@@ -55,3 +57,5 @@ namespace glwrap
 
 	};
 }
+
+#endif

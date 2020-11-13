@@ -40,11 +40,13 @@ namespace glwrap
 
 	ShaderProgram::ShaderProgram()
 	{
-		
+		m_isDrawing = false;
 	}
 
 	ShaderProgram::ShaderProgram(std::string _path)
 	{
+		m_isDrawing = false;
+
 		std::string vertShader;
 		std::string fragShader;
 		std::string geomShader;
@@ -194,9 +196,9 @@ namespace glwrap
 #if defined(__EMSCRIPTEN__)
 			vertShader = "#define VERTEX\n" + src.substr(15, std::string::npos);
 
-			fragShader = src.substr(0, 15) + "\n#define FRAGMENT\n" + src.substr(15, std::string::npos);
+			fragShader = "\n#define FRAGMENT\n" + src.substr(15, std::string::npos);
 
-			geomShader = src.substr(0, 15) + "\n#define GEOMETRY\n" + src.substr(15, std::string::npos);
+			geomShader = "\n#define GEOMETRY\n" + src.substr(15, std::string::npos);
 #else
 			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
 
@@ -380,7 +382,10 @@ namespace glwrap
 			}
 		}
 
+		m_isDrawing = true;
 		_vertexArray->draw();
+		m_isDrawing = false;
+
 		//glBindVertexArray(_vertexArray->getId());
 		//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
@@ -407,6 +412,86 @@ namespace glwrap
 		glm::vec4 lastViewport = m_viewport;
 		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
 		draw(_vertexArray);
+		m_viewport = lastViewport;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void ShaderProgram::draw(std::shared_ptr<Model> _model, std::string _textureUniform)
+	{
+		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
+		m_context.lock()->setCurrentShader(m_self.lock());
+
+		gType check;
+
+		for (size_t i = 0; i < m_samplers.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+
+			if (m_samplers.at(i).m_texture)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_texture->getId());
+			}
+			else if (m_samplers.at(i).m_depthCube)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, m_samplers.at(i).m_depthCube->getId());
+			}
+			else if (m_samplers.at(i).m_gBuffer)
+			{
+				check = m_samplers.at(i).m_gType;
+
+				if (check == 0)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getId());
+				}
+				else if (check == 1)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getNId());
+				}
+				else if (check == 2)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getAsId());
+				}
+				else
+				{
+					glBindTexture(GL_TEXTURE_2D, 0);
+				}
+			}
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+		}
+
+		m_isDrawing = true;
+		_model->draw(_textureUniform);
+		m_isDrawing = false;
+
+		//glBindVertexArray(_vertexArray->getId());
+		//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
+
+		for (size_t i = 0; i < m_samplers.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+
+			if (m_samplers.at(i).m_texture || m_samplers.at(i).m_gBuffer)
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+			else if (m_samplers.at(i).m_depthCube)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			}
+		}
+
+		glBindVertexArray(0);
+	}
+
+	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model> _model, std::string _textureUniform)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
+		glm::vec4 lastViewport = m_viewport;
+		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
+		draw(_model, _textureUniform);
 		m_viewport = lastViewport;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -509,6 +594,12 @@ namespace glwrap
 				m_samplers.at(i).m_gBuffer = NULL;
 
 				glUniform1i(uniformId, i);
+				if (m_isDrawing)
+				{
+					glActiveTexture(GL_TEXTURE0 + i);
+
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_texture->getId());
+				}
 				return;
 			}
 		}
@@ -519,6 +610,12 @@ namespace glwrap
 		m_samplers.push_back(s);
 
 		glUniform1i(uniformId, m_samplers.size() - 1);
+		if (m_isDrawing)
+		{
+			glActiveTexture(m_samplers.size() - 1);
+
+			glBindTexture(GL_TEXTURE_2D, s.m_texture->getId());
+		}
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::mat4 _value)

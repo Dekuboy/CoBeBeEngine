@@ -124,6 +124,7 @@ namespace cobebe
 
 		temp->m_resources = std::make_shared<Resources>();
 		temp->m_resources->m_context = temp->m_context;
+		temp->m_resources->m_self = temp->m_resources;
 
 		temp->m_nullShader = temp->loadAsset<Shader>("shaders\\nullpass.shad");
 		temp->m_lightPassShader = temp->loadAsset<Shader>("deferred_shaders\\lightingG.shad");

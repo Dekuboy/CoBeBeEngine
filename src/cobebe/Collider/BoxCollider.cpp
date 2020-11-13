@@ -6,6 +6,16 @@
 
 namespace cobebe
 {
+	BoxCollider::BoxCollider() : Collider(0)
+	{
+
+	}
+
+	BoxCollider::BoxCollider(int _mask) : Collider(_mask)
+	{
+
+	}
+
 	glm::vec3 BoxCollider::getSize()
 	{
 		return m_size;
@@ -43,32 +53,30 @@ namespace cobebe
 		for (std::list<std::shared_ptr<Entity> >::iterator it = boxEntities.begin();
 			it != boxEntities.end(); it++)
 		{
-			if (*it == getEntity())
-			{
-				continue;
-			}
-
 			bc = (*it)->getComponent<BoxCollider>();
 
-			if (!m_isTrigger && !m_isStatic)
+			if (checkMask(bc))
 			{
-				sp = bc->getCollisionResponse(np, m_size);
-				if (np != sp)
+				if (!m_isTrigger && !m_isStatic)
 				{
-					m_hasCollided = true;
-					m_colliders.push_back(*it);
-					np = sp;
-					np = np - m_offset;
-					getTransform()->m_position = (np);
-					m_lastPosition = np;
+					sp = bc->getCollisionResponse(np, m_size);
+					if (np != sp)
+					{
+						m_hasCollided = true;
+						m_colliders.push_back(*it);
+						np = sp;
+						np = np - m_offset;
+						getTransform()->m_position = (np);
+						m_lastPosition = np;
+					}
 				}
-			}
-			else
-			{
-				if (bc->isColliding(np, m_size))
+				else
 				{
-					m_hasCollided = true;
-					m_colliders.push_back(*it);
+					if (bc->isColliding(np, m_size))
+					{
+						m_hasCollided = true;
+						m_colliders.push_back(*it);
+					}
 				}
 			}
 		}
@@ -88,24 +96,27 @@ namespace cobebe
 			std::shared_ptr<StaticModelCollider> smc =
 				(*it)->getComponent<StaticModelCollider>();
 
-			bool solved = false;
-			glm::vec3 sp = smc->getCollisionResponse(np, m_size, solved);
+			if (checkMask(smc))
+			{
+				bool solved = false;
+				glm::vec3 sp = smc->getCollisionResponse(np, m_size, solved);
 
-			if (solved)
-			{
-				np = sp;
+				if (solved)
+				{
+					np = sp;
+				}
+				else
+				{
+					np = m_lastPosition + m_offset;
+				}
+				if (np != np)
+				{
+					np = m_lastPosition + m_offset;
+				}
+				np = np - m_offset;
+				getTransform()->m_position = np;
+				m_lastPosition = np;
 			}
-			else
-			{
-				np = m_lastPosition + m_offset;
-			}
-			if (np != np)
-			{
-				np = m_lastPosition + m_offset;
-			}
-			np = np - m_offset;
-			getTransform()->m_position = np;
-			m_lastPosition = np;
 		}
 	}
 

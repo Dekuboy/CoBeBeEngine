@@ -9,6 +9,9 @@ namespace cobebe
 	class BoxCollider : public Collider
 	{
 	public:
+		BoxCollider();
+		BoxCollider(int _mask);
+
 		/**
 		* \brief Gets the scale of the BoxCollider
 		*/

@@ -45,6 +45,7 @@ namespace cobebe
 	{
 	public:
 		StaticModelCollider();
+		StaticModelCollider(int _mask);
 
 		/**
 		* \brief Retrieves Extent values
