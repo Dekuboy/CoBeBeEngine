@@ -21,14 +21,14 @@ namespace glwrap
 		void drawPart(std::string _partName, std::string _textureUniform);
 
 		std::shared_ptr<Material> getMaterial(std::string _material);
-		std::list<std::shared_ptr<Material>>& getMatList();
+		std::list<std::shared_ptr<Material> >& getMatList();
 
 	private:
 		friend class Context;
 
 		void parseMtl(std::string _path);
 
-		std::list<std::shared_ptr<Material>> m_materialList;
+		std::list<std::shared_ptr<Material> > m_materialList;
 
 	};
 }

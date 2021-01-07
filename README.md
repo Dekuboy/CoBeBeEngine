@@ -13,6 +13,8 @@ HOST PYTHON SERVER BY
 
 python -m http.server
 
+http://localhost:8000/
+
 EXIT PYTHON SERVER BY
 
 CTRL + C

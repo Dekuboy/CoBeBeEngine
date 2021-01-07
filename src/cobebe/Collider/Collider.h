@@ -29,7 +29,7 @@ namespace cobebe
 		/**
 		* \brief Return list of all collided Entities
 		*/
-		const std::list<std::weak_ptr<Entity>>& getColliders();
+		const std::list<std::weak_ptr<Entity> >& getColliders();
 
 	protected:
 		std::list<int> m_maskList; ///< Collision masks to limit collisions with objects

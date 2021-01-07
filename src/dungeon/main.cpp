@@ -33,6 +33,7 @@ int main()
 
 	entity = App->addEntity();
 	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
+	entity->addComponent<PlayerController>();
 
 	renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\curuthers.obj");
@@ -46,7 +47,17 @@ int main()
 	std::shared_ptr<cobebe::BoxCollider> tmp = entity->addComponent<cobebe::BoxCollider>();
 	tmp->setSize(glm::vec3(0.7f));
 
-	entity->addComponent<PlayerController>();
+
+	entity = App->addEntity();
+	entity->getTransform()->m_position = glm::vec3(-4.0f, 1.7f, 5.0f);
+
+	renderer = entity->addComponent<cobebe::Renderer>();
+	renderer->setMesh("objs\\curuthers.obj");
+	renderer->setTexture("images\\curuthers_diffuse.png");
+	renderer->setShader("deferred_shaders\\renderGAni.shad");
+	anm = renderer->addAnimationController();
+	tmp = entity->addComponent<cobebe::BoxCollider>();
+	tmp->setSize(glm::vec3(0.7f));
 
 	entity = App->addEntity();
 	entity->getTransform()->m_position = glm::vec3(0.12f, 0.92f, 0.1f);

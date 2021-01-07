@@ -429,7 +429,7 @@ namespace glwrap
 
 	std::shared_ptr<Material> Model::getMaterial(std::string _material)
 	{
-		for (std::list<std::shared_ptr<Material>>::iterator itr = m_materialList.begin();
+		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materialList.begin();
 			itr != m_materialList.end(); itr++)
 		{
 			if ((*itr)->m_name == _material)
@@ -440,7 +440,7 @@ namespace glwrap
 		return 0;
 	}
 
-	std::list<std::shared_ptr<Material>>& Model::getMatList()
+	std::list<std::shared_ptr<Material> >& Model::getMatList()
 	{
 		return m_materialList;
 	}

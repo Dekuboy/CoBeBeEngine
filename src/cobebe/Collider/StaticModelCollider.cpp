@@ -86,7 +86,11 @@ namespace cobebe
 
 	StaticModelCollider::StaticModelCollider(int _mask) : Collider(_mask)
 	{
-
+		m_resolution = 0;
+		m_tryStep = 0;
+		m_maxStep = 0;
+		m_tryInc = 0;
+		m_maxInc = 0;
 	}
 
 	Extent StaticModelCollider::getExtent()

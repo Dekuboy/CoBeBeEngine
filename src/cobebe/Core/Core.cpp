@@ -155,6 +155,7 @@ namespace cobebe
 #if defined(__EMSCRIPTEN__)
 			COBEBE_EM_PTR = m_self.lock();
 
+			printf("loopstart\n");
 			emscripten_request_animation_frame_loop(one_iter, 0);
 #else
 			Uint32 currentTime, waitTime, lastTime = SDL_GetTicks();
@@ -223,7 +224,7 @@ namespace cobebe
 
 			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
-			glEnable(GL_CULL_FACE);
+			glDisable(GL_CULL_FACE);
 			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
@@ -239,7 +240,7 @@ namespace cobebe
 			{
 				(*it)->preDisplay();
 			}
-			//glCullFace(GL_BACK);
+			glCullFace(GL_BACK);
 			m_lighting->drawLighting();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -319,7 +320,7 @@ namespace cobebe
 		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
-			(float)width, (float)height, 0.1f, 100.f);
+			(float)width, (float)height, 0.1f, 1000.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;

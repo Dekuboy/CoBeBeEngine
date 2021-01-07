@@ -34,7 +34,9 @@ namespace cobebe
 		void setStatic(bool _switch);
 
 	private:
-		glm::vec3 m_size; ///< Size of BozCollider
+		std::weak_ptr<BoxCollider> m_self; ///< Pointer to avoid colliding with self
+
+		glm::vec3 m_size; ///< Size of BoxCollider
 		glm::vec3 m_offset; ///< Position from the origin(transform position)
 		bool m_isTrigger; ///< Does BoxCollider ghost
 		bool m_isStatic; ///< Does BoxCollider stay still

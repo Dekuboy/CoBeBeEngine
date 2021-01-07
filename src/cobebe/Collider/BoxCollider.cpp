@@ -8,12 +8,14 @@ namespace cobebe
 {
 	BoxCollider::BoxCollider() : Collider(0)
 	{
-
+		m_isTrigger = false;
+		m_isStatic = false;
 	}
 
 	BoxCollider::BoxCollider(int _mask) : Collider(_mask)
 	{
-
+		m_isTrigger = false;
+		m_isStatic = false;
 	}
 
 	glm::vec3 BoxCollider::getSize()
@@ -55,27 +57,30 @@ namespace cobebe
 		{
 			bc = (*it)->getComponent<BoxCollider>();
 
-			if (checkMask(bc))
+			if (bc != m_self.lock())
 			{
-				if (!m_isTrigger && !m_isStatic)
+				if (checkMask(bc))
 				{
-					sp = bc->getCollisionResponse(np, m_size);
-					if (np != sp)
+					if (!m_isTrigger && !m_isStatic)
 					{
-						m_hasCollided = true;
-						m_colliders.push_back(*it);
-						np = sp;
-						np = np - m_offset;
-						getTransform()->m_position = (np);
-						m_lastPosition = np;
+						sp = bc->getCollisionResponse(np, m_size);
+						if (np != sp)
+						{
+							m_hasCollided = true;
+							m_colliders.push_back(*it);
+							np = sp;
+							np = np - m_offset;
+							getTransform()->m_position = (np);
+							m_lastPosition = np;
+						}
 					}
-				}
-				else
-				{
-					if (bc->isColliding(np, m_size))
+					else
 					{
-						m_hasCollided = true;
-						m_colliders.push_back(*it);
+						if (bc->isColliding(np, m_size))
+						{
+							m_hasCollided = true;
+							m_colliders.push_back(*it);
+						}
 					}
 				}
 			}
@@ -219,6 +224,10 @@ namespace cobebe
 
 	void BoxCollider::onTick()
 	{
+		if (!m_self.lock())
+		{
+			m_self = getEntity()->getComponent<BoxCollider>();
+		}
 		m_colliders.clear();
 		if (!m_isTrigger && !m_isStatic)
 		{

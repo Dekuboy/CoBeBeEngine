@@ -1,4 +1,6 @@
 #include <cobebe/Cobebe.h>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/ext.hpp>
 
 int main()
 {
@@ -34,6 +36,9 @@ int main()
 
 	anm->playAnimation(0, 1);
 
+	App->getCurrentCamera()->m_rotation = glm::mat4(glm::rotate(glm::quat(), glm::radians(-90.0f), glm::normalize(glm::vec3(0,1,0))));
+	App->getCurrentCamera()->m_rotation = glm::mat4(glm::rotate(glm::quat(App->getCurrentCamera()->m_rotation), glm::radians(-45.0f), glm::normalize(glm::vec3(1,0,0))));
+	
 	App->run();
 
 	return 0;

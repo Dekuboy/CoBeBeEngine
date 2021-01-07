@@ -78,11 +78,11 @@ namespace glwrap
 		bool m_dirty;
 		std::weak_ptr<VertexArray> m_model;
 		std::vector<std::shared_ptr<Face> > m_faces;
-		std::vector<std::vector<std::shared_ptr<VertexBuffer>>> m_buffers;
+		std::vector<std::vector<std::shared_ptr<VertexBuffer> > > m_buffers;
 		glm::mat4 m_animationUniform;
 
 		bool m_useMaterial;
-		std::list<std::shared_ptr<Material>> m_materials;
+		std::list<std::shared_ptr<Material> > m_materials;
 
 		std::weak_ptr<Part> m_self;
 		std::weak_ptr<Context> m_context;

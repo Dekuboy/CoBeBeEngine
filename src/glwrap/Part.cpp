@@ -290,7 +290,7 @@ namespace glwrap
 		if (m_useMaterial)
 		{
 			int listItr = 0;
-			for (std::list<std::shared_ptr<Material>>::iterator itr = m_materials.begin();
+			for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
 				itr != m_materials.end(); itr++)
 			{
 				glBindVertexArray(getId(listItr));
@@ -332,7 +332,7 @@ namespace glwrap
 		}
 
 		int listItr = 0;
-		for (std::list<std::shared_ptr<Material>>::iterator itr = m_materials.begin();
+		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
 			itr != m_materials.end(); itr++)
 		{
 			m_context.lock()->getCurrentShader()->setUniform(_textureUniform, (*itr)->m_textureMap.lock());
