@@ -535,6 +535,19 @@ namespace glwrap
 		glUniform3f(uniformId, _value.x, _value.y, _value.z);
 	}
 
+	void ShaderProgram::setUniform(std::string _uniform, glm::vec2 _value)
+	{
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		m_context.lock()->setCurrentShader(m_self.lock());
+		glUniform2f(uniformId, _value.x, _value.y);
+	}
+
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3> _vectors)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());

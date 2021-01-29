@@ -50,6 +50,7 @@ namespace glwrap
 		void setUniform(std::string _uniform, int _value);
 		void setUniform(std::string _uniform, glm::vec4 _value);
 		void setUniform(std::string _uniform, glm::vec3 _value);
+		void setUniform(std::string _uniform, glm::vec2 _value);
 		void setUniform(std::string _uniform, std::vector<glm::vec3> _vectors);
 		void setUniform(std::string _uniform, float _value);
 		void setUniform(std::string _uniform, std::vector<float> _floats);

@@ -6,6 +6,7 @@ namespace glwrap
 	{
 	public:
 		GBuffer(int _width, int _height);
+		GBuffer(int _width, int _height, int _multisamples);
 
 		GLuint getNId();
 		GLuint getAsId();

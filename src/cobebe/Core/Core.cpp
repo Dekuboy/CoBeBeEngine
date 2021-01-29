@@ -76,7 +76,8 @@ namespace cobebe
 		temp->m_window = SDL_CreateWindow("CoBeBe Window",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			temp->m_environment->m_width, temp->m_environment->m_height,
-			SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+			SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
+			| SDL_WINDOW_BORDERLESS);
 
 		if (!SDL_GL_CreateContext(temp->m_window))
 		{
@@ -492,13 +493,19 @@ namespace cobebe
 
 		//temp->getInternal()->draw(m_currentCamera.lock()->m_texture);
 
-		std::shared_ptr<glwrap::ShaderProgram> nullInternal = m_nullShader->getInternal();
+		/*
+			std::shared_ptr<glwrap::ShaderProgram> nullInternal = m_nullShader->getInternal();
 
-		nullInternal->setViewport(glm::vec4(0, 0,
-			m_environment->m_width, m_environment->m_height));
-		std::shared_ptr<glwrap::Texture> texture = m_currentCamera.lock()->m_texture;
-		nullInternal->setUniform("in_Texture",
-			texture);
-		nullInternal->draw();
+			nullInternal->setViewport(glm::vec4(0, 0,
+				m_environment->m_width, m_environment->m_height));
+			std::shared_ptr<glwrap::Texture> texture = m_currentCamera.lock()->m_texture;
+			nullInternal->setUniform("in_Texture",
+				texture);
+			nullInternal->draw();
+		*/
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_currentCamera.lock()->m_texture->getFbId());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, m_environment->m_width, m_environment->m_height, 0, 0, m_environment->m_width, m_environment->m_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 }

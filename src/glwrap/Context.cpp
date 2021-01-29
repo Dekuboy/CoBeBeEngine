@@ -98,6 +98,13 @@ namespace glwrap
 		return rtn;
 	}
 
+	std::shared_ptr<RenderTexture> Context::createRenderTexture(int _width, int _height, int _multisamples)
+	{
+		std::shared_ptr<RenderTexture> rtn = std::make_shared<RenderTexture>(_width, _height, _multisamples);
+		rtn->m_context = m_self;
+		return rtn;
+	}
+
 	std::shared_ptr<DepthBuffer> Context::createDepthBuffer(int _width, int _height)
 	{
 		std::shared_ptr<DepthBuffer> rtn = std::make_shared<DepthBuffer>(_width, _height);

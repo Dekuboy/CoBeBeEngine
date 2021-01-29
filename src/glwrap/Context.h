@@ -29,6 +29,7 @@ namespace glwrap
 		std::shared_ptr<Animation> createAnimation(std::shared_ptr<VertexArray> _model);
 		std::shared_ptr<Animation> createAnimation(std::shared_ptr<VertexArray> _model, std::string _path);
 		std::shared_ptr<RenderTexture> createRenderTexture(int _width, int _height);
+		std::shared_ptr<RenderTexture> createRenderTexture(int _width, int _height, int _multisamples);
 		std::shared_ptr<DepthBuffer> createDepthBuffer(int _width, int _height);
 		std::shared_ptr<GBuffer> createGBuffer(int _width, int _height);
 
