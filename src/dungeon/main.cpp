@@ -20,7 +20,7 @@ int main()
 
 	//entity->addComponent<cobebe::Speaker>("oggs\\dixie_horn.ogg");
 
-	entity->addComponent<cobebe::StaticModelCollider>();
+	entity->addComponent<cobebe::StaticModelCollider>(0);
 
 	//entity = App->addEntity();
 	//entity->getTransform()->m_position = glm::vec3(-12.0f, 1.7f, -12.0f);
@@ -44,7 +44,7 @@ int main()
 
 	anm->playAnimation(0, 1);
 
-	std::shared_ptr<cobebe::BoxCollider> tmp = entity->addComponent<cobebe::BoxCollider>();
+	std::shared_ptr<cobebe::BoxCollider> tmp = entity->addComponent<cobebe::BoxCollider>(0);
 	tmp->setSize(glm::vec3(0.7f));
 
 
@@ -56,7 +56,7 @@ int main()
 	renderer->setTexture("images\\curuthers_diffuse.png");
 	renderer->setShader("deferred_shaders\\renderGAni.shad");
 	anm = renderer->addAnimationController();
-	tmp = entity->addComponent<cobebe::BoxCollider>();
+	tmp = entity->addComponent<cobebe::BoxCollider>(1);
 	tmp->setSize(glm::vec3(0.7f));
 
 	entity = App->addEntity();

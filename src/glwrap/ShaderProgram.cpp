@@ -41,11 +41,17 @@ namespace glwrap
 	ShaderProgram::ShaderProgram()
 	{
 		m_isDrawing = false;
+		m_drawingCentre = glm::vec3(0);
+		m_drawingSize = glm::vec3(0);
+		m_drawingRotation = glm::mat4(1);
 	}
 
 	ShaderProgram::ShaderProgram(std::string _path)
 	{
 		m_isDrawing = false;
+		m_drawingCentre = glm::vec3(0);
+		m_drawingSize = glm::vec3(0);
+		m_drawingRotation = glm::mat4(1);
 
 		std::string vertShader;
 		std::string fragShader;
@@ -341,46 +347,7 @@ namespace glwrap
 		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
 		m_context.lock()->setCurrentShader(m_self.lock());
 
-		gType check;
-
-		for (size_t i = 0; i < m_samplers.size(); i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-
-			if (m_samplers.at(i).m_texture)
-			{
-				glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_texture->getId());
-			}
-			else if (m_samplers.at(i).m_depthCube)
-			{
-				glBindTexture(GL_TEXTURE_CUBE_MAP, m_samplers.at(i).m_depthCube->getId());
-			}
-			else if (m_samplers.at(i).m_gBuffer)
-			{
-				check = m_samplers.at(i).m_gType;
-
-				if (check == 0)
-				{
-					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getId());
-				}
-				else if (check == 1)
-				{
-					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getNId());
-				}
-				else if (check == 2)
-				{
-					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getAsId());
-				}
-				else
-				{
-					glBindTexture(GL_TEXTURE_2D, 0);
-				}
-			}
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-		}
+		setSamplers();
 
 		m_isDrawing = true;
 		_vertexArray->draw();
@@ -389,19 +356,7 @@ namespace glwrap
 		//glBindVertexArray(_vertexArray->getId());
 		//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
-		for (size_t i = 0; i < m_samplers.size(); i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-
-			if (m_samplers.at(i).m_texture || m_samplers.at(i).m_gBuffer)
-			{
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-			else if (m_samplers.at(i).m_depthCube)
-			{
-				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-			}
-		}
+		resetSamplers();
 
 		glBindVertexArray(0);
 	}
@@ -421,46 +376,7 @@ namespace glwrap
 		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
 		m_context.lock()->setCurrentShader(m_self.lock());
 
-		gType check;
-
-		for (size_t i = 0; i < m_samplers.size(); i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-
-			if (m_samplers.at(i).m_texture)
-			{
-				glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_texture->getId());
-			}
-			else if (m_samplers.at(i).m_depthCube)
-			{
-				glBindTexture(GL_TEXTURE_CUBE_MAP, m_samplers.at(i).m_depthCube->getId());
-			}
-			else if (m_samplers.at(i).m_gBuffer)
-			{
-				check = m_samplers.at(i).m_gType;
-
-				if (check == 0)
-				{
-					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getId());
-				}
-				else if (check == 1)
-				{
-					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getNId());
-				}
-				else if (check == 2)
-				{
-					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getAsId());
-				}
-				else
-				{
-					glBindTexture(GL_TEXTURE_2D, 0);
-				}
-			}
-			else
-			{
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-		}
+		setSamplers();
 
 		m_isDrawing = true;
 		_model->draw(_textureUniform);
@@ -469,19 +385,7 @@ namespace glwrap
 		//glBindVertexArray(_vertexArray->getId());
 		//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
-		for (size_t i = 0; i < m_samplers.size(); i++)
-		{
-			glActiveTexture(GL_TEXTURE0 + i);
-
-			if (m_samplers.at(i).m_texture || m_samplers.at(i).m_gBuffer)
-			{
-				glBindTexture(GL_TEXTURE_2D, 0);
-			}
-			else if (m_samplers.at(i).m_depthCube)
-			{
-				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-			}
-		}
+		resetSamplers();
 
 		glBindVertexArray(0);
 	}
@@ -494,6 +398,98 @@ namespace glwrap
 		draw(_model, _textureUniform);
 		m_viewport = lastViewport;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void ShaderProgram::cullAndDraw(std::shared_ptr<VertexArray> _vertexArray, 
+		glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation)
+	{
+		if (m_viewingFrustum)
+		{
+			m_drawingCentre = _centre;
+			m_drawingSize = _size;
+			m_drawingRotation = _rotation;
+		}
+		else
+		{
+			draw(_vertexArray);
+		}
+	}
+
+	void ShaderProgram::cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray, 
+		glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
+		glm::vec4 lastViewport = m_viewport;
+		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
+		cullAndDraw(_vertexArray, _centre, _size, _rotation);
+		m_viewport = lastViewport;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	void ShaderProgram::cullAndDraw(std::shared_ptr<Model> _model, std::string _textureUniform, 
+		glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation)
+	{
+		if (m_viewingFrustum)
+		{
+			m_drawingCentre = _centre;
+			m_drawingSize = _size;
+			m_drawingRotation = _rotation;
+		}
+		else
+		{
+			draw(_model);
+		}
+	}
+
+	void ShaderProgram::cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, 
+		std::shared_ptr<Model> _model, std::string _textureUniform, 
+		glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
+		glm::vec4 lastViewport = m_viewport;
+		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
+		cullAndDraw(_model, _textureUniform, _centre, _size, _rotation);
+		m_viewport = lastViewport;
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+
+	std::shared_ptr<ViewingFrustum> ShaderProgram::getViewingFrustum()
+	{
+		return m_viewingFrustum;
+	}
+
+	void ShaderProgram::setViewingFrustum(std::shared_ptr<ViewingFrustum> _frustum)
+	{
+		m_viewingFrustum = _frustum;
+	}
+
+	bool ShaderProgram::checkViewingFrustum(const glm::vec3 & _centre, const glm::vec3 & _size, const glm::mat3 & _rotation)
+	{
+		if (m_isDrawing)
+		{
+			glm::vec3 partCentre = m_drawingCentre + _centre;
+			glm::vec3 partSize = m_drawingSize * _size;
+			glm::mat3 partRotation = m_drawingRotation * _rotation;
+			if (partRotation == glm::mat3(1))
+			{
+				return m_viewingFrustum->checkCube(partCentre, partSize);
+			}
+			else
+			{
+				return m_viewingFrustum->checkCube(partCentre, partSize, partRotation);
+			}
+		}
+		else
+		{
+			if (_rotation == glm::mat3(1))
+			{
+				return m_viewingFrustum->checkCube(_centre, _size);
+			}
+			else
+			{
+				return m_viewingFrustum->checkCube(_centre, _size, _rotation);
+			}
+		}
 	}
 
 	void ShaderProgram::setUniform(std::string _uniform, int _value)
@@ -548,7 +544,7 @@ namespace glwrap
 		glUniform2f(uniformId, _value.x, _value.y);
 	}
 
-	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3> _vectors)
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3> &_vectors)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
@@ -574,7 +570,7 @@ namespace glwrap
 		glUniform1f(uniformId, _value);
 	}
 
-	void ShaderProgram::setUniform(std::string _uniform, std::vector<float> _floats)
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<float> &_floats)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
@@ -631,7 +627,7 @@ namespace glwrap
 		}
 	}
 
-	void ShaderProgram::setUniform(std::string _uniform, glm::mat4 _value)
+	void ShaderProgram::setUniform(std::string _uniform, glm::mat4 &_value)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
@@ -644,7 +640,7 @@ namespace glwrap
 		glUniformMatrix4fv(uniformId, 1, 0, glm::value_ptr(_value));
 	}
 
-	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::mat4> _matrices)
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::mat4> &_matrices)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
@@ -721,7 +717,7 @@ namespace glwrap
 		glUniform1i(uniformId, m_samplers.size() - 1);
 	}
 
-	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube> > _cubes)
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube> > &_cubes)
 	{
 		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
 
@@ -820,5 +816,67 @@ namespace glwrap
 	void ShaderProgram::setViewport(glm::vec4 _viewport)
 	{
 		this->m_viewport = _viewport;
+	}
+
+	void ShaderProgram::setSamplers()
+	{
+
+		gType check;
+
+		for (size_t i = 0; i < m_samplers.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+
+			if (m_samplers.at(i).m_texture)
+			{
+				glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_texture->getId());
+			}
+			else if (m_samplers.at(i).m_depthCube)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, m_samplers.at(i).m_depthCube->getId());
+			}
+			else if (m_samplers.at(i).m_gBuffer)
+			{
+				check = m_samplers.at(i).m_gType;
+
+				if (check == 0)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getId());
+				}
+				else if (check == 1)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getNId());
+				}
+				else if (check == 2)
+				{
+					glBindTexture(GL_TEXTURE_2D, m_samplers.at(i).m_gBuffer->getAsId());
+				}
+				else
+				{
+					glBindTexture(GL_TEXTURE_2D, 0);
+				}
+			}
+			else
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+		}
+	}
+
+	void ShaderProgram::resetSamplers()
+	{
+		for (size_t i = 0; i < m_samplers.size(); i++)
+		{
+			glActiveTexture(GL_TEXTURE0 + i);
+
+			if (m_samplers.at(i).m_texture || m_samplers.at(i).m_gBuffer)
+			{
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+			else if (m_samplers.at(i).m_depthCube)
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+			}
+		}
 	}
 }

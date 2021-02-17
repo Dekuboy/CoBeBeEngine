@@ -5,8 +5,8 @@ namespace cobebe
 	Environment::Environment()
 	{
 		m_deltaTime = 1.0f / 60.0f;
-		m_width = 1920;
-		m_height = 1080;
+		m_width = 1080;
+		m_height = 720;
 	}
 
 	const float Environment::getDeltaTime()

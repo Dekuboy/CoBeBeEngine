@@ -9,6 +9,7 @@ namespace cobebe
 	class Texture;
 	class Shader;
 	class Lighting;
+	class Transform;
 
 	/**
 	* \brief Represents a cameras position and perspective
@@ -38,6 +39,7 @@ namespace cobebe
 		* \brief Sets projection matrix to perspective
 		*/
 		void setPerspective(float _angle, float _width, float _height, float _near, float _far);
+		
 		/**
 		* \brief Get the near plane
 		*/
@@ -46,11 +48,20 @@ namespace cobebe
 		* \brief Get the far plane
 		*/
 		float getFarPlane();
+		/**
+		* \brief Get the aspect ratio
+		*/
+		float getAspect();
+
+		/**
+		* \brief Use current View and Projection matrices to generate ViewingFrustum
+		*/
+		void setViewingFrustum();
 
 		/**
 		* \brief Draws to cameras RenderTexture
 		*/
-		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::VertexArray> _meshInternal);
+		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal);
 		/**
 		* \brief Draws to cameras RenderTexture
 		*/
@@ -58,7 +69,7 @@ namespace cobebe
 		/**
 		* \brief Draws to cameras RenderTexture
 		*/
-		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform);
+		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform);
 
 		/**
 		* \brief Draw from GBuffer to RenderTexture
@@ -78,12 +89,17 @@ namespace cobebe
 		friend class Core;
 
 		bool m_isOn; ///< Checks if the Camera is on
+		bool m_isDrawReady; ///< Checks if the variables for drawing have been set each frame
 		std::shared_ptr<glwrap::RenderTexture> m_texture; ///< Camera draws to internal RenderTexture
 		std::shared_ptr<glwrap::GBuffer> m_gBuffer; ///< Defers lighting to later
 		std::shared_ptr<Lighting> m_lighting; ///< Holds all variables regarding Lighting
+		std::shared_ptr<glwrap::ViewingFrustum> m_frustum; ///< Holds frustum planes for culling
 
 		glm::mat4 m_projection; ///< The projection matrix for passing to shader
 		float m_near; ///< The near plane used in perspective
 		float m_far; ///< The far plane used in perspective
+		float m_angle; ///< The angle used in perspective
+		float m_aspect; ///< The aspect ratio used in perspective
+
 	};
 }

@@ -20,11 +20,15 @@ namespace glwrap
 		VertexArray();
 		VertexArray(std::string _path);
 
-		virtual void parse(std::string _path);
+		void parse(std::string _path);
+		virtual void parse(std::string, bool _tanBitan);
 
 		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
 		void draw();
+		void cullAndDraw();
 		void drawPart(std::string _partName);
+
+		glm::vec3 getSize();
 
 		std::shared_ptr<Animation> addAnimation(std::string _path);
 		int playAnimationOnce(std::string _name);
@@ -52,9 +56,13 @@ namespace glwrap
 		std::weak_ptr<VertexArray> m_self;
 		std::weak_ptr<Context> m_context;
 
+		glm::vec3 m_minPoint;
+		glm::vec3 m_maxPoint;
+		glm::vec3 m_size;
+
 		void splitStringWhitespace(std::string& _input, std::vector<std::string>& _output);
 		void splitString(std::string& _input, char _splitter, std::vector<std::string>& _output);
-
+		void checkMinMax(glm::vec3& _vertexPosition);
 	};
 }
 

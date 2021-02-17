@@ -18,8 +18,8 @@ namespace cobebe
 		/**
 		* \brief Loads Asset of type (loads file if new Asset)
 		*/
-		template <class T>
-		std::shared_ptr<T> load(std::string _path)
+		template <class T, typename ... Args>
+		std::shared_ptr<T> load(std::string _path, Args&& ... _args)
 		{
 			std::shared_ptr<T> asset;
 			if (!m_resources.empty())
@@ -36,7 +36,7 @@ namespace cobebe
 					}
 				}
 			}
-			asset = std::make_shared<T>();
+			asset = std::make_shared<T>(std::forward<Args>(_args)...);
 			asset->m_context = m_context;
 			asset->m_resources = m_self;
 			std::shared_ptr<Asset> assetCast = asset;

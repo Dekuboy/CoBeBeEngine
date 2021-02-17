@@ -77,7 +77,7 @@ namespace cobebe
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			temp->m_environment->m_width, temp->m_environment->m_height,
 			SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
-			| SDL_WINDOW_BORDERLESS);
+			/*| SDL_WINDOW_BORDERLESS*/);
 
 		if (!SDL_GL_CreateContext(temp->m_window))
 		{
@@ -140,7 +140,6 @@ namespace cobebe
 
 		temp->m_currentCamera = temp->addCamera();
 		temp->m_currentCamera.lock()->m_isOn = true;
-		temp->m_currentCamera.lock()->m_position = glm::vec3(0, 0, 10);
 
 		temp->m_self = temp;
 		return temp;
@@ -230,13 +229,15 @@ namespace cobebe
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
 			m_currentCamera.lock()->m_gBuffer->clear();
+			m_currentCamera.lock()->setViewingFrustum();
 
 			// Clear Shadows
 			m_lighting->clear();
 
 			// PreDisplay each Entity
 			// Renders to DepthMaps in Lighting
-			//glCullFace(GL_FRONT);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->preDisplay();
@@ -321,7 +322,7 @@ namespace cobebe
 		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
-			(float)width, (float)height, 0.1f, 1000.f);
+			(float)width, (float)height, 3.0f, 100.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;
@@ -504,8 +505,10 @@ namespace cobebe
 			nullInternal->draw();
 		*/
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_currentCamera.lock()->m_texture->getFbId());
+		std::shared_ptr<glwrap::RenderTexture> texture = m_currentCamera.lock()->m_texture;
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, texture->getFbId());
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(0, 0, m_environment->m_width, m_environment->m_height, 0, 0, m_environment->m_width, m_environment->m_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, texture->getSize().x, texture->getSize().y, 0, 0, m_environment->m_width, m_environment->m_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 }

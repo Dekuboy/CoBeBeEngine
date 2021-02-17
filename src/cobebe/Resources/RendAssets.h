@@ -18,6 +18,9 @@ namespace cobebe
 	class Mesh : public Asset
 	{
 	public:
+		Mesh();
+		Mesh(bool _calcTanBitan);
+
 		/**
 		* \brief Retrieves all VertexArray faces
 		*/
@@ -27,6 +30,7 @@ namespace cobebe
 		friend class Renderer;
 
 		std::shared_ptr<glwrap::VertexArray> m_internal; ///< Pointer to OpenGL VertexArray
+		bool m_tanBitan; ///< True if internal has calculated Tangent and Bitangent values
 
 		void onLoad(const std::string& _path);
 
@@ -39,6 +43,9 @@ namespace cobebe
 	class WavefrontModel : public Asset
 	{
 	public:
+		WavefrontModel();
+		WavefrontModel(bool _calcTanBitan);
+
 		/**
 		* \brief Retrieves all VertexArray faces
 		*/
@@ -48,6 +55,7 @@ namespace cobebe
 		friend class Renderer;
 
 		std::shared_ptr<glwrap::Model> m_internal; ///< Pointer to OpenGL Model
+		bool m_tanBitan; ///< True if internal has calculated Tangent and Bitangent values
 
 		void onLoad(const std::string& _path);
 

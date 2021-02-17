@@ -16,8 +16,10 @@ namespace glwrap
 		Model(std::string _path);
 
 		void parse(std::string _path);
+		void parse(std::string _path, bool _tanBitan);
 
 		void draw(std::string _textureUniform);
+		void cullAndDraw(std::string _textureUniform);
 		void drawPart(std::string _partName, std::string _textureUniform);
 
 		std::shared_ptr<Material> getMaterial(std::string _material);
@@ -26,9 +28,9 @@ namespace glwrap
 	private:
 		friend class Context;
 
-		void parseMtl(std::string _path);
-
 		std::list<std::shared_ptr<Material> > m_materialList;
+
+		void parseMtl(std::string _path);
 
 	};
 }

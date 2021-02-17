@@ -62,76 +62,16 @@ namespace cobebe
 		/**
 		* \brief Adds class inheriting Entity to the game loop
 		*/
-		template <class T>
-		std::shared_ptr<T> addEntity()
+		template <class T, typename ... Args>
+		std::shared_ptr<T> addEntity(Args&& ... _args)
 		{
 			// Initialise Entity before pushing to list
-			std::shared_ptr<T> tempInheritor = std::make_shared<T>();
+			std::shared_ptr<T> tempInheritor = std::make_shared<T>(std::forward<Args>(_args)...);
 			std::shared_ptr<Entity> tempEntity = tempInheritor;
 			std::shared_ptr<Transform> tempTransform = tempEntity->addComponent<Transform>();
 			tempEntity->m_transform = tempTransform;
 			tempEntity->m_self = tempEntity;
 			tempEntity->m_core = m_self;
-			m_entities.push_back(tempEntity);
-			return tempEntity;
-		}
-
-		/**
-		* \brief Adds class inheriting Entity to the game loop
-		*/
-		template <class T, class A>
-		std::shared_ptr<T> addEntity(A _a)
-		{
-			// Initialise Entity before pushing to list
-			std::shared_ptr<T> tempInheritor = std::make_shared<T>(_a);
-			std::shared_ptr<Entity> tempEntity = tempInheritor;
-			std::shared_ptr<Transform> tempTransform = tempEntity->addComponent<Transform>();
-			tempEntity->m_transform = tempTransform;
-			tempEntity->m_self = tempEntity;
-			tempEntity->m_core = m_self;
-
-			tempEntity->init();
-
-			m_entities.push_back(tempEntity);
-			return tempEntity;
-		}
-
-		/**
-		* \brief Adds class inheriting Entity to the game loop
-		*/
-		template <class T, class A, class B>
-		std::shared_ptr<T> addEntity(A _a, B _b)
-		{
-			// Initialise Entity before pushing to list
-			std::shared_ptr<T> tempInheritor = std::make_shared<T>(_a, _b);
-			std::shared_ptr<Entity> tempEntity = tempInheritor;
-			std::shared_ptr<Transform> tempTransform = tempEntity->addComponent<Transform>();
-			tempEntity->m_transform = tempTransform;
-			tempEntity->m_self = tempEntity;
-			tempEntity->m_core = m_self;
-
-			tempEntity->init();
-
-			m_entities.push_back(tempEntity);
-			return tempEntity;
-		}
-
-		/**
-		* \brief Adds class inheriting Entity to the game loop
-		*/
-		template <class T, class A, class B, class C>
-		std::shared_ptr<T> addEntity(A _a, B _b, C _c)
-		{
-			// Initialise Entity before pushing to list
-			std::shared_ptr<T> tempInheritor = std::make_shared<T>(_a, _b, _c);
-			std::shared_ptr<Entity> tempEntity = tempInheritor;
-			std::shared_ptr<Transform> tempTransform = tempEntity->addComponent<Transform>();
-			tempEntity->m_transform = tempTransform;
-			tempEntity->m_self = tempEntity;
-			tempEntity->m_core = m_self;
-
-			tempEntity->init();
-
 			m_entities.push_back(tempEntity);
 			return tempEntity;
 		}

@@ -19,13 +19,14 @@ varying mat3 ex_TBN;
 
 void main()
 {
-	gl_Position = in_Projection * in_View * in_Model * in_Animate * vec4(in_Position, 1.0);
+	mat3 transform = in_Model * in_Animate;
+	gl_Position = in_Projection * in_View * transform * vec4(in_Position, 1.0);
 	ex_Color = in_Color;
 	ex_TexCoord = in_TexCoord;
 
-	vec3 T = normalize(mat3(in_Model) * in_Tangent);
-	vec3 B = normalize(mat3(in_Model) * in_Bitangent);
-	vec3 N = normalize(mat3(in_Model) * in_Normal);
+	vec3 T = normalize(mat3(transform) * in_Tangent);
+	vec3 B = normalize(mat3(transform) * in_Bitangent);
+	vec3 N = normalize(mat3(transform) * in_Normal);
 	ex_TBN = mat3(T, B, N);
 
 	ex_FragPos = vec3(in_Model * vec4(in_Position, 1.0));

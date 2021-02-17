@@ -15,4 +15,5 @@
 #include <glwrap/GBuffer.h>
 #include <glwrap/DepthBuffer.h>
 #include <glwrap/DepthCube.h>
+#include <glwrap/ViewingFrustum.h>
 #endif

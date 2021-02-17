@@ -27,52 +27,10 @@ namespace cobebe
 		/**
 		* \brief Adds Component of type to Entity
 		*/
-		template <class T>
-		std::shared_ptr<T> addComponent()
+		template <class T, typename ... Args>
+		std::shared_ptr<T> addComponent(Args&& ... _args)
 		{
-			std::shared_ptr<T> comp = std::make_shared<T>();
-			comp->m_entity = m_self;
-			std::shared_ptr<Component> compCast = comp;
-			compCast->onInit();
-			m_components.push_back(comp);
-			return comp;
-		}
-
-		/**
-		* \brief Adds Component of type to Entity using parameters
-		*/
-		template <class T, class A>
-		std::shared_ptr<T> addComponent(A _a)
-		{
-			std::shared_ptr<T> comp = std::make_shared<T>(_a);
-			comp->m_entity = m_self;
-			std::shared_ptr<Component> compCast = comp;
-			compCast->onInit();
-			m_components.push_back(comp);
-			return comp;
-		}
-
-		/**
-		* \brief Adds Component of type to Entity using parameters
-		*/
-		template <class T, class A, class B>
-		std::shared_ptr<T> addComponent(A _a, B _b)
-		{
-			std::shared_ptr<T> comp = std::make_shared<T>(_a, _b);
-			comp->m_entity = m_self;
-			std::shared_ptr<Component> compCast = comp;
-			compCast->onInit();
-			m_components.push_back(comp);
-			return comp;
-		}
-
-		/**
-		* \brief Adds Component of type to Entity using parameters
-		*/
-		template <class T, class A, class B, class C>
-		std::shared_ptr<T> addComponent(A _a, B _b, C _c)
-		{
-			std::shared_ptr<T> comp = std::make_shared<T>(_a, _b, _c);
+			std::shared_ptr<T> comp = std::make_shared<T>(std::forward<Args>(_args)...);
 			comp->m_entity = m_self;
 			std::shared_ptr<Component> compCast = comp;
 			compCast->onInit();

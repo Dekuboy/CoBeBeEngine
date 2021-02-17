@@ -61,6 +61,11 @@ namespace cobebe
 		void setShader(std::string _path);
 
 		/**
+		* \brief Set whether a models parts should individually be culled
+		*/
+		void setCullByPart(bool _switch);
+
+		/**
 		* \brief Returns loaded mesh
 		*/
 		std::shared_ptr<Mesh> getMesh();
@@ -69,7 +74,13 @@ namespace cobebe
 		*/
 		std::shared_ptr<WavefrontModel> getWavefrontModel();
 
+		/**
+		*
+		*/
 		std::shared_ptr<AnimationController> addAnimationController();
+		/**
+		*
+		*/
 		void loadAnimation(std::string _path);
 
 	protected:
@@ -80,8 +91,9 @@ namespace cobebe
 		std::shared_ptr<WavefrontModel> m_objMtlModel; ///< Loaded WavefrontModel to draw
 		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
+		std::shared_ptr<AnimationController> m_animationController; ///< Stores animation info
 
-		std::shared_ptr<AnimationController> m_animationController;
+		bool m_cullByPart;
 
 		/**
 		* \brief Returns texture internal, useful for renderer inheritance

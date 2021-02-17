@@ -28,37 +28,38 @@ int main()
 {
 	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 	printf("Initialise\n");
+	{
+		std::shared_ptr<cobebe::Entity> entity = App->addEntity();
 
-	std::shared_ptr<cobebe::Entity> entity = App->addEntity();
+		std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
+		//renderer->setWavefrontModel("speedhighway\\speed.obj");
+		renderer->setShader("deferred_shaders\\renderGAni.shad");
 
-	std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
-	renderer->setWavefrontModel("speedhighway\\speed.obj");
-	renderer->setShader("deferred_shaders\\renderGAni.shad");
+		entity->addComponent<cobebe::StaticModelCollider>();
 
-	entity->addComponent<cobebe::StaticModelCollider>();
+		//entity = App->addEntity();
+		//entity->getTransform()->m_position = glm::vec3(-12.0f, 1.7f, -12.0f);
+		//std::shared_ptr<cobebe::PBRenderer> pbRenderer = entity->addComponent<cobebe::PBRenderer>();
+		//pbRenderer->setMesh("spaceship\\Intergalactic_Spaceship-(Wavefront).obj");
+		//pbRenderer->setTexture("spaceship\\textures\\Intergalactic Spaceship_color_4.png");
+		//pbRenderer->setNormalMap("spaceship\\textures\\Intergalactic Spaceship_nmap_2_Tris.png");
+		//pbRenderer->setMetalMap("spaceship\\textures\\Intergalactic Spaceship_metalness.png");
+		//pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
 
-	//entity = App->addEntity();
-	//entity->getTransform()->m_position = glm::vec3(-12.0f, 1.7f, -12.0f);
-	//std::shared_ptr<cobebe::PBRenderer> pbRenderer = entity->addComponent<cobebe::PBRenderer>();
-	//pbRenderer->setMesh("spaceship\\Intergalactic_Spaceship-(Wavefront).obj");
-	//pbRenderer->setTexture("spaceship\\textures\\Intergalactic Spaceship_color_4.png");
-	//pbRenderer->setNormalMap("spaceship\\textures\\Intergalactic Spaceship_nmap_2_Tris.png");
-	//pbRenderer->setMetalMap("spaceship\\textures\\Intergalactic Spaceship_metalness.png");
-	//pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
+		entity = App->addEntity();
+		entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, -5.0f);
+		entity->getTransform()->m_scale = glm::vec3(2);
+		entity->addComponent<CamController>();
 
-	entity = App->addEntity();
-	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
-	entity->addComponent<CamController>();
+		renderer = entity->addComponent<cobebe::Renderer>();
+		renderer->setMesh("objs\\curuthers.obj");
+		renderer->setTexture("images\\curuthers_diffuse.png");
+		renderer->setShader("deferred_shaders\\renderGAni.shad");
+		std::shared_ptr<cobebe::AnimationController> anm = renderer->addAnimationController();
+		renderer->loadAnimation("animations\\run.anm");
 
-	renderer = entity->addComponent<cobebe::Renderer>();
-	renderer->setMesh("objs\\curuthers.obj");
-	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("deferred_shaders\\renderGAni.shad");
-	std::shared_ptr<cobebe::AnimationController> anm = renderer->addAnimationController();
-	renderer->loadAnimation("animations\\run.anm");
-
-	anm->playAnimation(0, 1);
-	
+		anm->playAnimation(0, 1);
+	}
 	App->run();
 
 	return 0;
@@ -126,6 +127,23 @@ void CamController::onTick()
 		glm::vec3 z = m_camera.lock()->m_rotation[2];
 		m_camera.lock()->m_position += -z;
 	}
+	if (getKeyboard()->isKey(cobebeInput::aKey))
+	{
+		glm::vec3 x = m_camera.lock()->m_rotation[0];
+		m_camera.lock()->m_position += -x;
+	}
+	if (getKeyboard()->isKey(cobebeInput::sKey))
+	{
+		glm::vec3 z = m_camera.lock()->m_rotation[2];
+		m_camera.lock()->m_position += z;
+	}
+	if (getKeyboard()->isKey(cobebeInput::dKey))
+	{
+		glm::vec3 x = m_camera.lock()->m_rotation[0];
+		m_camera.lock()->m_position += -x;
+	}
+
+	getEntity()->getComponent<cobebe::AnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());
 }
 
 void CamController::onPostDisplay()

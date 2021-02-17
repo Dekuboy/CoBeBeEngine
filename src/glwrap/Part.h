@@ -59,7 +59,9 @@ namespace glwrap
 		GLuint getId(int _materialId);
 
 		void draw();
+		void cullAndDraw();
 		void draw(std::string _textureUniform);
+		void cullAndDraw(std::string _textureUniform);
 
 		glm::vec3 getSize();
 
@@ -69,6 +71,8 @@ namespace glwrap
 		friend class Model;
 
 		void translate(int _undo);
+		void drawArrays();
+		void drawArrays(std::string _textureUniform);
 
 		void generateArrays();
 

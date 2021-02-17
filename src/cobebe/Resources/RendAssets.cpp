@@ -3,6 +3,16 @@
 
 namespace cobebe
 {
+	Mesh::Mesh()
+	{
+		m_tanBitan = false;
+	}
+
+	Mesh::Mesh(bool _calcTanBitan)
+	{
+		m_tanBitan = _calcTanBitan;
+	}
+
 	std::vector<std::shared_ptr<glwrap::Face> > Mesh::getFaces()
 	{
 		if (m_internal)
@@ -15,13 +25,23 @@ namespace cobebe
 	void Mesh::onLoad(const std::string& _path)
 	{
 		m_path = _path;
-		m_internal = m_context.lock()->createMesh(_path);
+		m_internal = m_context.lock()->createMesh(_path, m_tanBitan);
 	}
 
 	void Texture::onLoad(const std::string& _path)
 	{
 		m_path = _path;
 		m_internal = m_context.lock()->createTexture(_path);
+	}
+
+	WavefrontModel::WavefrontModel()
+	{
+		m_tanBitan = false;
+	}
+
+	WavefrontModel::WavefrontModel(bool _calcTanBitan)
+	{
+		m_tanBitan = _calcTanBitan;
 	}
 
 	std::vector<std::shared_ptr<glwrap::Face> > WavefrontModel::getFaces()
@@ -36,7 +56,7 @@ namespace cobebe
 	void WavefrontModel::onLoad(const std::string& _path)
 	{
 		m_path = _path;
-		m_internal = m_context.lock()->createObjMtlMesh(_path);
+		m_internal = m_context.lock()->createObjMtlMesh(_path, m_tanBitan);
 
 		std::list<std::shared_ptr<glwrap::Material> > matList = m_internal->getMatList();
 		std::shared_ptr<Texture> currentTex;

@@ -23,6 +23,11 @@ namespace glwrap
 
 	void Model::parse(std::string _path)
 	{
+		parse(_path, false);
+	}
+
+	void Model::parse(std::string _path, bool _tanBitan)
+	{
 		std::string mtlPath = _path.substr(0, _path.length() - 3) + "mtl";
 
 		parseMtl(mtlPath);
@@ -56,7 +61,7 @@ namespace glwrap
 		Face f;
 		Face fq;
 
-		glm::vec3 edge1, edge2, normal;
+		glm::vec3 vertexPosition, edge1, edge2, normal;
 		glm::vec2 deltaUV1, deltaUV2;
 		float factor;
 
@@ -83,10 +88,13 @@ namespace glwrap
 					{
 						currentPart->setBuffer("in_Normal", normalBuffer, materialCount);
 						normalBuffer = std::make_shared<VertexBuffer>();
-						currentPart->setBuffer("in_Tangent", tangentBuffer, materialCount);
-						tangentBuffer = std::make_shared<VertexBuffer>();
-						currentPart->setBuffer("in_Bitangent", bitangentBuffer, materialCount);
-						bitangentBuffer = std::make_shared<VertexBuffer>();
+						if (_tanBitan)
+						{
+							currentPart->setBuffer("in_Tangent", tangentBuffer, materialCount);
+							tangentBuffer = std::make_shared<VertexBuffer>();
+							currentPart->setBuffer("in_Bitangent", bitangentBuffer, materialCount);
+							bitangentBuffer = std::make_shared<VertexBuffer>();
+						}
 					}
 					//if (lightMapBuffer) currentPart->setBuffer("in_LightMapCoord", lightMapBuffer);
 					m_parts.push_back(currentPart);
@@ -112,10 +120,13 @@ namespace glwrap
 					{
 						currentPart->setBuffer("in_Normal", normalBuffer, materialCount);
 						normalBuffer = std::make_shared<VertexBuffer>();
-						currentPart->setBuffer("in_Tangent", tangentBuffer, materialCount);
-						tangentBuffer = std::make_shared<VertexBuffer>();
-						currentPart->setBuffer("in_Bitangent", bitangentBuffer, materialCount);
-						bitangentBuffer = std::make_shared<VertexBuffer>();
+						if (_tanBitan)
+						{
+							currentPart->setBuffer("in_Tangent", tangentBuffer, materialCount);
+							tangentBuffer = std::make_shared<VertexBuffer>();
+							currentPart->setBuffer("in_Bitangent", bitangentBuffer, materialCount);
+							bitangentBuffer = std::make_shared<VertexBuffer>();
+						}
 					}
 
 					materialCount++;
@@ -130,11 +141,13 @@ namespace glwrap
 			else if (splitLine.at(0) == "v")
 			{
 				if (!positionBuffer) positionBuffer = std::make_shared<VertexBuffer>();
-
-				positions.push_back(glm::vec3(
+				vertexPosition = glm::vec3(
 					atof(splitLine.at(1).c_str()),
 					atof(splitLine.at(2).c_str()),
-					atof(splitLine.at(3).c_str())));
+					atof(splitLine.at(3).c_str()));
+				positions.push_back(vertexPosition);
+
+				checkMinMax(vertexPosition);
 			}
 			else if (splitLine.at(0) == "vt")
 			{
@@ -149,8 +162,11 @@ namespace glwrap
 				if (!normalBuffer)
 				{
 					normalBuffer = std::make_shared<VertexBuffer>();
-					tangentBuffer = std::make_shared<VertexBuffer>();
-					bitangentBuffer = std::make_shared<VertexBuffer>();
+					if (_tanBitan)
+					{
+						tangentBuffer = std::make_shared<VertexBuffer>();
+						bitangentBuffer = std::make_shared<VertexBuffer>();
+					}
 				}
 
 				normals.push_back(glm::vec3(
@@ -220,31 +236,32 @@ namespace glwrap
 					f.nc = normals.at(atoi(subsplit.at(2).c_str()) - 1);
 					normalBuffer->add(f.nc);
 
-					edge1 = f.pb - f.pa;
-					edge2 = f.pc - f.pa;
-					deltaUV1 = f.tcb - f.tca;
-					deltaUV2 = f.tcc - f.tca;
-					factor = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-					f.tan.x = factor * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-					f.tan.y = factor * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-					f.tan.z = factor * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-					f.tan = glm::normalize(f.tan);
-
-					f.bitan.x = factor * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-					f.bitan.y = factor * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-					f.bitan.z = factor * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-					f.bitan = glm::normalize(f.bitan);
-
-					normal = glm::cross(f.tan, f.bitan);
-					factor = glm::dot(normal, f.na);
-					if (factor < 0)
+					if (_tanBitan)
 					{
-						f.tan = -f.tan;
-					}
+						edge1 = f.pb - f.pa;
+						edge2 = f.pc - f.pa;
+						deltaUV1 = f.tcb - f.tca;
+						deltaUV2 = f.tcc - f.tca;
+						factor = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-					tangentBuffer->add(f.tan);
-					bitangentBuffer->add(f.bitan);
+						f.tan.x = factor * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+						f.tan.y = factor * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+						f.tan.z = factor * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+						f.bitan.x = factor * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+						f.bitan.y = factor * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+						f.bitan.z = factor * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+						normal = glm::cross(f.tan, f.bitan);
+						factor = glm::dot(normal, f.na);
+						if (factor < 0)
+						{
+							f.tan = -f.tan;
+						}
+
+						tangentBuffer->add(f.tan);
+						bitangentBuffer->add(f.bitan);
+					}
 				}
 				//if (subsplit.size() >= 4)
 				//{
@@ -302,31 +319,32 @@ namespace glwrap
 				{
 					normalBuffer->add(fq.nc);
 
-					edge1 = fq.pb - fq.pa;
-					edge2 = fq.pc - fq.pa;
-					deltaUV1 = fq.tcb - fq.tca;
-					deltaUV2 = fq.tcc - fq.tca;
-					factor = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-					fq.tan.x = factor * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-					fq.tan.y = factor * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-					fq.tan.z = factor * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-					fq.tan = glm::normalize(fq.tan);
-
-					fq.bitan.x = factor * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-					fq.bitan.y = factor * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-					fq.bitan.z = factor * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-					fq.bitan = glm::normalize(fq.bitan);
-
-					normal = glm::cross(fq.tan, fq.bitan);
-					factor = glm::dot(normal, fq.na);
-					if (factor < 0)
+					if (_tanBitan)
 					{
-						fq.tan = -fq.tan;
-					}
+						edge1 = fq.pb - fq.pa;
+						edge2 = fq.pc - fq.pa;
+						deltaUV1 = fq.tcb - fq.tca;
+						deltaUV2 = fq.tcc - fq.tca;
+						factor = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
 
-					tangentBuffer->add(fq.tan);
-					bitangentBuffer->add(fq.bitan);
+						fq.tan.x = factor * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+						fq.tan.y = factor * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+						fq.tan.z = factor * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+						fq.bitan.x = factor * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+						fq.bitan.y = factor * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+						fq.bitan.z = factor * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+						normal = glm::cross(fq.tan, fq.bitan);
+						factor = glm::dot(normal, fq.na);
+						if (factor < 0)
+						{
+							fq.tan = -fq.tan;
+						}
+
+						tangentBuffer->add(fq.tan);
+						bitangentBuffer->add(fq.bitan);
+					}
 				}
 				//fq.lmcc = f.lmca;
 				//if (lightMapBuffer) lightMapBuffer->add(fq.lmcc);
@@ -341,11 +359,16 @@ namespace glwrap
 		if (normalBuffer)
 		{
 			currentPart->setBuffer("in_Normal", normalBuffer, materialCount);
-			currentPart->setBuffer("in_Tangent", tangentBuffer, materialCount);
-			currentPart->setBuffer("in_Bitangent", bitangentBuffer, materialCount);
+			if (_tanBitan)
+			{
+				currentPart->setBuffer("in_Tangent", tangentBuffer, materialCount);
+				currentPart->setBuffer("in_Bitangent", bitangentBuffer, materialCount);
+			}
 		}
 		//if (lightMapBuffer) currentPart->setBuffer("in_LightMapCoord", lightMapBuffer);
 		m_parts.push_back(currentPart);
+
+		m_size = m_maxPoint - m_minPoint;
 	}
 
 	void Model::draw(std::string _textureUniform)
@@ -354,6 +377,15 @@ namespace glwrap
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->draw(_textureUniform);
+		}
+	}
+
+	void Model::cullAndDraw(std::string _textureUniform)
+	{
+		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+			itr != m_parts.end(); itr++)
+		{
+			(*itr)->cullAndDraw(_textureUniform);
 		}
 	}
 
