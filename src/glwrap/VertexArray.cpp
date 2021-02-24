@@ -1,8 +1,8 @@
 #include <glwrap/VertexArray.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
-#include <glwrap/Part.h>
-#include <glwrap/Animation.h>
+#include <glwrap/ObjPart.h>
+#include <glwrap/ObjAnimation.h>
 #include <glwrap/Context.h>
 
 #include <fstream>
@@ -130,7 +130,7 @@ namespace glwrap
 		std::vector<glm::vec3> normals;
 		//std::vector<glm::vec2> lightMaps;
 
-		std::shared_ptr<Part> currentPart;
+		std::shared_ptr<ObjPart> currentPart;
 
 		std::shared_ptr<VertexBuffer> positionBuffer;
 		std::shared_ptr<VertexBuffer> texCoordBuffer;
@@ -434,7 +434,7 @@ namespace glwrap
 
 	void VertexArray::draw()
 	{
-		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->draw();
@@ -443,7 +443,7 @@ namespace glwrap
 
 	void VertexArray::cullAndDraw()
 	{
-		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->cullAndDraw();
@@ -452,7 +452,7 @@ namespace glwrap
 
 	void VertexArray::drawPart(std::string _partName)
 	{
-		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			if ((*itr)->getName() == _partName)
@@ -478,9 +478,9 @@ namespace glwrap
 		return m_cullAnimated;
 	}
 
-	std::shared_ptr<Animation> VertexArray::addAnimation(std::string _path)
+	std::shared_ptr<ObjAnimation> VertexArray::addAnimation(std::string _path)
 	{
-		std::shared_ptr<Animation> anim = m_context.lock()->createAnimation(
+		std::shared_ptr<ObjAnimation> anim = m_context.lock()->createAnimation(
 			m_self.lock(), _path);
 		m_animations.push_back(anim);
 		return anim;
@@ -610,12 +610,12 @@ namespace glwrap
 		return m_faces;
 	}
 
-	std::vector<std::shared_ptr<Part> > VertexArray::getParts()
+	std::vector<std::shared_ptr<ObjPart> > VertexArray::getParts()
 	{
 		return m_parts;
 	}
 
-	std::shared_ptr<Part> VertexArray::getPart(std::string _name)
+	std::shared_ptr<ObjPart> VertexArray::getPart(std::string _name)
 	{
 		for (int partIndex = 0; partIndex < m_parts.size(); partIndex++)
 		{
@@ -628,7 +628,7 @@ namespace glwrap
 		throw std::exception();
 	}
 
-	std::vector<std::shared_ptr<Animation> > VertexArray::getAnimations()
+	std::vector<std::shared_ptr<ObjAnimation> > VertexArray::getAnimations()
 	{
 		return m_animations;
 	}

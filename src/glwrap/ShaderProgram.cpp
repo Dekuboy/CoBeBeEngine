@@ -371,7 +371,7 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<Model> _model, std::string _textureUniform)
+	void ShaderProgram::draw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform)
 	{
 		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
 		m_context.lock()->setCurrentShader(m_self.lock());
@@ -390,7 +390,7 @@ namespace glwrap
 		glBindVertexArray(0);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model> _model, std::string _textureUniform)
+	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
 		glm::vec4 lastViewport = m_viewport;
@@ -440,7 +440,7 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void ShaderProgram::cullAndDraw(std::shared_ptr<Model> _model, std::string _textureUniform,
+	void ShaderProgram::cullAndDraw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform,
 		glm::vec3& _centre, glm::vec3& _size, glm::mat3& _rotation)
 	{
 		if (m_viewingFrustum)
@@ -470,7 +470,7 @@ namespace glwrap
 	}
 
 	void ShaderProgram::cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture,
-		std::shared_ptr<Model> _model, std::string _textureUniform,
+		std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform,
 		glm::vec3& _centre, glm::vec3& _size, glm::mat3& _rotation)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());

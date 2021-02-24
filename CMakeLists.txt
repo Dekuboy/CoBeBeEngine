@@ -29,14 +29,14 @@ add_library(glwrap
 	src/glwrap/ViewingFrustum.cpp
 	src/glwrap/GBuffer.h
 	src/glwrap/GBuffer.cpp
-	src/glwrap/Animation.h
-	src/glwrap/Animation.cpp
-	src/glwrap/Frame.h
-	src/glwrap/Frame.cpp
-	src/glwrap/Part.h
-	src/glwrap/Part.cpp
-	src/glwrap/Model.h
-	src/glwrap/Model.cpp
+	src/glwrap/ObjAnimation.h
+	src/glwrap/ObjAnimation.cpp
+	src/glwrap/ObjFrame.h
+	src/glwrap/ObjFrame.cpp
+	src/glwrap/ObjPart.h
+	src/glwrap/ObjPart.cpp
+	src/glwrap/ObjMtlModel.h
+	src/glwrap/ObjMtlModel.cpp
 	src/glwrap/Material.h
 	src/glwrap/Material.cpp
 	src/glwrap/stb_image.h
@@ -106,8 +106,8 @@ add_library(cobebe
 	src/cobebe/Renderer/Lighting.cpp
 	src/cobebe/Renderer/PointLight.h
 	src/cobebe/Renderer/PointLight.cpp
-	src/cobebe/Renderer/AnimationController.h
-	src/cobebe/Renderer/AnimationController.cpp
+	src/cobebe/Renderer/ObjAnimationController.h
+	src/cobebe/Renderer/ObjAnimationController.cpp
 
 	src/cobebe/GUI/Canvas.h
 	src/cobebe/GUI/Canvas.cpp

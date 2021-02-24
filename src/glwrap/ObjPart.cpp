@@ -1,8 +1,8 @@
-#include <glwrap/Part.h>
+#include <glwrap/ObjPart.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/VertexArray.h>
-#include <glwrap/Frame.h>
-#include <glwrap/Animation.h>
+#include <glwrap/ObjFrame.h>
+#include <glwrap/ObjAnimation.h>
 #include <glwrap/Material.h>
 #include <glwrap/Context.h>
 #include <glwrap/ShaderProgram.h>
@@ -115,7 +115,7 @@ namespace glwrap
 
 	// ---------------------------------------------------------------------------------
 
-	Part::Part(std::shared_ptr<VertexArray> _mesh, std::string _name)
+	ObjPart::ObjPart(std::shared_ptr<VertexArray> _mesh, std::string _name)
 	{
 		m_name = _name;
 		m_model = _mesh;
@@ -125,22 +125,22 @@ namespace glwrap
 		generateArrays();
 	}
 
-	Part::~Part()
+	ObjPart::~ObjPart()
 	{
 
 	}
 
-	std::string Part::getName()
+	std::string ObjPart::getName()
 	{
 		return m_name;
 	}
 
-	std::vector<std::shared_ptr<Face> > Part::getFaces()
+	std::vector<std::shared_ptr<Face> > ObjPart::getFaces()
 	{
 		return m_faces;
 	}
 
-	void Part::addFace(std::shared_ptr<Face> _face)
+	void ObjPart::addFace(std::shared_ptr<Face> _face)
 	{
 		m_faces.push_back(_face);
 
@@ -192,7 +192,7 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	void Part::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
+	void ObjPart::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
 	{
 		if (_attribute == "in_Position")
 		{
@@ -226,7 +226,7 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	int Part::getVertexCount(int _materialId)
+	int ObjPart::getVertexCount(int _materialId)
 	{
 		if (m_buffers.size() < 1)
 		{
@@ -236,7 +236,7 @@ namespace glwrap
 		return m_buffers.at(_materialId).at(0)->getDataSize() / m_buffers.at(_materialId).at(0)->getComponents();
 	}
 
-	GLuint Part::getId(int _materialId)
+	GLuint ObjPart::getId(int _materialId)
 	{
 		if (m_dirty)
 		{
@@ -269,7 +269,7 @@ namespace glwrap
 		return m_idList.at(_materialId);
 	}
 
-	void Part::draw()
+	void ObjPart::draw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
@@ -280,7 +280,7 @@ namespace glwrap
 		drawArrays();
 	}
 
-	void Part::cullAndDraw()
+	void ObjPart::cullAndDraw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
@@ -331,7 +331,7 @@ namespace glwrap
 		}
 	}
 
-	void Part::draw(std::string _textureUniform)
+	void ObjPart::draw(std::string _textureUniform)
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
@@ -342,7 +342,7 @@ namespace glwrap
 		drawArrays(_textureUniform);
 	}
 
-	void Part::cullAndDraw(std::string _textureUniform)
+	void ObjPart::cullAndDraw(std::string _textureUniform)
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
@@ -393,21 +393,21 @@ namespace glwrap
 		}
 	}
 
-	glm::vec3 Part::getSize()
+	glm::vec3 ObjPart::getSize()
 	{
 		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
 	}
 
-	void Part::translate(int _undo)
+	void ObjPart::translate(int _undo)
 	{
-		std::vector<std::shared_ptr<Animation> > animations =
+		std::vector<std::shared_ptr<ObjAnimation> > animations =
 			m_model.lock()->getAnimations();
-		std::shared_ptr<Frame> frame;
+		std::shared_ptr<ObjFrame> frame;
 		std::shared_ptr<Translation> translation;
 
 		glm::vec3 translateVector(0);
 
-		for (std::vector<std::shared_ptr<Animation> >::iterator itr = animations.begin();
+		for (std::vector<std::shared_ptr<ObjAnimation> >::iterator itr = animations.begin();
 			itr != animations.end(); itr++)
 		{
 			if ((*itr)->getEnabled())
@@ -445,7 +445,7 @@ namespace glwrap
 		}
 	}
 
-	void Part::drawArrays()
+	void ObjPart::drawArrays()
 	{
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
 			getCurrentShader();
@@ -482,7 +482,7 @@ namespace glwrap
 		}
 	}
 
-	void Part::drawArrays(std::string _textureUniform)
+	void ObjPart::drawArrays(std::string _textureUniform)
 	{
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
 			getCurrentShader();
@@ -513,7 +513,7 @@ namespace glwrap
 		}
 	}
 
-	void Part::generateArrays()
+	void ObjPart::generateArrays()
 	{
 		m_buffers.resize(m_buffers.size() + 1);
 		m_idList.resize(m_idList.size() + 1);

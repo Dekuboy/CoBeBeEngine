@@ -9,7 +9,7 @@ namespace glwrap
 {
 	class Context;
 	class VertexArray;
-	class Model;
+	class ObjMtlModel;
 	class Texture;
 	class RenderTexture;
 	class GBuffer;
@@ -45,18 +45,18 @@ namespace glwrap
 		void draw(std::shared_ptr<RenderTexture> _renderTexture);
 		void draw(std::shared_ptr<VertexArray> _vertexArray);
 		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray);
-		void draw(std::shared_ptr<Model> _model, std::string _textureUniform);
-		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model> _model, std::string _textureUniform);
+		void draw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform);
+		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform);
 
 		void cullAndDraw(std::shared_ptr<VertexArray> _vertexArray, 
 			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
 		void cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, 
 			std::shared_ptr<VertexArray> _vertexArray, 
 			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
-		void cullAndDraw(std::shared_ptr<Model> _model, std::string _textureUniform, 
+		void cullAndDraw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform,
 			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
 		void cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, 
-			std::shared_ptr<Model> _model, std::string _textureUniform, 
+			std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform, 
 			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
 
 		std::shared_ptr<ViewingFrustum> getViewingFrustum();

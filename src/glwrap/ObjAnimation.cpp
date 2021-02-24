@@ -1,43 +1,43 @@
-#include <glwrap/Animation.h>
-#include <glwrap/Frame.h>
+#include <glwrap/ObjAnimation.h>
+#include <glwrap/ObjFrame.h>
 #include <glwrap/VertexArray.h>
-#include <glwrap/Part.h>
+#include <glwrap/ObjPart.h>
 #include <glwrap/FileManager.h>
 #include <fstream>
 
 namespace glwrap
 {
-	Animation::Animation(std::shared_ptr<VertexArray> _model)
+	ObjAnimation::ObjAnimation(std::shared_ptr<VertexArray> _model)
 	{
 		this->m_model = _model;
 	}
 
-	Animation::~Animation()
+	ObjAnimation::~ObjAnimation()
 	{
 
 	}
 
-	void Animation::parse(std::string _path)
+	void ObjAnimation::parse(std::string _path)
 	{
-		std::shared_ptr<Animation> aniPtr = m_self.lock();
+		std::shared_ptr<ObjAnimation> aniPtr = m_self.lock();
 		if (_path == "")
 		{
-			m_frames.push_back(std::make_shared<Frame>(aniPtr));
+			m_frames.push_back(std::make_shared<ObjFrame>(aniPtr));
 			m_name = "Default";
 			m_frame = 0;
 			m_enabled = false;
 			m_repeating = true;
-			m_mergeFrame.reset(new Frame(m_self.lock()));
+			m_mergeFrame.reset(new ObjFrame(m_self.lock()));
 		}
 		else
 		{
 			std::ifstream file(FileManager::returnPath(_path).c_str());
 			std::string line;
 			std::vector<std::string> parameters;
-			std::vector<std::shared_ptr<Part> > parts = m_model->getParts();
+			std::vector<std::shared_ptr<ObjPart> > parts = m_model->getParts();
 			glm::vec3 v, rotation;
 			bool found = false;
-			m_mergeFrame.reset(new Frame(m_self.lock()));
+			m_mergeFrame.reset(new ObjFrame(m_self.lock()));
 
 			m_name = "";
 			m_frame = 0;
@@ -63,7 +63,7 @@ namespace glwrap
 
 					if (parameters.at(0) == "f")
 					{
-						m_frames.push_back(std::make_shared<Frame>(aniPtr));
+						m_frames.push_back(std::make_shared<ObjFrame>(aniPtr));
 					}
 
 					if (parameters.at(0) == "t")
@@ -73,7 +73,7 @@ namespace glwrap
 
 						for (int partIndex = 0; partIndex < parts.size(); partIndex++)
 						{
-							std::shared_ptr<Part> cp = parts.at(partIndex);
+							std::shared_ptr<ObjPart> cp = parts.at(partIndex);
 							v.x = cp->getSize().x * (atof(parameters.at(2).c_str()) / 100.0f);
 							v.y = cp->getSize().y * (atof(parameters.at(3).c_str()) / 100.0f);
 							v.z = cp->getSize().z * (atof(parameters.at(4).c_str()) / 100.0f);
@@ -102,12 +102,12 @@ namespace glwrap
 		}
 	}
 
-	void Animation::setRepeating(bool _switch)
+	void ObjAnimation::setRepeating(bool _switch)
 	{
 		m_repeating = _switch;
 	}
 
-	void Animation::setEnabled(bool _switch)
+	void ObjAnimation::setEnabled(bool _switch)
 	{
 		if (m_enabled != _switch)
 		{
@@ -116,22 +116,22 @@ namespace glwrap
 		}
 	}
 
-	bool Animation::getEnabled()
+	bool ObjAnimation::getEnabled()
 	{
 		return m_enabled;
 	}
 
-	std::string Animation::getName()
+	std::string ObjAnimation::getName()
 	{
 		return m_name;
 	}
 
-	void Animation::setName(std::string _name)
+	void ObjAnimation::setName(std::string _name)
 	{
 		m_name = _name;
 	}
 
-	std::shared_ptr<Frame> Animation::getFrame()
+	std::shared_ptr<ObjFrame> ObjAnimation::getFrame()
 	{
 		if (m_frame < m_frames.size())
 		{
@@ -143,7 +143,7 @@ namespace glwrap
 		}
 	}
 
-	std::shared_ptr<Frame> Animation::getMergeFrame()
+	std::shared_ptr<ObjFrame> ObjAnimation::getMergeFrame()
 	{
 		double nearestFrame = (int)m_frame;
 		double weight = m_frame - nearestFrame;
@@ -162,22 +162,22 @@ namespace glwrap
 		return m_mergeFrame;
 	}
 
-	int Animation::getCurrentFrame()
+	int ObjAnimation::getCurrentFrame()
 	{
 		return m_frame;
 	}
 
-	double Animation::getTrueCurrentFrame()
+	double ObjAnimation::getTrueCurrentFrame()
 	{
 		return m_frame;
 	}
 
-	int Animation::getMaxFrames()
+	int ObjAnimation::getMaxFrames()
 	{
 		return m_frames.size();
 	}
 
-	void Animation::nextFrame(float _deltaTime)
+	void ObjAnimation::nextFrame(float _deltaTime)
 	{
 		if (m_enabled == true)
 		{
@@ -198,12 +198,12 @@ namespace glwrap
 		}
 	}
 
-	void Animation::setCurrentFrame(double _currentFrame)
+	void ObjAnimation::setCurrentFrame(double _currentFrame)
 	{
 		m_frame = _currentFrame;
 	}
 
-	void Animation::splitString(std::string input, char splitter, std::vector<std::string>* output)
+	void ObjAnimation::splitString(std::string input, char splitter, std::vector<std::string>* output)
 	{
 		std::string current;
 
@@ -228,10 +228,10 @@ namespace glwrap
 		}
 	}
 
-	void Animation::generateMergeFrame(std::shared_ptr<Frame> a,
-		std::shared_ptr<Frame> b, double weight)
+	void ObjAnimation::generateMergeFrame(std::shared_ptr<ObjFrame> a,
+		std::shared_ptr<ObjFrame> b, double weight)
 	{
-		Frame::copy(a, m_mergeFrame);
-		Frame::merge(b, m_mergeFrame, weight);
+		ObjFrame::copy(a, m_mergeFrame);
+		ObjFrame::merge(b, m_mergeFrame, weight);
 	}
 }

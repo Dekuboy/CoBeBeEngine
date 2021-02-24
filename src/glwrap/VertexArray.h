@@ -11,8 +11,8 @@ namespace glwrap
 
 	class Context;
 	class VertexBuffer;
-	class Part;
-	class Animation;
+	class ObjPart;
+	class ObjAnimation;
 
 	class VertexArray
 	{
@@ -32,7 +32,7 @@ namespace glwrap
 		void setCullAnimation(bool _switch);
 		bool getCullAnimation();
 
-		std::shared_ptr<Animation> addAnimation(std::string _path);
+		std::shared_ptr<ObjAnimation> addAnimation(std::string _path);
 		int playAnimationOnce(std::string _name);
 		void playAnimationOnce(int _index);
 		int enableAnimation(std::string _name);
@@ -44,17 +44,17 @@ namespace glwrap
 		void disableAllAnimations();
 
 		std::vector<std::shared_ptr<Face> > getFaces();
-		std::vector<std::shared_ptr<Part> > getParts();
-		std::shared_ptr<Part> getPart(std::string _name);
-		std::vector<std::shared_ptr<Animation> > getAnimations();
+		std::vector<std::shared_ptr<ObjPart> > getParts();
+		std::shared_ptr<ObjPart> getPart(std::string _name);
+		std::vector<std::shared_ptr<ObjAnimation> > getAnimations();
 
 	protected:
 		friend class Context;
 
 		bool m_dirty;
 		std::vector<std::shared_ptr<Face> > m_faces;
-		std::vector<std::shared_ptr<Part> > m_parts;
-		std::vector<std::shared_ptr<Animation> > m_animations;
+		std::vector<std::shared_ptr<ObjPart> > m_parts;
+		std::vector<std::shared_ptr<ObjAnimation> > m_animations;
 		std::weak_ptr<VertexArray> m_self;
 		std::weak_ptr<Context> m_context;
 

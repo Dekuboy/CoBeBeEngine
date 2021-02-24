@@ -4,15 +4,15 @@
 
 namespace cobebe
 {
-	class PartAnimation;
+	class ObjPartAnimation;
 	class Renderer;
 
-	class AnimationController : public Component
+	class ObjAnimationController : public Component
 	{
 	public:
-		AnimationController(std::shared_ptr<glwrap::VertexArray> _model);
+		ObjAnimationController(std::shared_ptr<glwrap::VertexArray> _model);
 
-		~AnimationController();
+		~ObjAnimationController();
 
 		void loadAnimation(std::string _path);
 
@@ -34,7 +34,7 @@ namespace cobebe
 	private:
 		friend class Renderer;
 
-		std::list<std::shared_ptr<PartAnimation> > m_animations;
+		std::list<std::shared_ptr<ObjPartAnimation> > m_animations;
 		std::shared_ptr<glwrap::VertexArray> m_model;
 
 		std::vector<double> m_animationTimes;

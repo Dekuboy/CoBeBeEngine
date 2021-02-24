@@ -3,8 +3,8 @@
 
 namespace glwrap
 {
-	class Model;
-	class Part;
+	class ObjMtlModel;
+	class ObjPart;
 	class Texture;
 
 	class Material
@@ -14,8 +14,8 @@ namespace glwrap
 		void setTexture(std::shared_ptr<Texture> _texture);
 
 	private:
-		friend class Model;
-		friend class Part;
+		friend class ObjMtlModel;
+		friend class ObjPart;
 
 		std::string m_name;
 		std::string m_mapPath;

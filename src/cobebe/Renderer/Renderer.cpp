@@ -5,7 +5,7 @@
 #include <cobebe/Core/Core.h>
 #include <cobebe/Resources/RendAssets.h>
 #include <cobebe/Core/Camera.h>
-#include <cobebe/Renderer/AnimationController.h>
+#include <cobebe/Renderer/ObjAnimationController.h>
 
 namespace cobebe
 {
@@ -69,11 +69,11 @@ namespace cobebe
 		return m_objMtlModel;
 	}
 
-	std::shared_ptr<AnimationController> Renderer::addAnimationController()
+	std::shared_ptr<ObjAnimationController> Renderer::addAnimationController()
 	{
 		if (m_mesh)
 		{
-			m_animationController = getEntity()->addComponent<AnimationController>(m_mesh->m_internal);
+			m_animationController = getEntity()->addComponent<ObjAnimationController>(m_mesh->m_internal);
 			return m_animationController;
 		}
 		return nullptr;

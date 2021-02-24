@@ -41,13 +41,13 @@ namespace glwrap
 	class VertexArray;
 	class VertexBuffer;
 	class Material;
-	class Model;
+	class ObjMtlModel;
 
-	class Part
+	class ObjPart
 	{
 	public:
-		Part(std::shared_ptr<VertexArray> _mesh, std::string _name);
-		~Part();
+		ObjPart(std::shared_ptr<VertexArray> _mesh, std::string _name);
+		~ObjPart();
 
 		std::string getName();
 		std::vector<std::shared_ptr<Face> > getFaces();
@@ -68,7 +68,7 @@ namespace glwrap
 	private:
 		friend class Context;
 		friend class VertexArray;
-		friend class Model;
+		friend class ObjMtlModel;
 
 		void translate(int _undo);
 		void drawArrays();
@@ -88,7 +88,7 @@ namespace glwrap
 		bool m_useMaterial;
 		std::list<std::shared_ptr<Material> > m_materials;
 
-		std::weak_ptr<Part> m_self;
+		std::weak_ptr<ObjPart> m_self;
 		std::weak_ptr<Context> m_context;
 
 		float m_offsetX;

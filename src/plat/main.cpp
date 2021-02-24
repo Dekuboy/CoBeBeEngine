@@ -57,7 +57,7 @@ int main()
 		renderer->setMesh(mesh);
 		renderer->setTexture("images\\curuthers_diffuse.png");
 		renderer->setShader("deferred_shaders\\renderGAni.shad");
-		std::shared_ptr<cobebe::AnimationController> anm = renderer->addAnimationController();
+		std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
 		renderer->loadAnimation("animations\\run.anm");
 
 		anm->playAnimation(0, 1);
@@ -145,7 +145,7 @@ void CamController::onTick()
 		m_camera.lock()->m_position += x;
 	}
 
-	getEntity()->getComponent<cobebe::AnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());
+	getEntity()->getComponent<cobebe::ObjAnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());
 }
 
 void CamController::onPostDisplay()

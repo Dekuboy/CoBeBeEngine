@@ -85,7 +85,7 @@ namespace cobebe
 		}
 	}
 
-	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform)
+	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::ObjMtlModel> _meshInternal, std::string _textureUniform)
 	{
 		if (m_isOn)
 		{
@@ -117,7 +117,7 @@ namespace cobebe
 		}
 	}
 
-	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform)
+	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::ObjMtlModel> _meshInternal, std::string _textureUniform)
 	{
 		if (m_isOn)
 		{

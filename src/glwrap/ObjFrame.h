@@ -4,17 +4,17 @@
 
 namespace glwrap
 {
-	class Animation;
-	class Part;
+	class ObjAnimation;
+	class ObjPart;
 
 	class Translation
 	{
 	public:
-		Translation(std::shared_ptr<Part> _part, glm::vec3 _position,
+		Translation(std::shared_ptr<ObjPart> _part, glm::vec3 _position,
 			glm::vec3 _rotation);
 		~Translation();
 
-		std::shared_ptr<Part> getPart();
+		std::shared_ptr<ObjPart> getPart();
 
 		float getX();
 		float getY();
@@ -37,7 +37,7 @@ namespace glwrap
 		void setZRotation(float _ZRotation);
 
 	private:
-		std::weak_ptr<Part> m_part;
+		std::weak_ptr<ObjPart> m_part;
 		
 		float m_x;
 		float m_y;
@@ -51,22 +51,22 @@ namespace glwrap
 
 	// ------------------------------------------------------------------
 
-	class Frame
+	class ObjFrame
 	{
 	public:
-		Frame(std::shared_ptr<Animation> _animation);
+		ObjFrame(std::shared_ptr<ObjAnimation> _animation);
 
-		static void copy(std::shared_ptr<Frame> _source, std::shared_ptr<Frame> _destination);
-		static void merge(std::shared_ptr<Frame> _source, std::shared_ptr<Frame> _destination,
+		static void copy(std::shared_ptr<ObjFrame> _source, std::shared_ptr<ObjFrame> _destination);
+		static void merge(std::shared_ptr<ObjFrame> _source, std::shared_ptr<ObjFrame> _destination,
 			double _weight = 0.5f);
 
 		std::vector<std::shared_ptr<Translation> > getTranslations();
-		std::shared_ptr<Translation> getTranslation(std::shared_ptr<Part> _part, bool _add = false);
+		std::shared_ptr<Translation> getTranslation(std::shared_ptr<ObjPart> _part, bool _add = false);
 
 	private:
-		friend class Animation;
+		friend class ObjAnimation;
 
-		std::shared_ptr<Animation> m_animation;
+		std::shared_ptr<ObjAnimation> m_animation;
 		std::vector<std::shared_ptr<Translation> > m_translations;
 
 	};

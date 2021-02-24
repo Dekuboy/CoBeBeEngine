@@ -1,8 +1,8 @@
-#include <glwrap/Model.h>
+#include <glwrap/ObjMtlModel.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
-#include <glwrap/Part.h>
-#include <glwrap/Animation.h>
+#include <glwrap/ObjPart.h>
+#include <glwrap/ObjAnimation.h>
 #include <glwrap/Context.h>
 #include <glwrap/Material.h>
 
@@ -11,22 +11,22 @@
 
 namespace glwrap
 {
-	Model::Model()
+	ObjMtlModel::ObjMtlModel()
 	{
 
 	}
 
-	Model::Model(std::string _path) : VertexArray(_path)
+	ObjMtlModel::ObjMtlModel(std::string _path) : VertexArray(_path)
 	{
 
 	}
 
-	void Model::parse(std::string _path)
+	void ObjMtlModel::parse(std::string _path)
 	{
 		parse(_path, false);
 	}
 
-	void Model::parse(std::string _path, bool _tanBitan)
+	void ObjMtlModel::parse(std::string _path, bool _tanBitan)
 	{
 		std::string mtlPath = _path.substr(0, _path.length() - 3) + "mtl";
 
@@ -46,7 +46,7 @@ namespace glwrap
 		std::vector<glm::vec3> normals;
 		//std::vector<glm::vec2> lightMaps;
 
-		std::shared_ptr<Part> currentPart;
+		std::shared_ptr<ObjPart> currentPart;
 
 		std::shared_ptr<Material> currentMaterial;
 		int materialCount = 0;
@@ -371,27 +371,27 @@ namespace glwrap
 		m_size = m_maxPoint - m_minPoint;
 	}
 
-	void Model::draw(std::string _textureUniform)
+	void ObjMtlModel::draw(std::string _textureUniform)
 	{
-		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->draw(_textureUniform);
 		}
 	}
 
-	void Model::cullAndDraw(std::string _textureUniform)
+	void ObjMtlModel::cullAndDraw(std::string _textureUniform)
 	{
-		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->cullAndDraw(_textureUniform);
 		}
 	}
 
-	void Model::drawPart(std::string _partName, std::string _textureUniform)
+	void ObjMtlModel::drawPart(std::string _partName, std::string _textureUniform)
 	{
-		for (std::vector<std::shared_ptr<Part> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			if ((*itr)->getName() == _partName)
@@ -402,7 +402,7 @@ namespace glwrap
 		}
 	}
 
-	void Model::parseMtl(std::string _path)
+	void ObjMtlModel::parseMtl(std::string _path)
 	{
 		std::ifstream file(FileManager::returnPath(_path).c_str());
 
@@ -459,7 +459,7 @@ namespace glwrap
 		}
 	}
 
-	std::shared_ptr<Material> Model::getMaterial(std::string _material)
+	std::shared_ptr<Material> ObjMtlModel::getMaterial(std::string _material)
 	{
 		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materialList.begin();
 			itr != m_materialList.end(); itr++)
@@ -472,7 +472,7 @@ namespace glwrap
 		return 0;
 	}
 
-	std::list<std::shared_ptr<Material> >& Model::getMatList()
+	std::list<std::shared_ptr<Material> >& ObjMtlModel::getMatList()
 	{
 		return m_materialList;
 	}

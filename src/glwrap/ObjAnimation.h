@@ -6,14 +6,17 @@
 namespace glwrap
 {
 	class VertexArray;
-	class Frame;
+	class ObjFrame;
 	class Context;
 
-	class Animation
+	/**
+	* \brief 
+	*/
+	class ObjAnimation
 	{
 	public:
-		Animation(std::shared_ptr<VertexArray> _model);
-		~Animation();
+		ObjAnimation(std::shared_ptr<VertexArray> _model);
+		~ObjAnimation();
 
 		void parse(std::string _path);
 
@@ -23,8 +26,8 @@ namespace glwrap
 		void setEnabled(bool _switch);
 		void setName(std::string _name);
 
-		std::shared_ptr<Frame> getFrame();
-		std::shared_ptr<Frame> getMergeFrame();
+		std::shared_ptr<ObjFrame> getFrame();
+		std::shared_ptr<ObjFrame> getMergeFrame();
 		int getCurrentFrame();
 		double getTrueCurrentFrame();
 		int getMaxFrames();
@@ -39,15 +42,15 @@ namespace glwrap
 		double m_frame;
 		bool m_enabled;
 		bool m_repeating;
-		std::vector<std::shared_ptr<Frame> > m_frames;
-		std::shared_ptr<Frame> m_mergeFrame;
-		std::weak_ptr<Animation> m_self;
+		std::vector<std::shared_ptr<ObjFrame> > m_frames;
+		std::shared_ptr<ObjFrame> m_mergeFrame;
+		std::weak_ptr<ObjAnimation> m_self;
 		std::weak_ptr<Context> m_context;
 
 		void splitString(std::string input, char splitter, 
 			std::vector<std::string>* output);
-		void generateMergeFrame(std::shared_ptr<Frame> a, 
-			std::shared_ptr<Frame> b, double weight);
+		void generateMergeFrame(std::shared_ptr<ObjFrame> a, 
+			std::shared_ptr<ObjFrame> b, double weight);
 
 	};
 }

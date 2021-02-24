@@ -10,7 +10,7 @@ namespace cobebe
 	class Canvas;
 	class Lighting;
 	class Camera;
-	class AnimationController;
+	class ObjAnimationController;
 
 	/**
 	* \brief Stores a VertexArray to set in Renderer
@@ -56,7 +56,7 @@ namespace cobebe
 	private:
 		friend class Renderer;
 
-		std::shared_ptr<glwrap::Model> m_internalModel; ///< Pointer to OpenGL Model
+		std::shared_ptr<glwrap::ObjMtlModel> m_internalModel; ///< Pointer to OpenGL Model
 
 		void onLoad(const std::string& _path);
 
@@ -178,14 +178,14 @@ namespace cobebe
 
 	};
 
-	class PartAnimation : public Asset
+	class ObjPartAnimation : public Asset
 	{
 	public:
 
 	private:
-		friend class AnimationController;
+		friend class ObjAnimationController;
 
-		std::shared_ptr<glwrap::Animation> m_internal; ///< Pointer to OpenGL PartAnimation
+		std::shared_ptr<glwrap::ObjAnimation> m_internal; ///< Pointer to OpenGL PartAnimation
 
 		void onLoad(const std::string& _path);
 

@@ -1,9 +1,9 @@
-#include <glwrap/Frame.h>
-#include <glwrap/Part.h>
+#include <glwrap/ObjFrame.h>
+#include <glwrap/ObjPart.h>
 
 namespace glwrap
 {
-	Translation::Translation(std::shared_ptr<Part> _part, glm::vec3 _position,
+	Translation::Translation(std::shared_ptr<ObjPart> _part, glm::vec3 _position,
 		glm::vec3 _rotation)
 	{
 		m_part = _part;
@@ -22,7 +22,7 @@ namespace glwrap
 
 	}
 
-	std::shared_ptr<Part> Translation::getPart()
+	std::shared_ptr<ObjPart> Translation::getPart()
 	{
 		return m_part.lock();
 	}
@@ -111,15 +111,15 @@ namespace glwrap
 	// ------------------------------------------------------------------
 
 
-	Frame::Frame(std::shared_ptr<Animation> _animation)
+	ObjFrame::ObjFrame(std::shared_ptr<ObjAnimation> _animation)
 	{
 		m_animation = _animation;
 	}
 
-	void Frame::copy(std::shared_ptr<Frame> _source, std::shared_ptr<Frame> _destination)
+	void ObjFrame::copy(std::shared_ptr<ObjFrame> _source, std::shared_ptr<ObjFrame> _destination)
 	{
 		std::shared_ptr<Translation> translation;
-		std::shared_ptr<Part> part;
+		std::shared_ptr<ObjPart> part;
 		glm::vec3 position, rotation;
 		_destination->m_translations.clear();
 
@@ -136,11 +136,11 @@ namespace glwrap
 		}
 	}
 
-	void Frame::merge(std::shared_ptr<Frame> _source, std::shared_ptr<Frame> _destination, double _weight)
+	void ObjFrame::merge(std::shared_ptr<ObjFrame> _source, std::shared_ptr<ObjFrame> _destination, double _weight)
 	{
 		std::shared_ptr<Translation> translation;
 		std::shared_ptr<Translation> to;
-		std::shared_ptr<Part> part;
+		std::shared_ptr<ObjPart> part;
 
 		glm::vec3 empty(0);
 
@@ -186,12 +186,12 @@ namespace glwrap
 		}
 	}
 
-	std::vector<std::shared_ptr<Translation> > Frame::getTranslations()
+	std::vector<std::shared_ptr<Translation> > ObjFrame::getTranslations()
 	{
 		return m_translations;
 	}
 
-	std::shared_ptr<Translation> Frame::getTranslation(std::shared_ptr<Part> _part, bool _add)
+	std::shared_ptr<Translation> ObjFrame::getTranslation(std::shared_ptr<ObjPart> _part, bool _add)
 	{
 		for (std::vector<std::shared_ptr<Translation> >::iterator itr = m_translations.begin();
 			itr != m_translations.end(); itr++)

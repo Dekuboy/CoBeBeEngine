@@ -15,7 +15,7 @@ namespace cobebe
 	class Texture;
 	class Shader;
 	class Lighting;
-	class AnimationController;
+	class ObjAnimationController;
 
 	/**
 	* \brief Displays an Entity to the screen via loaded assets
@@ -77,7 +77,7 @@ namespace cobebe
 		/**
 		*
 		*/
-		std::shared_ptr<AnimationController> addAnimationController();
+		std::shared_ptr<ObjAnimationController> addAnimationController();
 		/**
 		*
 		*/
@@ -91,7 +91,7 @@ namespace cobebe
 		std::shared_ptr<WavefrontModel> m_objMtlModel; ///< Loaded WavefrontModel to draw
 		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
-		std::shared_ptr<AnimationController> m_animationController; ///< Stores animation info
+		std::shared_ptr<ObjAnimationController> m_animationController; ///< Stores animation info
 
 		bool m_cullByPart; ///< Culls a models individual parts -useful for large or animated objects
 

@@ -2,7 +2,7 @@
 #include <cobebe/Renderer/PointLight.h>
 #include <cobebe/Resources/Resources.h>
 #include <cobebe/Resources/RendAssets.h>
-#include <cobebe/Renderer/AnimationController.h>
+#include <cobebe/Renderer/ObjAnimationController.h>
 #include <cobebe/Core/Core.h>
 #include <cobebe/Core/Camera.h>
 #include <glm/ext.hpp>
@@ -169,7 +169,7 @@ namespace cobebe
 	}
 
 	void Lighting::draw(std::shared_ptr<glwrap::VertexArray> _meshInternal,
-		std::shared_ptr<AnimationController> _animation, glm::mat4 _modelMat)
+		std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat)
 	{
 		ShadowModel tempModel;
 		tempModel.m_mesh = _meshInternal;

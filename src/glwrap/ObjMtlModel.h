@@ -9,11 +9,11 @@ namespace glwrap
 	/**
 	* \brief Model class which utilises a .mtl file to find textures
 	*/
-	class Model : public VertexArray
+	class ObjMtlModel : public VertexArray
 	{
 	public:
-		Model();
-		Model(std::string _path);
+		ObjMtlModel();
+		ObjMtlModel(std::string _path);
 
 		void parse(std::string _path);
 		void parse(std::string _path, bool _tanBitan);

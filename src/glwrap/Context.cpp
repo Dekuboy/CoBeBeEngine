@@ -65,44 +65,44 @@ namespace glwrap
 		return rtn;
 	}
 
-	std::shared_ptr<Model> Context::createObjMtlMesh(std::string _path)
+	std::shared_ptr<ObjMtlModel> Context::createObjMtlMesh(std::string _path)
 	{
-		std::shared_ptr<Model> rtn = std::make_shared<Model>();
+		std::shared_ptr<ObjMtlModel> rtn = std::make_shared<ObjMtlModel>();
 		rtn->m_context = m_self;
 		rtn->m_self = rtn;
 		rtn->parse(_path);
 		return rtn;
 	}
 
-	std::shared_ptr<Model> Context::createObjMtlMesh(std::string _path, bool _calcTanBitan)
+	std::shared_ptr<ObjMtlModel> Context::createObjMtlMesh(std::string _path, bool _calcTanBitan)
 	{
-		std::shared_ptr<Model> rtn = std::make_shared<Model>();
+		std::shared_ptr<ObjMtlModel> rtn = std::make_shared<ObjMtlModel>();
 		rtn->m_context = m_self;
 		rtn->m_self = rtn;
 		rtn->parse(_path, _calcTanBitan);
 		return rtn;
 	}
 
-	std::shared_ptr<Part> Context::createPart(std::shared_ptr<VertexArray> _mesh, std::string _name)
+	std::shared_ptr<ObjPart> Context::createPart(std::shared_ptr<VertexArray> _mesh, std::string _name)
 	{
-		std::shared_ptr<Part> rtn = std::make_shared<Part>(_mesh, _name);
+		std::shared_ptr<ObjPart> rtn = std::make_shared<ObjPart>(_mesh, _name);
 		rtn->m_context = m_self;
 		rtn->m_self = rtn;
 		return rtn;
 	}
 
-	std::shared_ptr<Animation> Context::createAnimation(std::shared_ptr<VertexArray> _model)
+	std::shared_ptr<ObjAnimation> Context::createAnimation(std::shared_ptr<VertexArray> _model)
 	{
-		std::shared_ptr<Animation> rtn = std::make_shared<Animation>(_model);
+		std::shared_ptr<ObjAnimation> rtn = std::make_shared<ObjAnimation>(_model);
 		rtn->m_context = m_self;
 		rtn->m_self = rtn;
 		rtn->parse("");
 		return rtn;
 	}
 
-	std::shared_ptr<Animation> Context::createAnimation(std::shared_ptr<VertexArray> _model, std::string _path)
+	std::shared_ptr<ObjAnimation> Context::createAnimation(std::shared_ptr<VertexArray> _model, std::string _path)
 	{
-		std::shared_ptr<Animation> rtn = std::make_shared<Animation>(_model);
+		std::shared_ptr<ObjAnimation> rtn = std::make_shared<ObjAnimation>(_model);
 		rtn->m_context = m_self;
 		rtn->m_self = rtn;
 		rtn->parse(_path);
