@@ -283,24 +283,51 @@ namespace glwrap
 	void Part::cullAndDraw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
+		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
 
 		m_animationUniform = glm::translate(m_animationUniform, translateVector);
 		translate(1);
+		glm::mat4 partMatrix = m_animationUniform;
+		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
-		glm::vec3 partCentre = m_animationUniform * glm::vec4(0, 0, 0, 1);
-		glm::mat3 partRotation = glm::mat3(m_animationUniform);
-		glm::vec3 partSize = getSize();
-
-		if (m_context.lock()->getCurrentShader()->
-			checkViewingFrustum(partCentre, partSize, partRotation))
+		if (m_model.lock()->getCullAnimation())
 		{
-			m_animationUniform = glm::translate(m_animationUniform, -translateVector);
+			if (shader->checkModelInView() && m_animationUniform == glm::mat4(1))
+			{
+				drawArrays();
+			}
+			else
+			{
+				glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
+				glm::mat3 partRotation = glm::mat3(m_animationUniform);
+				glm::vec3 partSize = getSize();
 
-			drawArrays();
+				if (shader->
+					checkViewingFrustum(partCentre, partSize, partRotation))
+				{
+					drawArrays();
+				}
+				else
+				{
+					m_animationUniform = glm::mat4(1);
+				}
+			}
 		}
 		else
 		{
-			m_animationUniform = glm::mat4(1);
+			glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
+			glm::mat3 partRotation = glm::mat3(m_animationUniform);
+			glm::vec3 partSize = getSize();
+
+			if (shader->
+				checkViewingFrustum(partCentre, partSize, partRotation))
+			{
+				drawArrays();
+			}
+			else
+			{
+				m_animationUniform = glm::mat4(1);
+			}
 		}
 	}
 
@@ -318,24 +345,51 @@ namespace glwrap
 	void Part::cullAndDraw(std::string _textureUniform)
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
+		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
 
 		m_animationUniform = glm::translate(m_animationUniform, translateVector);
 		translate(1);
+		glm::mat4 partMatrix = m_animationUniform;
+		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
-		glm::vec3 partCentre = m_animationUniform[3];
-		glm::vec3 partSize = getSize();
-		glm::mat3 partRotation = glm::mat3(m_animationUniform);
-
-		if (m_context.lock()->getCurrentShader()->
-			checkViewingFrustum(partCentre, partSize, partRotation))
+		if (m_model.lock()->getCullAnimation())
 		{
-			m_animationUniform = glm::translate(m_animationUniform, -translateVector);
+			if (shader->checkModelInView() && m_animationUniform == glm::mat4(1))
+			{
+				drawArrays(_textureUniform);
+			}
+			else
+			{
+				glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
+				glm::mat3 partRotation = glm::mat3(m_animationUniform);
+				glm::vec3 partSize = getSize();
 
-			drawArrays(_textureUniform);
+				if (shader->
+					checkViewingFrustum(partCentre, partSize, partRotation))
+				{
+					drawArrays(_textureUniform);
+				}
+				else
+				{
+					m_animationUniform = glm::mat4(1);
+				}
+			}
 		}
 		else
 		{
-			m_animationUniform = glm::mat4(1);
+			glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
+			glm::mat3 partRotation = glm::mat3(m_animationUniform);
+			glm::vec3 partSize = getSize();
+
+			if (shader->
+				checkViewingFrustum(partCentre, partSize, partRotation))
+			{
+				drawArrays(_textureUniform);
+			}
+			else
+			{
+				m_animationUniform = glm::mat4(1);
+			}
 		}
 	}
 

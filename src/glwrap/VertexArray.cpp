@@ -98,12 +98,14 @@ namespace glwrap
 	{
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
+		m_cullAnimated = false;
 	}
 
 	VertexArray::VertexArray(std::string _path) : m_dirty(false)
 	{
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
+		m_cullAnimated = false;
 		parse(_path);
 	}
 
@@ -464,6 +466,16 @@ namespace glwrap
 	glm::vec3 VertexArray::getSize()
 	{
 		return m_size;
+	}
+
+	void VertexArray::setCullAnimation(bool _switch)
+	{
+		m_cullAnimated = _switch;
+	}
+
+	bool VertexArray::getCullAnimation()
+	{
+		return m_cullAnimated;
 	}
 
 	std::shared_ptr<Animation> VertexArray::addAnimation(std::string _path)

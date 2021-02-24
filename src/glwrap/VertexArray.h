@@ -29,6 +29,8 @@ namespace glwrap
 		void drawPart(std::string _partName);
 
 		glm::vec3 getSize();
+		void setCullAnimation(bool _switch);
+		bool getCullAnimation();
 
 		std::shared_ptr<Animation> addAnimation(std::string _path);
 		int playAnimationOnce(std::string _name);
@@ -59,6 +61,8 @@ namespace glwrap
 		glm::vec3 m_minPoint;
 		glm::vec3 m_maxPoint;
 		glm::vec3 m_size;
+
+		bool m_cullAnimated;
 
 		void splitStringWhitespace(std::string& _input, std::vector<std::string>& _output);
 		void splitString(std::string& _input, char _splitter, std::vector<std::string>& _output);

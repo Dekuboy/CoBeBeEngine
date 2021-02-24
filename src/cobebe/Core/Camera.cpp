@@ -103,6 +103,34 @@ namespace cobebe
 		}
 	}
 
+	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal)
+	{
+		if (m_isOn)
+		{
+			bool inView;
+			_shaderInternal->setViewingFrustum(m_frustum);
+			glm::vec3 size = _transform->m_scale * _meshInternal->getSize();
+
+			//_shaderInternal->draw(m_texture);
+			_shaderInternal->cullAndDraw(m_gBuffer, _meshInternal,
+				_transform->m_position, size, _transform->m_rotation);
+		}
+	}
+
+	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform)
+	{
+		if (m_isOn)
+		{
+			bool inView;
+			_shaderInternal->setViewingFrustum(m_frustum);
+			glm::vec3 size = _transform->m_scale * _meshInternal->getSize();
+
+			//_shaderInternal->draw(m_texture);
+			_shaderInternal->cullAndDraw(m_gBuffer, _meshInternal, _textureUniform,
+				_transform->m_position, size, _transform->m_rotation);
+		}
+	}
+
 	void Camera::drawLighting(std::shared_ptr<Shader> _shader)
 	{
 		if (m_isOn)

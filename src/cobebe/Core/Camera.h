@@ -72,6 +72,17 @@ namespace cobebe
 		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform);
 
 		/**
+		* \brief Draws to cameras RenderTexture (Culls parts individually)
+		*/
+		void cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal);
+		/**
+		* \brief Draws to cameras RenderTexture (Culls parts individually)
+		*/
+		void cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model> _meshInternal, std::string _textureUniform);
+
+
+
+		/**
 		* \brief Draw from GBuffer to RenderTexture
 		*/
 		void drawLighting(std::shared_ptr<Shader> _shader);

@@ -52,7 +52,9 @@ int main()
 		entity->addComponent<CamController>();
 
 		renderer = entity->addComponent<cobebe::Renderer>();
-		renderer->setMesh("objs\\curuthers.obj");
+		std::shared_ptr<cobebe::Mesh> mesh = App->loadAsset<cobebe::Mesh>
+			("objs\\curuthers.obj");
+		renderer->setMesh(mesh);
 		renderer->setTexture("images\\curuthers_diffuse.png");
 		renderer->setShader("deferred_shaders\\renderGAni.shad");
 		std::shared_ptr<cobebe::AnimationController> anm = renderer->addAnimationController();
@@ -140,7 +142,7 @@ void CamController::onTick()
 	if (getKeyboard()->isKey(cobebeInput::dKey))
 	{
 		glm::vec3 x = m_camera.lock()->m_rotation[0];
-		m_camera.lock()->m_position += -x;
+		m_camera.lock()->m_position += x;
 	}
 
 	getEntity()->getComponent<cobebe::AnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());

@@ -182,10 +182,11 @@ namespace cobebe
 		/**
 		* \brief Returns Asset of file path
 		*/
-		template <class T>
-		std::shared_ptr<T> loadAsset(std::string _path)
+		template <class T, typename ... Args>
+		std::shared_ptr<T> loadAsset(std::string _path, Args&& ... _args)
 		{
-			std::shared_ptr<T> asset = m_resources->load<T>(_path);
+			std::shared_ptr<T> asset = m_resources->load<T>
+				(_path, std::forward<Args>(_args)...);
 			return asset;
 		}
 

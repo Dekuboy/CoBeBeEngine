@@ -56,8 +56,7 @@ namespace glwrap
 		for (std::list<Plane>::iterator itr = m_planes.begin(); itr != m_planes.end(); itr++)
 		{
 			plane = itr->getPlaneEquation();
-			printf("Plane:%f,%f,%f,%f\n", plane.x, plane.y, plane.z, plane.w);
-			if (glm::dot(pos, itr->getPlaneEquation()) < 0.0f)
+			if (glm::dot(pos, plane) < 0.0f)
 			{
 				return false;
 			}

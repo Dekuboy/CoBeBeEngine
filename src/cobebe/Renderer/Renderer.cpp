@@ -54,6 +54,11 @@ namespace cobebe
 		m_shader = getCore()->loadAsset<Shader>(_path);
 	}
 
+	void Renderer::setCullByPart(bool _switch)
+	{
+		m_cullByPart = _switch;
+	}
+
 	std::shared_ptr<Mesh> Renderer::getMesh()
 	{
 		return m_mesh;
@@ -141,49 +146,55 @@ namespace cobebe
 	{
 		if (m_shader)
 		{
-			if (m_mesh && m_texture)
+			if ((m_mesh && m_texture) || m_objMtlModel)
 			{
+				std::shared_ptr<Camera> currentCam;
 				glm::mat4 model = m_transform.lock()->getModel();
 				m_shader->m_internal->setUniform("in_Model", model);
 				m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
 				//m_shader->m_internal->setUniform("in_Animate", glm::mat4(1));
+				
 				if (m_animationController)
 				{
 					m_animationController->setToDraw();
 				}
+
 				if (m_camera)
 				{
-					m_shader->setCam(m_camera);
-					m_camera->draw(m_shader->m_internal, m_transform.lock(), m_mesh->m_internal);
+					currentCam = m_camera;
+					m_shader->setCam(currentCam);
 				}
 				else
 				{
-					std::shared_ptr<Camera> currentCam = getCore()->getCurrentCamera();
-
+					currentCam = getCore()->getCurrentCamera();
 					m_shader->setCam(currentCam);
-					currentCam->draw(m_shader->m_internal, m_transform.lock(), m_mesh->m_internal);
 				}
-			}
-			else if (m_objMtlModel)
-			{
-				glm::mat4 model = m_transform.lock()->getModel();
-				m_shader->m_internal->setUniform("in_Model", model);
-				m_shader->m_internal->setUniform("in_Animate", glm::mat4(1));
-				if (m_animationController)
+
+				if (m_objMtlModel)
 				{
-					m_animationController->setToDraw();
-				}
-				if (m_camera)
-				{
-					m_shader->setCam(m_camera);
-					m_camera->draw(m_shader->m_internal, m_transform.lock(), m_objMtlModel->m_internal, "in_Texture");
+					if (m_cullByPart)
+					{
+						m_camera->cullAndDraw(m_shader->m_internal, m_transform.lock(),
+							m_objMtlModel->m_internalModel, "in_Texture");
+					}
+					else
+					{
+						m_camera->draw(m_shader->m_internal, m_transform.lock(),
+							m_objMtlModel->m_internalModel, "in_Texture");
+					}
 				}
 				else
 				{
-					std::shared_ptr<Camera> currentCam = getCore()->getCurrentCamera();
-
-					m_shader->setCam(currentCam);
-					currentCam->draw(m_shader->m_internal, m_transform.lock(), m_objMtlModel->m_internal, "in_Texture");
+					if (m_cullByPart)
+					{
+						currentCam->cullAndDraw(m_shader->m_internal,
+							m_transform.lock(), m_mesh->m_internal);
+					}
+					else
+					{
+						currentCam->draw(m_shader->m_internal,
+							m_transform.lock(), m_mesh->m_internal);
+					}
 				}
 			}
 		}

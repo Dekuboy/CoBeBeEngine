@@ -93,7 +93,7 @@ namespace cobebe
 		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
 		std::shared_ptr<AnimationController> m_animationController; ///< Stores animation info
 
-		bool m_cullByPart;
+		bool m_cullByPart; ///< Culls a models individual parts -useful for large or animated objects
 
 		/**
 		* \brief Returns texture internal, useful for renderer inheritance

@@ -26,13 +26,20 @@ namespace cobebe
 		*/
 		std::vector<std::shared_ptr<glwrap::Face> > getFaces();
 
-	private:
+		/**
+		* \brief Sets the model to cull animated parts individually
+		* -assumes nonanimated parts are in view
+		* -useful for small model with larger reaches when animated
+		*/
+		void setAnimationCulling(bool _switch);
+
+	protected:
 		friend class Renderer;
 
 		std::shared_ptr<glwrap::VertexArray> m_internal; ///< Pointer to OpenGL VertexArray
 		bool m_tanBitan; ///< True if internal has calculated Tangent and Bitangent values
 
-		void onLoad(const std::string& _path);
+		virtual void onLoad(const std::string& _path);
 
 	};
 
@@ -40,22 +47,16 @@ namespace cobebe
 	/**
 	* \brief Stores a Model to set in Renderer
 	*/
-	class WavefrontModel : public Asset
+	class WavefrontModel : public Mesh
 	{
 	public:
 		WavefrontModel();
 		WavefrontModel(bool _calcTanBitan);
 
-		/**
-		* \brief Retrieves all VertexArray faces
-		*/
-		std::vector<std::shared_ptr<glwrap::Face> > getFaces();
-
 	private:
 		friend class Renderer;
 
-		std::shared_ptr<glwrap::Model> m_internal; ///< Pointer to OpenGL Model
-		bool m_tanBitan; ///< True if internal has calculated Tangent and Bitangent values
+		std::shared_ptr<glwrap::Model> m_internalModel; ///< Pointer to OpenGL Model
 
 		void onLoad(const std::string& _path);
 

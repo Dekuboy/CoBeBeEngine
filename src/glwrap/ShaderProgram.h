@@ -63,6 +63,11 @@ namespace glwrap
 		void setViewingFrustum(std::shared_ptr<ViewingFrustum> _frustum);
 		bool checkViewingFrustum(const glm::vec3 &_centre, const glm::vec3 &_size, const glm::mat3 &_rotation);
 
+		/**
+		* \brief When Drawing a Model: check if the base model is in View
+		*/
+		bool checkModelInView();
+
 		void setUniform(std::string _uniform, int _value);
 		void setUniform(std::string _uniform, glm::vec4 _value);
 		void setUniform(std::string _uniform, glm::vec3 _value);
@@ -88,6 +93,7 @@ namespace glwrap
 		GLuint m_id;
 		std::vector <Sampler> m_samplers;
 		bool m_isDrawing;
+		bool m_modelInView;
 		glm::vec3 m_drawingCentre;
 		glm::vec3 m_drawingSize;
 		glm::mat3 m_drawingRotation;
