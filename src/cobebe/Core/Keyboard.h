@@ -80,10 +80,10 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		const uint8_t* m_state; ///< Pointer to keyboard state
+		const uint8_t* m_state; //!< Pointer to keyboard state
 
-		std::vector<int> m_keysPressed; ///< Vector of keys pressed
-		std::vector<int> m_keysReleased; ///< Vector of keys released
+		std::vector<int> m_keysPressed; //!< Vector of keys pressed
+		std::vector<int> m_keysReleased; //!< Vector of keys released
 
 		/**
 		* \brief Initialises variables after Core pointer set

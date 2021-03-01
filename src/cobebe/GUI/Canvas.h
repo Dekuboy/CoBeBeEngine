@@ -59,17 +59,17 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		glm::mat4 m_projection; ///< Orthographic matrix for drawing to screen
-		int m_currentWidth; ///< Current matrix width to scale to screen
-		int m_currentHeight; ///< Current matrix height to scale to screen
-		std::shared_ptr<Shader> m_staticShader; ///< Minimal Shader draws without a view matrix
+		glm::mat4 m_projection; //!< Orthographic matrix for drawing to screen
+		int m_currentWidth; //!< Current matrix width to scale to screen
+		int m_currentHeight; //!< Current matrix height to scale to screen
+		std::shared_ptr<Shader> m_staticShader; //!< Minimal Shader draws without a view matrix
 
-		std::list<std::weak_ptr<Entity> > m_buttonList; ///< List of buttons in scene
-		std::weak_ptr<Entity> m_currentButton; ///< Current button highlighted
-		std::weak_ptr<Entity> m_clickedButton; ///< Current button clicked
+		std::list<std::weak_ptr<Entity> > m_buttonList; //!< List of buttons in scene
+		std::weak_ptr<Entity> m_currentButton; //!< Current button highlighted
+		std::weak_ptr<Entity> m_clickedButton; //!< Current button clicked
 
-		std::weak_ptr<Environment> m_environment; ///< Pointer to environment to get screen size
-		std::weak_ptr<Core> m_core; /// Pointer to games Core
+		std::weak_ptr<Environment> m_environment; //!< Pointer to environment to get screen size
+		std::weak_ptr<Core> m_core; // Pointer to games Core
 
 		/**
 		* \brief Sets the orthographic matrix based on current values

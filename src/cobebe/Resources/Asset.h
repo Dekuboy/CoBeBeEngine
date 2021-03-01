@@ -20,9 +20,9 @@ namespace cobebe
 	protected:
 		friend class Resources;
 
-		std::string m_path; ///< Folder path as identification
-		std::weak_ptr<glwrap::Context> m_context; ///< Pointer to context for OpenGL asset creation
-		std::weak_ptr<Resources> m_resources; ///< Pointer to Resources for Assets with multiple dependencies
+		std::string m_path; //!< Folder path as identification
+		std::weak_ptr<glwrap::Context> m_context; //!< Pointer to context for OpenGL asset creation
+		std::weak_ptr<Resources> m_resources; //!< Pointer to Resources for Assets with multiple dependencies
 
 		/**
 		* \brief Activates once when loading a file

@@ -36,8 +36,8 @@ namespace cobebe
 	protected:
 		friend class Renderer;
 
-		std::shared_ptr<glwrap::VertexArray> m_internal; ///< Pointer to OpenGL VertexArray
-		bool m_tanBitan; ///< True if internal has calculated Tangent and Bitangent values
+		std::shared_ptr<glwrap::VertexArray> m_internal; //!< Pointer to OpenGL VertexArray
+		bool m_tanBitan; //!< True if internal has calculated Tangent and Bitangent values
 
 		virtual void onLoad(const std::string& _path);
 
@@ -56,7 +56,7 @@ namespace cobebe
 	private:
 		friend class Renderer;
 
-		std::shared_ptr<glwrap::ObjMtlModel> m_internalModel; ///< Pointer to OpenGL Model
+		std::shared_ptr<glwrap::ObjMtlModel> m_internalModel; //!< Pointer to OpenGL Model
 
 		void onLoad(const std::string& _path);
 
@@ -75,7 +75,7 @@ namespace cobebe
 		friend class Canvas;
 		friend class WavefrontModel;
 
-		std::shared_ptr<glwrap::Texture> m_internal; ///< Pointer to OpenGL Texture
+		std::shared_ptr<glwrap::Texture> m_internal; //!< Pointer to OpenGL Texture
 
 		void onLoad(const std::string& _path);
 
@@ -168,11 +168,11 @@ namespace cobebe
 		friend class Canvas;
 		friend class Lighting;
 
-		std::shared_ptr<glwrap::ShaderProgram> m_internal; ///< Pointer to OpenGL ShaderProgram
-		bool m_uniformCheck; ///< Checks if lighting uniforms need to be set
-		bool m_shadowCheck; ///< Checks if shadow uniforms need to be set
+		std::shared_ptr<glwrap::ShaderProgram> m_internal; //!< Pointer to OpenGL ShaderProgram
+		bool m_uniformCheck; //!< Checks if lighting uniforms need to be set
+		bool m_shadowCheck; //!< Checks if shadow uniforms need to be set
 
-		std::shared_ptr<Camera> m_camSet; ///< Stores current camera view active
+		std::shared_ptr<Camera> m_camSet; //!< Stores current camera view active
 
 		void onLoad(const std::string& _path);
 
@@ -185,7 +185,7 @@ namespace cobebe
 	private:
 		friend class ObjAnimationController;
 
-		std::shared_ptr<glwrap::ObjAnimation> m_internal; ///< Pointer to OpenGL PartAnimation
+		std::shared_ptr<glwrap::ObjAnimation> m_internal; //!< Pointer to OpenGL PartAnimation
 
 		void onLoad(const std::string& _path);
 

@@ -42,10 +42,10 @@ namespace cobebe
 		void setAoMap(std::string _path);
 
 	protected:
-		std::shared_ptr<Texture> m_normalMap; ///< Loaded normal map to apply
-		std::shared_ptr<Texture> m_metalMap; ///< Loaded metal map to apply
-		std::shared_ptr<Texture> m_roughMap; ///< Loaded rough map to apply
-		std::shared_ptr<Texture> m_aoMap; ///< Loaded ambient occlusion map to apply
+		std::shared_ptr<Texture> m_normalMap; //!< Loaded normal map to apply
+		std::shared_ptr<Texture> m_metalMap; //!< Loaded metal map to apply
+		std::shared_ptr<Texture> m_roughMap; //!< Loaded rough map to apply
+		std::shared_ptr<Texture> m_aoMap; //!< Loaded ambient occlusion map to apply
 
 		virtual void onPreDisplay();
 		virtual void onDisplay();

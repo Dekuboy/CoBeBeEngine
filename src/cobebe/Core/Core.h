@@ -192,33 +192,33 @@ namespace cobebe
 
 	private:
 
-		std::weak_ptr<Core> m_self; ///< Pointer to self to be placed in added entities
+		std::weak_ptr<Core> m_self; //!< Pointer to self to be placed in added entities
 
-		SDL_Window* m_window; ///< Engine window
-		std::shared_ptr<Shader> m_nullShader; ///< Draws RenderTexture
-		std::shared_ptr<Shader> m_lightPassShader; ///< Draws deferred lighting
+		SDL_Window* m_window; //!< Engine window
+		std::shared_ptr<Shader> m_nullShader; //!< Draws RenderTexture
+		std::shared_ptr<Shader> m_lightPassShader; //!< Draws deferred lighting
 
-		ALCdevice* m_device; ///< Engine sound device
-		ALCcontext* m_alContext; ///< Engine sound context
+		ALCdevice* m_device; //!< Engine sound device
+		ALCcontext* m_alContext; //!< Engine sound context
 
-		std::shared_ptr<glwrap::Context> m_context; ///< Safely instantiates OpenGL objects
-		std::list<std::shared_ptr<Entity> > m_entities; ///< List of entities in game loop
-		std::list<std::shared_ptr<Camera> > m_cameras; ///< List of cameras in game loop
-		std::weak_ptr<Camera> m_currentCamera; ///< Holds Camera currently drawing to the screen
-		std::shared_ptr<Lighting> m_lighting; ///< Holds all variables regarding Lighting
-		std::shared_ptr<Canvas> m_canvas; ///< Draws GUI to screen
-		std::list<std::string> m_maskNames; ///< Masks to limit certain interactions
+		std::shared_ptr<glwrap::Context> m_context; //!< Safely instantiates OpenGL objects
+		std::list<std::shared_ptr<Entity> > m_entities; //!< List of entities in game loop
+		std::list<std::shared_ptr<Camera> > m_cameras; //!< List of cameras in game loop
+		std::weak_ptr<Camera> m_currentCamera; //!< Holds Camera currently drawing to the screen
+		std::shared_ptr<Lighting> m_lighting; //!< Holds all variables regarding Lighting
+		std::shared_ptr<Canvas> m_canvas; //!< Draws GUI to screen
+		std::list<std::string> m_maskNames; //!< Masks to limit certain interactions
 
-		std::shared_ptr<Keyboard> m_keyboard; ///< Holds keyboard inputs
-		std::shared_ptr<Mouse> m_mouse; ///< Holds mouse inputs
-		std::shared_ptr<Gamepad> m_gamepad; ///< Holds gamepad inputs
+		std::shared_ptr<Keyboard> m_keyboard; //!< Holds keyboard inputs
+		std::shared_ptr<Mouse> m_mouse; //!< Holds mouse inputs
+		std::shared_ptr<Gamepad> m_gamepad; //!< Holds gamepad inputs
 
-		std::shared_ptr<Environment> m_environment; ///< Holds deltaTime and window size
+		std::shared_ptr<Environment> m_environment; //!< Holds deltaTime and window size
 
-		std::shared_ptr<Resources> m_resources; ///< Holds loaded file paths
+		std::shared_ptr<Resources> m_resources; //!< Holds loaded file paths
 
-		bool m_running; ///< Controls the game loop
-		bool m_inLoop; ///< Controls within single loop
+		bool m_running; //!< Controls the game loop
+		bool m_inLoop; //!< Controls within single loop
 
 		/**
 		* \brief Passes current Cameras RenderTexture to screen

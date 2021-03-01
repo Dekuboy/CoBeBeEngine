@@ -1,5 +1,9 @@
 #ifndef _GLWRAP_
 #define _GLWRAP_
+/**
+* \brief Library that manages all info relating to OpenGL
+*/
+namespace glwrap {};
 #include <glwrap/FileManager.h>
 #include <glwrap/Context.h>
 #include <glwrap/VertexBuffer.h>

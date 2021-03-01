@@ -8,26 +8,29 @@
 
 namespace glwrap
 {
+	/**
+	* \brief Describes the values of a models tris
+	*/
 	struct Face
 	{
-		glm::vec3 pa;
-		glm::vec3 pb;
-		glm::vec3 pc;
+		glm::vec3 pa; //!< Position of vertex A
+		glm::vec3 pb; //!< Position of vertex B
+		glm::vec3 pc; //!< Position of vertex C
 
-		glm::vec2 tca;
-		glm::vec2 tcb;
-		glm::vec2 tcc;
+		glm::vec2 tca; //!< Texture position of vertex A
+		glm::vec2 tcb; //!< Texture position of vertex B
+		glm::vec2 tcc; //!< Texture position of vertex C
 
-		glm::vec3 na;
-		glm::vec3 nb;
-		glm::vec3 nc;
+		glm::vec3 na; //!< Normal of Vertex A
+		glm::vec3 nb; //!< Normal of Vertex B
+		glm::vec3 nc; //!< Normal of Vertex C
 
-		glm::vec3 tan;
-		glm::vec3 bitan;
+		glm::vec3 tan; //!< Tangent of tri
+		glm::vec3 bitan; //!< Bitangent of tri
 
-		glm::vec2 lmca;
-		glm::vec2 lmcb;
-		glm::vec2 lmcc;
+		//glm::vec2 lmca;
+		//glm::vec2 lmcb;
+		//glm::vec2 lmcc;
 
 		float getMaxX();
 		float getMinX();
@@ -43,26 +46,45 @@ namespace glwrap
 	class Material;
 	class ObjMtlModel;
 
+	/**
+	* \brief Stores information on individual parts of an obj model
+	*/
 	class ObjPart
 	{
 	public:
 		ObjPart(std::shared_ptr<VertexArray> _mesh, std::string _name);
 		~ObjPart();
 
+		/**
+		* \brief Retrieve name of part
+		*/
 		std::string getName();
-		std::vector<std::shared_ptr<Face> > getFaces();
+		/**
+		* \brief Retrieve list of tri faces
+		*/
+		std::vector<std::shared_ptr<Face> >& getFaces();
+		/**
+		* \brief Add tri face to list
+		*/
 		void addFace(std::shared_ptr<Face> _face);
 
+		/**
+		* \brief Set buffer of name _attribute and add to list
+		*/
 		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId);
+		/**
+		* \brief Retrieve vertex total which use the same Material within part
+		*/
 		int getVertexCount(int _materialId);
 
+		/**
+		* \brief Retrieve GL Id of the vertex array which uses input Material
+		*/
 		GLuint getId(int _materialId);
 
-		void draw();
-		void cullAndDraw();
-		void draw(std::string _textureUniform);
-		void cullAndDraw(std::string _textureUniform);
-
+		/**
+		* \brief Retrieve the size of ObjPart based on xyz values
+		*/
 		glm::vec3 getSize();
 
 	private:
@@ -70,37 +92,72 @@ namespace glwrap
 		friend class VertexArray;
 		friend class ObjMtlModel;
 
-		void translate(int _undo);
+		std::string m_name; //!< Name of ObjPart
+		std::vector<GLuint> m_idList; //!< List of vertex array GL Ids
+
+		bool m_dirty; //!< If a buffer has been added, buffer information must be sent to the GPU
+		std::weak_ptr<VertexArray> m_model; //!< Pointer to obj that part is attached to
+		std::vector<std::shared_ptr<Face> > m_faces; //!< List of tris in part
+		std::vector<std::vector<std::shared_ptr<VertexBuffer> > > 
+			m_buffers; //!< List of different buffers in part, separated by Material ([mat][])
+		glm::mat4 m_animationUniform; //!< Transformation matrix based on animated movement
+
+		bool m_useMaterial; //!< Stores if the part is separated by Material
+		std::list<std::shared_ptr<Material> > m_materials; //!< List of Material used in part
+
+		std::weak_ptr<ObjPart> m_self; //!< Pointer to self to find Translation referring to this part
+		std::weak_ptr<Context> m_context; //!< Pointer to glwrap context
+
+		float m_offsetX; //!< x Offset from obj centre
+		float m_offsetY; //!< y Offset from obj centre
+		float m_offsetZ; //!< z Offset from obj centre
+
+		float m_maxX; //!< Max x value in part
+		float m_maxY; //!< Max y value in part
+		float m_maxZ; //!< Max z value in part
+		float m_minX; //!< Min x value in part
+		float m_minY; //!< Min y value in part
+		float m_minZ; //!< Min z value in part
+
+		/**
+		* \brief Translate part by base obj animation
+		*/
+		void translate();
+		/**
+		* \brief Draws vertex arrays
+		*/
 		void drawArrays();
+		/**
+		* \brief Draws vertex arrays
+		* -applies material texture to input uniform name
+		*/
 		void drawArrays(std::string _textureUniform);
 
+		/**
+		* \brief Generates a vertex array Id in GL
+		*/
 		void generateArrays();
 
-		std::string m_name;
-		std::vector<GLuint> m_idList;;
-
-		bool m_dirty;
-		std::weak_ptr<VertexArray> m_model;
-		std::vector<std::shared_ptr<Face> > m_faces;
-		std::vector<std::vector<std::shared_ptr<VertexBuffer> > > m_buffers;
-		glm::mat4 m_animationUniform;
-
-		bool m_useMaterial;
-		std::list<std::shared_ptr<Material> > m_materials;
-
-		std::weak_ptr<ObjPart> m_self;
-		std::weak_ptr<Context> m_context;
-
-		float m_offsetX;
-		float m_offsetY;
-		float m_offsetZ;
-
-		float m_maxX;
-		float m_maxY;
-		float m_maxZ;
-		float m_minX;
-		float m_minY;
-		float m_minZ;
+		/**
+		* \brief Draw all vertex arrays represented within this part
+		*/
+		void draw();
+		/**
+		* \brief Draw all vertex arrays represented within this part that appear in view
+		* -useful for large objects where parts are too distant to always be in view
+		*/
+		void cullAndDraw();
+		/**
+		* \brief Draw all vertex arrays represented within this part
+		* -applies material texture to input uniform name
+		*/
+		void draw(std::string _textureUniform);
+		/**
+		* \brief Draw all vertex arrays represented within this part if in view
+		* -applies material texture to input uniform name
+		* -useful for large objects where parts are too distant to always be in view
+		*/
+		void cullAndDraw(std::string _textureUniform);
 
 	};
 }

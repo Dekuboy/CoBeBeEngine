@@ -35,6 +35,7 @@ namespace glwrap
 			std::string line;
 			std::vector<std::string> parameters;
 			std::vector<std::shared_ptr<ObjPart> > parts = m_model->getParts();
+			std::shared_ptr<ObjPart> cp;
 			glm::vec3 v, rotation;
 			bool found = false;
 			m_mergeFrame.reset(new ObjFrame(m_self.lock()));
@@ -73,7 +74,7 @@ namespace glwrap
 
 						for (int partIndex = 0; partIndex < parts.size(); partIndex++)
 						{
-							std::shared_ptr<ObjPart> cp = parts.at(partIndex);
+							cp = parts.at(partIndex);
 							v.x = cp->getSize().x * (atof(parameters.at(2).c_str()) / 100.0f);
 							v.y = cp->getSize().y * (atof(parameters.at(3).c_str()) / 100.0f);
 							v.z = cp->getSize().z * (atof(parameters.at(4).c_str()) / 100.0f);

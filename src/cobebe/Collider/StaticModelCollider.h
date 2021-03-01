@@ -12,8 +12,8 @@ namespace cobebe
 	*/
 	struct Extent
 	{
-		glm::vec3 m_max; ///< Max xyz extent
-		glm::vec3 m_min; ///< Min xyz extent
+		glm::vec3 m_max; //!< Max xyz extent
+		glm::vec3 m_min; //!< Min xyz extent
 	};
 
 	/**
@@ -21,9 +21,9 @@ namespace cobebe
 	*/
 	struct ColliderColumn
 	{
-		glm::vec3 m_position; ///< Position of column
-		glm::vec3 m_size; ///< Scale of column
-		std::vector<glwrap::Face> m_faces; ///< Faces within column
+		glm::vec3 m_position; //!< Position of column
+		glm::vec3 m_size; //!< Scale of column
+		std::vector<glwrap::Face> m_faces; //!< Faces within column
 
 		/**
 		* \brief Checks if input is colliding with column faces
@@ -74,16 +74,16 @@ namespace cobebe
 			glm::vec3 _size, bool& _solved);
 
 	private:
-		std::vector<std::shared_ptr<ColliderColumn> > m_cols; ///< Partitions of model containing faces
-		Extent m_extent; ///< Max and min xyz values
+		std::vector<std::shared_ptr<ColliderColumn> > m_cols; //!< Partitions of model containing faces
+		Extent m_extent; //!< Max and min xyz values
 
-		float m_resolution; ///< Partition divisor for allocating size
-		float m_tryStep; ///< Distance to step per test
-		float m_maxStep; ///< Max step height
-		float m_tryInc; ///< Distance to increment per test
-		float m_maxInc; ///< Max increment for cludge
+		float m_resolution; //!< Partition divisor for allocating size
+		float m_tryStep; //!< Distance to step per test
+		float m_maxStep; //!< Max step height
+		float m_tryInc; //!< Distance to increment per test
+		float m_maxInc; //!< Max increment for cludge
 
-		std::vector<glwrap::Face> m_collisions; ///< Faces currently colliding
+		std::vector<glwrap::Face> m_collisions; //!< Faces currently colliding
 
 		/**
 		* \brief Find the max and min xyz values

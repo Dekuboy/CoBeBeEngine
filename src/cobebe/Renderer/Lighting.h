@@ -15,9 +15,9 @@ namespace cobebe
 	*/
 	struct ShadowModel
 	{
-		std::weak_ptr<glwrap::VertexArray> m_mesh; ///< Stores mesh to render
-		std::weak_ptr<ObjAnimationController> m_animation; ///< Stores animation to apply
-		glm::mat4 m_model; ///< Stores joined model matrix
+		std::weak_ptr<glwrap::VertexArray> m_mesh; //!< Stores mesh to render
+		std::weak_ptr<ObjAnimationController> m_animation; //!< Stores animation to apply
+		glm::mat4 m_model; //!< Stores joined model matrix
 	};
 
 	/**
@@ -132,31 +132,31 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		glm::mat4 m_globalLightSpace; ///< Global directional light space matrix
-		glm::vec3 m_globalLightPos; ///< Global directional light position
-		glm::vec3 m_globalLightDir; ///< Global light direction
-		glm::vec3 m_globalLightCol; ///< Global directional light colour
-		glm::vec3 m_globalLightEmissive; ///< Global light emission
-		glm::vec3 m_globalLightAmbient; ///< Global ambient light
+		glm::mat4 m_globalLightSpace; //!< Global directional light space matrix
+		glm::vec3 m_globalLightPos; //!< Global directional light position
+		glm::vec3 m_globalLightDir; //!< Global light direction
+		glm::vec3 m_globalLightCol; //!< Global directional light colour
+		glm::vec3 m_globalLightEmissive; //!< Global light emission
+		glm::vec3 m_globalLightAmbient; //!< Global ambient light
 
-		float m_globalLightRenderDistance; ///< Directional light depth map range
-		float m_globalLightScale; ///< Orthographic matrix scaling
+		float m_globalLightRenderDistance; //!< Directional light depth map range
+		float m_globalLightScale; //!< Orthographic matrix scaling
 
-		std::shared_ptr<Shader> m_depthShader; ///< Directional light depth shader
-		std::shared_ptr<glwrap::DepthBuffer> m_depthMap; ///< Directional light depth map
+		std::shared_ptr<Shader> m_depthShader; //!< Directional light depth shader
+		std::shared_ptr<glwrap::DepthBuffer> m_depthMap; //!< Directional light depth map
 		float m_depthMapSize;
 
-		std::shared_ptr<Shader> m_cubeShader; ///< PointLight depth shader
-		std::list<std::shared_ptr<PointLight> > m_pointLights; ///< All PointLights available in engine
-		int m_maxPointLights; ///< Max possible PointLights
-		std::vector<std::shared_ptr<glwrap::DepthCube> > m_depthCubes; ///< Stored DepthCubes for applying PointLights
-		std::vector<glm::vec3> m_pointLightPositions; ///< PointLight positions to pass into shader
-		std::vector<glm::vec3> m_pointColours; ///< PointLight colours to pass into shader
-		std::vector<float> m_farPlanes; ///< PointLight ranges to pass into shader
+		std::shared_ptr<Shader> m_cubeShader; //!< PointLight depth shader
+		std::list<std::shared_ptr<PointLight> > m_pointLights; //!< All PointLights available in engine
+		int m_maxPointLights; //!< Max possible PointLights
+		std::vector<std::shared_ptr<glwrap::DepthCube> > m_depthCubes; //!< Stored DepthCubes for applying PointLights
+		std::vector<glm::vec3> m_pointLightPositions; //!< PointLight positions to pass into shader
+		std::vector<glm::vec3> m_pointColours; //!< PointLight colours to pass into shader
+		std::vector<float> m_farPlanes; //!< PointLight ranges to pass into shader
 
-		std::list<ShadowModel> m_shadowModels; ///< Models ready to draw
+		std::list<ShadowModel> m_shadowModels; //!< Models ready to draw
 
-		std::weak_ptr<Core> m_core; ///< Pointer to games Core
+		std::weak_ptr<Core> m_core; //!< Pointer to games Core
 
 		/**
 		* \brief Function to set directional light to optimal position

@@ -66,10 +66,10 @@ namespace cobebe
 
 	protected:
 		friend class Entity;
-		bool m_kill; ///< Marks Component for destruction after tick
+		bool m_kill; //!< Marks Component for destruction after tick
 
 	private:
-		std::weak_ptr<Entity> m_entity; ///< Pointer to entity
+		std::weak_ptr<Entity> m_entity; //!< Pointer to entity
 
 		/**
 		* \brief Activates when added to Entity

@@ -65,16 +65,16 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		std::vector<cobebeInput::MouseButton> m_buttons; ///< Vector of buttons currently down
-		std::vector<cobebeInput::MouseButton> m_buttonsPressed; ///< Vector of buttons pressed on tick
-		std::vector<cobebeInput::MouseButton> m_buttonsReleased; ///< Vector of buttons released on tick
+		std::vector<cobebeInput::MouseButton> m_buttons; //!< Vector of buttons currently down
+		std::vector<cobebeInput::MouseButton> m_buttonsPressed; //!< Vector of buttons pressed on tick
+		std::vector<cobebeInput::MouseButton> m_buttonsReleased; //!< Vector of buttons released on tick
 
-		glm::vec2 m_position; ///< Current mouse position on screen
-		glm::vec2 m_movement; ///< Current mouse movement detected
+		glm::vec2 m_position; //!< Current mouse position on screen
+		glm::vec2 m_movement; //!< Current mouse movement detected
 
-		bool m_warpMouse; ///< Determine if mouse warps to centre
+		bool m_warpMouse; //!< Determine if mouse warps to centre
 
-		std::weak_ptr<Core> m_core; ///< Pointer to Core for retrieving Environment class
+		std::weak_ptr<Core> m_core; //!< Pointer to Core for retrieving Environment class
 
 		/**
 		* \brief Sets button as pressed

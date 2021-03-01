@@ -28,11 +28,11 @@ namespace cobebe
 		void setWorldGUI(bool _switch);
 
 	private:
-		std::weak_ptr<Transform> m_transform; ///< Pointer to position and scale for drawing
-		std::shared_ptr<Texture> m_texture; ///< Loaded texture to apply
+		std::weak_ptr<Transform> m_transform; //!< Pointer to position and scale for drawing
+		std::shared_ptr<Texture> m_texture; //!< Loaded texture to apply
 
-		std::shared_ptr<Canvas> m_canvas; ///< Pointer to canvas for drawing to screen
-		bool m_isWorldGUI; ///< Checks if GUI is in screen or world space
+		std::shared_ptr<Canvas> m_canvas; //!< Pointer to canvas for drawing to screen
+		bool m_isWorldGUI; //!< Checks if GUI is in screen or world space
 
 		virtual void onInit();
 		virtual void onGUI();

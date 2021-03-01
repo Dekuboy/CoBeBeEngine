@@ -57,11 +57,11 @@ namespace cobebe
 
 	private:
 		friend class Gamepad;
-		std::vector<cobebeInput::GamepadButton> m_buttons; ///< Vector of buttons currently down
-		std::vector<cobebeInput::GamepadButton> m_buttonsPressed; ///< Vector of buttons pressed on tick
-		std::vector<cobebeInput::GamepadButton> m_buttonsReleased; ///< Vector of buttons released on tick
+		std::vector<cobebeInput::GamepadButton> m_buttons; //!< Vector of buttons currently down
+		std::vector<cobebeInput::GamepadButton> m_buttonsPressed; //!< Vector of buttons pressed on tick
+		std::vector<cobebeInput::GamepadButton> m_buttonsReleased; //!< Vector of buttons released on tick
 
-		std::vector<int> m_axisValues; ///< Vector of ints corresponding to axis values
+		std::vector<int> m_axisValues; //!< Vector of ints corresponding to axis values
 
 		/**
 		* \brief Clears pressed and released buttons
@@ -101,9 +101,9 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		std::vector<SDL_GameController*> m_controllerHandles; ///< Currently attached game controllers
+		std::vector<SDL_GameController*> m_controllerHandles; //!< Currently attached game controllers
 
-		std::vector<GamepadInputs> m_inputs; ///< Stored inputs for each Gamepad
+		std::vector<GamepadInputs> m_inputs; //!< Stored inputs for each Gamepad
 
 		/**
 		* \brief Retrieves corresponding controller Id if attached

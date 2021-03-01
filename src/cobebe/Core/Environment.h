@@ -30,10 +30,10 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		float m_deltaTime; ///< Maintains framerate
-		int m_currentTick; ///< Current tick of frame;
-		int m_width; ///< Screen width
-		int m_height; ///< Screen height
+		float m_deltaTime; //!< Maintains framerate
+		int m_currentTick; //!< Current tick of frame;
+		int m_width; //!< Screen width
+		int m_height; //!< Screen height
 
 	};
 }

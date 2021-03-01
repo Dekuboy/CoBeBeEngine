@@ -48,9 +48,9 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		std::list<std::shared_ptr<Asset> > m_resources; ///< List of currently loaded assets
-		std::weak_ptr<glwrap::Context> m_context; ///< Pointer to context for OpenGL assets
-		std::weak_ptr<Resources> m_self; ///< Pointer to self to store in Asset class
+		std::list<std::shared_ptr<Asset> > m_resources; //!< List of currently loaded assets
+		std::weak_ptr<glwrap::Context> m_context; //!< Pointer to context for OpenGL assets
+		std::weak_ptr<Resources> m_self; //!< Pointer to self to store in Asset class
 
 	};
 }

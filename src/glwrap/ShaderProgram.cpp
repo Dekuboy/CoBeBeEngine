@@ -410,22 +410,25 @@ namespace glwrap
 			m_drawingRotation = _rotation;
 
 			m_modelInView = checkViewingFrustum(_centre, _size, _rotation);
+			if (m_modelInView || _vertexArray->getCullAnimation())
+			{
 
-			glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
-			m_context.lock()->setCurrentShader(m_self.lock());
+				glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
+				m_context.lock()->setCurrentShader(m_self.lock());
 
-			setSamplers();
+				setSamplers();
 
-			m_isDrawing = true;
-			_vertexArray->cullAndDraw();
-			m_isDrawing = false;
+				m_isDrawing = true;
+				_vertexArray->cullAndDraw();
+				m_isDrawing = false;
 
-			//glBindVertexArray(_vertexArray->getId());
-			//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
+				//glBindVertexArray(_vertexArray->getId());
+				//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
-			resetSamplers();
+				resetSamplers();
 
-			glBindVertexArray(0);
+				glBindVertexArray(0);
+			}
 		}
 	}
 
@@ -450,22 +453,25 @@ namespace glwrap
 			m_drawingRotation = _rotation;
 
 			m_modelInView = checkViewingFrustum(_centre, _size, _rotation);
+			if (m_modelInView || _model->getCullAnimation())
+			{
 
-			glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
-			m_context.lock()->setCurrentShader(m_self.lock());
+				glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
+				m_context.lock()->setCurrentShader(m_self.lock());
 
-			setSamplers();
+				setSamplers();
 
-			m_isDrawing = true;
-			_model->cullAndDraw(_textureUniform);
-			m_isDrawing = false;
+				m_isDrawing = true;
+				_model->cullAndDraw(_textureUniform);
+				m_isDrawing = false;
 
-			//glBindVertexArray(_vertexArray->getId());
-			//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
+				//glBindVertexArray(_vertexArray->getId());
+				//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
 
-			resetSamplers();
+				resetSamplers();
 
-			glBindVertexArray(0);
+				glBindVertexArray(0);
+			}
 		}
 	}
 

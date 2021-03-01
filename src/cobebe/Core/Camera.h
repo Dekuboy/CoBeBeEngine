@@ -23,8 +23,8 @@ namespace cobebe
 		*/
 		Camera();
 
-		glm::vec3 m_position; ///< Position in world space
-		glm::mat3 m_rotation; ///< Rotation in world space
+		glm::vec3 m_position; //!< Position in world space
+		glm::mat3 m_rotation; //!< Rotation in world space
 
 		/**
 		* \brief Creates and returns a view matrix
@@ -99,18 +99,18 @@ namespace cobebe
 	private:
 		friend class Core;
 
-		bool m_isOn; ///< Checks if the Camera is on
-		bool m_isDrawReady; ///< Checks if the variables for drawing have been set each frame
-		std::shared_ptr<glwrap::RenderTexture> m_texture; ///< Camera draws to internal RenderTexture
-		std::shared_ptr<glwrap::GBuffer> m_gBuffer; ///< Defers lighting to later
-		std::shared_ptr<Lighting> m_lighting; ///< Holds all variables regarding Lighting
-		std::shared_ptr<glwrap::ViewingFrustum> m_frustum; ///< Holds frustum planes for culling
+		bool m_isOn; //!< Checks if the Camera is on
+		bool m_isDrawReady; //!< Checks if the variables for drawing have been set each frame
+		std::shared_ptr<glwrap::RenderTexture> m_texture; //!< Camera draws to internal RenderTexture
+		std::shared_ptr<glwrap::GBuffer> m_gBuffer; //!< Defers lighting to later
+		std::shared_ptr<Lighting> m_lighting; //!< Holds all variables regarding Lighting
+		std::shared_ptr<glwrap::ViewingFrustum> m_frustum; //!< Holds frustum planes for culling
 
-		glm::mat4 m_projection; ///< The projection matrix for passing to shader
-		float m_near; ///< The near plane used in perspective
-		float m_far; ///< The far plane used in perspective
-		float m_angle; ///< The angle used in perspective
-		float m_aspect; ///< The aspect ratio used in perspective
+		glm::mat4 m_projection; //!< The projection matrix for passing to shader
+		float m_near; //!< The near plane used in perspective
+		float m_far; //!< The far plane used in perspective
+		float m_angle; //!< The angle used in perspective
+		float m_aspect; //!< The aspect ratio used in perspective
 
 	};
 }

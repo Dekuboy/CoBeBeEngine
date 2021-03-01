@@ -7,13 +7,19 @@ namespace glwrap
 	class ObjAnimation;
 	class ObjPart;
 
+	/**
+	* \brief Store information on part movement during animation frame
+	*/
 	class Translation
 	{
 	public:
 		Translation(std::shared_ptr<ObjPart> _part, glm::vec3 _position,
 			glm::vec3 _rotation);
 		~Translation();
-
+		
+		/**
+		* \brief Get ObjPart that Translation applies to
+		*/
 		std::shared_ptr<ObjPart> getPart();
 
 		float getX();
@@ -37,7 +43,7 @@ namespace glwrap
 		void setZRotation(float _ZRotation);
 
 	private:
-		std::weak_ptr<ObjPart> m_part;
+		std::weak_ptr<ObjPart> m_part; //!< ObjPart that Translation applies to
 		
 		float m_x;
 		float m_y;
@@ -51,23 +57,39 @@ namespace glwrap
 
 	// ------------------------------------------------------------------
 
+	/**
+	* \brief Contains information on part positions during frame of animation
+	*/
 	class ObjFrame
 	{
 	public:
 		ObjFrame(std::shared_ptr<ObjAnimation> _animation);
 
+		/**
+		* \brief Copy _source values to _destination
+		*/
 		static void copy(std::shared_ptr<ObjFrame> _source, std::shared_ptr<ObjFrame> _destination);
+		/**
+		* \brief Merge from _source to _destination and store in _destination
+		*/
 		static void merge(std::shared_ptr<ObjFrame> _source, std::shared_ptr<ObjFrame> _destination,
 			double _weight = 0.5f);
 
+		/**
+		* \brief Get list of different part movements in frame
+		*/
 		std::vector<std::shared_ptr<Translation> > getTranslations();
+		/**
+		* \brief Get translation of a specific part of the object 
+		* -if _add, add a translation to base position if there is no part translation
+		*/
 		std::shared_ptr<Translation> getTranslation(std::shared_ptr<ObjPart> _part, bool _add = false);
 
 	private:
 		friend class ObjAnimation;
 
-		std::shared_ptr<ObjAnimation> m_animation;
-		std::vector<std::shared_ptr<Translation> > m_translations;
+		std::weak_ptr<ObjAnimation> m_animation; //!< Parent animation that frame is attached to
+		std::vector<std::shared_ptr<Translation> > m_translations; //!< The translations that apply to separate parts during frame
 
 	};
 }

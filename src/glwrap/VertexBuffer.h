@@ -7,27 +7,48 @@ namespace glwrap
 {
 	class Context;
 
+	/**
+	* \brief Stores info of an attribute buffer in GL
+	*/
 	class VertexBuffer
 	{
 	public:
 		VertexBuffer();
 
+		/**
+		* \brief Adds value to buffer
+		*/
 		void add(glm::vec2 _value);
+		/**
+		* \brief Adds value to buffer
+		*/
 		void add(glm::vec3 _value);
+		/**
+		* \brief Adds value to buffer
+		*/
 		void add(glm::vec4 _value);
 
+		/**
+		* \brief Retrieve number of components (vec length)
+		*/
 		int getComponents();
+		/**
+		* \brief Retrieve total data size
+		*/
 		int getDataSize();
+		/**
+		* \brief Retrieve GL buffer Id
+		*/
 		GLuint getId();
 
 	private:
 		friend class Context;
 
-		GLuint m_id;
-		int m_components;
-		std::vector <GLfloat> m_data;
-		bool m_dirty;
-		std::weak_ptr<Context> m_context;
+		GLuint m_id; //!< GL Id of VertexBuffer
+		int m_components; //!< Vector length in VertexBuffer to keep data consistent
+		std::vector <GLfloat> m_data; //!< Data to send to GL
+		bool m_dirty; //!< If the buffer has been altered, update in GL
+		std::weak_ptr<Context> m_context; //!< Pointer to glwrap context
 
 	};
 }

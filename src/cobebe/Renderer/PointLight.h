@@ -46,14 +46,14 @@ namespace cobebe
 
 	private:
 		friend class Lighting;
-		glm::vec3 m_position; ///< Stored position, when changed, the light space matrices updates
-		glm::vec3 m_colour; ///< Stored colour
-		float m_radius; ///< Stored effective light radius
-		std::vector<glm::mat4> m_lightSpaces; ///< DepthCube perspective matrices to pass in
+		glm::vec3 m_position; //!< Stored position, when changed, the light space matrices updates
+		glm::vec3 m_colour; //!< Stored colour
+		float m_radius; //!< Stored effective light radius
+		std::vector<glm::mat4> m_lightSpaces; //!< DepthCube perspective matrices to pass in
 
-		std::shared_ptr<glwrap::DepthCube> m_depthCube; ///< DepthCube to render shadows to
+		std::shared_ptr<glwrap::DepthCube> m_depthCube; //!< DepthCube to render shadows to
 
-		std::weak_ptr<Core> m_core; ///< Pointer to games core
+		std::weak_ptr<Core> m_core; //!< Pointer to games core
 
 	};
 }

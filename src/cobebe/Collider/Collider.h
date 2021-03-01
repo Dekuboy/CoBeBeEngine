@@ -32,10 +32,10 @@ namespace cobebe
 		const std::list<std::weak_ptr<Entity> >& getColliders();
 
 	protected:
-		std::list<int> m_maskList; ///< Collision masks to limit collisions with objects
+		std::list<int> m_maskList; //!< Collision masks to limit collisions with objects
 
-		bool m_hasCollided; ///< Has the object collided this tick?
-		std::list<std::weak_ptr<Entity> > m_colliders; ///< List of collided entities
+		bool m_hasCollided; //!< Has the object collided this tick?
+		std::list<std::weak_ptr<Entity> > m_colliders; //!< List of collided entities
 
 		/**
 		* \brief Check for common masks

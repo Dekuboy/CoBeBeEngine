@@ -130,6 +130,13 @@ namespace glwrap
 		return rtn;
 	}
 
+	std::shared_ptr<DepthCube> Context::createDepthCube(int _width, int _height)
+	{
+		std::shared_ptr<DepthCube> rtn = std::make_shared<DepthCube>(_width, _height);
+		rtn->m_context = m_self;
+		return rtn;
+	}
+
 	std::shared_ptr<GBuffer> Context::createGBuffer(int _width, int _height)
 	{
 		std::shared_ptr<GBuffer> rtn = std::make_shared<GBuffer>(_width, _height);

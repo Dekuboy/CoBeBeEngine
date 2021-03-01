@@ -18,7 +18,7 @@ namespace cobebe
 	private:
 		friend class Speaker;
 
-		ALuint m_bufferId; ///< Sound buffer loaded in OpenAL
+		ALuint m_bufferId; //!< Sound buffer loaded in OpenAL
 
 		void onLoad(const std::string& _path);
 		/**

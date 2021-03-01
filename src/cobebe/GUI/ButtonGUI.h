@@ -54,16 +54,16 @@ namespace cobebe
 	private:
 		friend class Canvas;
 
-		std::weak_ptr<Transform> m_transform; ///< Pointer to position and scale for drawing and raycasting
-		std::shared_ptr<Texture> m_textureStatic; ///< Loaded texture to apply when static
-		std::shared_ptr<Texture> m_textureHighlighted; ///< Loaded texture to apply when highlighted
-		std::shared_ptr<Texture> m_texturePressed; ///< Loaded texture to apply when pressed
+		std::weak_ptr<Transform> m_transform; //!< Pointer to position and scale for drawing and raycasting
+		std::shared_ptr<Texture> m_textureStatic; //!< Loaded texture to apply when static
+		std::shared_ptr<Texture> m_textureHighlighted; //!< Loaded texture to apply when highlighted
+		std::shared_ptr<Texture> m_texturePressed; //!< Loaded texture to apply when pressed
 
-		std::shared_ptr<Canvas> m_canvas; ///< Pointer to canvas for drawing to screen
-		bool m_isHighlighted; ///< Checks if mouse is ready to click button
-		bool m_isClicked; ///< Checks if button is currently clicked
+		std::shared_ptr<Canvas> m_canvas; //!< Pointer to canvas for drawing to screen
+		bool m_isHighlighted; //!< Checks if mouse is ready to click button
+		bool m_isClicked; //!< Checks if button is currently clicked
 
-		bool m_isWorldGUI; ///< Checks if GUI is in screen or world space
+		bool m_isWorldGUI; //!< Checks if GUI is in screen or world space
 
 		/**
 		* \brief Checks for ray collision

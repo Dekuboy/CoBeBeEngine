@@ -139,12 +139,12 @@ namespace cobebe
 
 	private:
 		friend class Core;
-		bool m_kill; ///< Marks Entity for destruction
+		bool m_kill; //!< Marks Entity for destruction
 
-		std::list<std::shared_ptr<Component> > m_components; ///< List of components attached to entity
-		std::weak_ptr<Core> m_core; ///< Pointer to games Core
-		std::weak_ptr<Entity> m_self; ///< Pointer to self to be placed in attached components
-		std::weak_ptr<Transform> m_transform; ///< Pointer to attached Transform Component
+		std::list<std::shared_ptr<Component> > m_components; //!< List of components attached to entity
+		std::weak_ptr<Core> m_core; //!< Pointer to games Core
+		std::weak_ptr<Entity> m_self; //!< Pointer to self to be placed in attached components
+		std::weak_ptr<Transform> m_transform; //!< Pointer to attached Transform Component
 
 		/**
 		* \brief Initialise the Entity when created by the Core

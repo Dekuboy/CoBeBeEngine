@@ -84,16 +84,16 @@ namespace cobebe
 		void loadAnimation(std::string _path);
 
 	protected:
-		std::shared_ptr<Camera> m_camera; ///< Stores Camera to draw to when set
-		std::weak_ptr<Transform> m_transform; ///< Pointer to Transform component
-		std::shared_ptr<Lighting> m_lighting; ///< Pointer to Lighting to get uniforms
-		std::shared_ptr<Mesh> m_mesh; ///< Loaded Mesh to draw
-		std::shared_ptr<WavefrontModel> m_objMtlModel; ///< Loaded WavefrontModel to draw
-		std::shared_ptr<Texture> m_texture; ///< Loaded Texture to apply
-		std::shared_ptr<Shader> m_shader; ///< Loaded Shader to draw with
-		std::shared_ptr<ObjAnimationController> m_animationController; ///< Stores animation info
+		std::shared_ptr<Camera> m_camera; //!< Stores Camera to draw to when set
+		std::weak_ptr<Transform> m_transform; //!< Pointer to Transform component
+		std::shared_ptr<Lighting> m_lighting; //!< Pointer to Lighting to get uniforms
+		std::shared_ptr<Mesh> m_mesh; //!< Loaded Mesh to draw
+		std::shared_ptr<WavefrontModel> m_objMtlModel; //!< Loaded WavefrontModel to draw
+		std::shared_ptr<Texture> m_texture; //!< Loaded Texture to apply
+		std::shared_ptr<Shader> m_shader; //!< Loaded Shader to draw with
+		std::shared_ptr<ObjAnimationController> m_animationController; //!< Stores animation info
 
-		bool m_cullByPart; ///< Culls a models individual parts -useful for large or animated objects
+		bool m_cullByPart; //!< Culls a models individual parts -useful for large or animated objects
 
 		/**
 		* \brief Returns texture internal, useful for renderer inheritance

@@ -135,7 +135,7 @@ namespace glwrap
 		return m_name;
 	}
 
-	std::vector<std::shared_ptr<Face> > ObjPart::getFaces()
+	std::vector<std::shared_ptr<Face> >& ObjPart::getFaces()
 	{
 		return m_faces;
 	}
@@ -242,9 +242,9 @@ namespace glwrap
 		{
 			for (int matId = 0; matId < m_idList.size(); matId++)
 			{
+				glBindVertexArray(m_idList.at(matId));
 				for (int i = 0; i < m_buffers.at(matId).size(); i++)
 				{
-					glBindVertexArray(m_idList.at(matId));
 					if (m_buffers.at(matId).at(i))
 					{
 						glBindBuffer(GL_ARRAY_BUFFER, m_buffers.at(matId).at(i)->getId());
@@ -274,7 +274,7 @@ namespace glwrap
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
 		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate(1);
+		translate();
 		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
 		drawArrays();
@@ -286,7 +286,7 @@ namespace glwrap
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
 
 		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate(1);
+		translate();
 		glm::mat4 partMatrix = m_animationUniform;
 		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
@@ -336,7 +336,7 @@ namespace glwrap
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
 		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate(1);
+		translate();
 		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
 		drawArrays(_textureUniform);
@@ -348,7 +348,7 @@ namespace glwrap
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
 
 		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate(1);
+		translate();
 		glm::mat4 partMatrix = m_animationUniform;
 		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
@@ -398,7 +398,7 @@ namespace glwrap
 		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
 	}
 
-	void ObjPart::translate(int _undo)
+	void ObjPart::translate()
 	{
 		std::vector<std::shared_ptr<ObjAnimation> > animations =
 			m_model.lock()->getAnimations();
@@ -417,29 +417,16 @@ namespace glwrap
 
 				if (translation != nullptr)
 				{
-					if (_undo == -1)
-					{
-						m_animationUniform = glm::rotate(m_animationUniform, _undo *
-							translation->getXRotation(), glm::vec3(1, 0, 0));
-						m_animationUniform = glm::rotate(m_animationUniform, _undo *
-							translation->getYRotation(), glm::vec3(0, 1, 0));
-						m_animationUniform = glm::rotate(m_animationUniform, _undo *
-							translation->getZRotation(), glm::vec3(0, 0, 1));
-					}
-
-					translateVector = ((float)_undo) * glm::vec3(translation->getX(), translation->getY(),
+					translateVector = glm::vec3(translation->getX(), translation->getY(),
 						translation->getZ());
 					m_animationUniform = glm::translate(m_animationUniform, translateVector);
 
-					if (_undo == 1)
-					{
-						m_animationUniform = glm::rotate(m_animationUniform, _undo *
-							translation->getZRotation(), glm::vec3(0, 0, 1));
-						m_animationUniform = glm::rotate(m_animationUniform, _undo *
-							translation->getYRotation(), glm::vec3(0, 1, 0));
-						m_animationUniform = glm::rotate(m_animationUniform, _undo *
-							translation->getXRotation(), glm::vec3(1, 0, 0));
-					}
+					m_animationUniform = glm::rotate(m_animationUniform,
+						translation->getZRotation(), glm::vec3(0, 0, 1));
+					m_animationUniform = glm::rotate(m_animationUniform,
+						translation->getYRotation(), glm::vec3(0, 1, 0));
+					m_animationUniform = glm::rotate(m_animationUniform,
+						translation->getXRotation(), glm::vec3(1, 0, 0));
 				}
 			}
 		}
@@ -525,6 +512,6 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		m_buffers.back().resize(10);
+		m_buffers.back().resize(6);
 	}
 }
