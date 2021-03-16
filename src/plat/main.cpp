@@ -61,6 +61,11 @@ int main()
 		renderer->loadAnimation("animations\\run.anm");
 
 		anm->playAnimation(0, 1);
+
+		std::shared_ptr<glwrap::Context> glContext = App->getGLContext();
+
+		std::shared_ptr<glwrap::GltfModel> cube = glContext->createModel("gltf\\Cube.gltf");
+
 	}
 	App->run();
 

@@ -207,7 +207,7 @@ namespace cobebe
 		std::weak_ptr<Camera> m_currentCamera; //!< Holds Camera currently drawing to the screen
 		std::shared_ptr<Lighting> m_lighting; //!< Holds all variables regarding Lighting
 		std::shared_ptr<Canvas> m_canvas; //!< Draws GUI to screen
-		std::list<std::string> m_maskNames; //!< Masks to limit certain interactions
+		std::vector<std::string> m_maskNames; //!< Masks to limit certain interactions
 
 		std::shared_ptr<Keyboard> m_keyboard; //!< Holds keyboard inputs
 		std::shared_ptr<Mouse> m_mouse; //!< Holds mouse inputs

@@ -44,8 +44,16 @@ add_library(glwrap
 	src/glwrap/ObjPart.cpp
 	src/glwrap/ObjMtlModel.h
 	src/glwrap/ObjMtlModel.cpp
+
 	src/glwrap/Material.h
 	src/glwrap/Material.cpp
+
+	src/glwrap/ModelJoint.h
+	src/glwrap/ModelJoint.cpp
+
+	src/glwrap/GltfModel.h
+	src/glwrap/GltfModel.cpp
+
 	src/glwrap/stb_image.h
 )
 

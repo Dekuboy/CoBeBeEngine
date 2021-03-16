@@ -145,8 +145,10 @@ namespace glwrap
 		glBindAttribLocation(m_id, 1, "in_Color");
 		glBindAttribLocation(m_id, 2, "in_TexCoord");
 		glBindAttribLocation(m_id, 3, "in_Normal");
-		glBindAttribLocation(m_id, 4, "in_Tangent");
-		glBindAttribLocation(m_id, 5, "in_Bitangent");
+		glBindAttribLocation(m_id, 4, "in_JointIDs");
+		glBindAttribLocation(m_id, 5, "in_Weights");
+		glBindAttribLocation(m_id, 6, "in_Tangent");
+		glBindAttribLocation(m_id, 7, "in_Bitangent");
 
 		// Perform the link and check for failure
 		glLinkProgram(m_id);
@@ -282,8 +284,10 @@ namespace glwrap
 		glBindAttribLocation(m_id, 1, "in_Color");
 		glBindAttribLocation(m_id, 2, "in_TexCoord");
 		glBindAttribLocation(m_id, 3, "in_Normal");
-		glBindAttribLocation(m_id, 4, "in_Tangent");
-		glBindAttribLocation(m_id, 5, "in_Bitangent");
+		glBindAttribLocation(m_id, 4, "in_JointIDs");
+		glBindAttribLocation(m_id, 5, "in_Weights");
+		glBindAttribLocation(m_id, 6, "in_Tangent");
+		glBindAttribLocation(m_id, 7, "in_Bitangent");
 
 		// Perform the link and check for failure
 		glLinkProgram(m_id);

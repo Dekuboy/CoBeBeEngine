@@ -7,9 +7,12 @@ namespace glwrap {};
 #include <glwrap/FileManager.h>
 #include <glwrap/Context.h>
 #include <glwrap/VertexBuffer.h>
+#include <glwrap/TriFace.h>
 #include <glwrap/VertexArray.h>
 #include <glwrap/ObjPart.h>
 #include <glwrap/ObjMtlModel.h>
+#include <glwrap/ModelJoint.h>
+#include <glwrap/GltfModel.h>
 #include <glwrap/Material.h>
 #include <glwrap/ObjAnimation.h>
 #include <glwrap/ObjFrame.h>

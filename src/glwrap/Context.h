@@ -14,6 +14,7 @@ namespace glwrap
 	class DepthCube;
 	class ShaderProgram;
 	class ObjMtlModel;
+	class GltfModel;
 
 	/**
 	* \brief The OpenGL Context
@@ -58,7 +59,7 @@ namespace glwrap
 		/**
 		* \brief Create Mesh within glwrap Context
 		* -parses as .obj
-		* -can calculate tangentBitangentNormal matrix in shader
+		* -precalculate tangentBitangentNormal matrix if _calcTanBitan
 		*/
 		std::shared_ptr<VertexArray> createMesh(std::string _path, bool _calcTanBitan);
 		/**
@@ -67,12 +68,22 @@ namespace glwrap
 		std::shared_ptr<ObjMtlModel> createObjMtlMesh(std::string _path);
 		/**
 		* \brief Create WavefrontModel within glwrap Context
+		* -precalculate tangentBitangentNormal matrix if _calcTanBitan
 		*/
 		std::shared_ptr<ObjMtlModel> createObjMtlMesh(std::string _path, bool _calcTanBitan);
 		/**
 		* \brief Create ObjPart within glwrap Context
 		*/
 		std::shared_ptr<ObjPart> createPart(std::shared_ptr<VertexArray> _mesh, std::string _name);
+		/**
+		* \brief Create Model within glwrap Context using .gltf
+		*/
+		std::shared_ptr<GltfModel> createModel(std::string _path);
+		/**
+		* \brief Create Model within glwrap Context using .gltf
+		* -precalculate tangentBitangentNormal matrix if _calcTanBitan
+		*/
+		std::shared_ptr<GltfModel> createModel(std::string _path, bool _calcTanBitan);
 		/**
 		* \brief Create ObjAnimation within glwrap Context
 		*/

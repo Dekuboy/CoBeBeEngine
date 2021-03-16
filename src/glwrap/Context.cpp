@@ -91,6 +91,24 @@ namespace glwrap
 		return rtn;
 	}
 
+	std::shared_ptr<GltfModel> Context::createModel(std::string _path)
+	{
+		std::shared_ptr<GltfModel> rtn = std::make_shared<GltfModel>();
+		rtn->m_context = m_self;
+		rtn->m_self = rtn;
+		rtn->parse(_path);
+		return rtn;
+	}
+
+	std::shared_ptr<GltfModel> Context::createModel(std::string _path, bool _calcTanBitan)
+	{
+		std::shared_ptr<GltfModel> rtn = std::make_shared<GltfModel>();
+		rtn->m_context = m_self;
+		rtn->m_self = rtn;
+		rtn->parse(_path, _calcTanBitan);
+		return rtn;
+	}
+
 	std::shared_ptr<ObjAnimation> Context::createAnimation(std::shared_ptr<VertexArray> _model)
 	{
 		std::shared_ptr<ObjAnimation> rtn = std::make_shared<ObjAnimation>(_model);

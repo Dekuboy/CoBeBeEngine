@@ -13,13 +13,13 @@ namespace cobebe
 		m_tanBitan = _calcTanBitan;
 	}
 
-	std::vector<std::shared_ptr<glwrap::Face> > Mesh::getFaces()
+	std::vector<std::shared_ptr<glwrap::TriFace> > Mesh::getFaces()
 	{
 		if (m_internal)
 		{
 			return m_internal->getFaces();
 		}
-		return std::vector < std::shared_ptr<glwrap::Face> >();
+		return std::vector < std::shared_ptr<glwrap::TriFace> >();
 	}
 
 	void Mesh::setAnimationCulling(bool _switch)

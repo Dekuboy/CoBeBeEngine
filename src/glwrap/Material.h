@@ -3,6 +3,8 @@
 
 namespace glwrap
 {
+	class GltfModel;
+	class ModelJoint;
 	class ObjMtlModel;
 	class ObjPart;
 	class Texture;
@@ -23,6 +25,8 @@ namespace glwrap
 		void setTexture(std::shared_ptr<Texture> _texture);
 
 	private:
+		friend class GltfModel;
+		friend class ModelJoint;
 		friend class ObjMtlModel;
 		friend class ObjPart;
 

@@ -24,7 +24,7 @@ namespace cobebe
 		/**
 		* \brief Retrieves all VertexArray faces
 		*/
-		std::vector<std::shared_ptr<glwrap::Face> > getFaces();
+		std::vector<std::shared_ptr<glwrap::TriFace> > getFaces();
 
 		/**
 		* \brief Sets the model to cull animated parts individually

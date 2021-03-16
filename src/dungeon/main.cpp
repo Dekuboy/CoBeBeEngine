@@ -39,7 +39,7 @@ int main()
 	renderer->setMesh("objs\\curuthers.obj");
 	renderer->setTexture("images\\curuthers_diffuse.png");
 	renderer->setShader("deferred_shaders\\renderGAni.shad");
-	std::shared_ptr<cobebe::AnimationController> anm = renderer->addAnimationController();
+	std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
 	renderer->loadAnimation("animations\\run.anm");
 
 	anm->playAnimation(0, 1);

@@ -2,6 +2,7 @@
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
 #include <glwrap/ObjPart.h>
+#include <glwrap/TriFace.h>
 #include <glwrap/ObjAnimation.h>
 #include <glwrap/Context.h>
 
@@ -139,8 +140,8 @@ namespace glwrap
 		std::shared_ptr<VertexBuffer> bitangentBuffer;
 		//std::shared_ptr<VertexBuffer> lightMapBuffer;
 
-		Face f;
-		Face fq;
+		TriFace f;
+		TriFace fq;
 
 		glm::vec3 vertexPosition, edge1, edge2, normal;
 		glm::vec2 deltaUV1, deltaUV2;
@@ -315,7 +316,7 @@ namespace glwrap
 				//	lightMapBuffer->add(f.lmcc);
 				//}
 
-				m_faces.push_back(std::make_shared<Face>(f));
+				m_faces.push_back(std::make_shared<TriFace>(f));
 				if (!currentPart)
 				{
 					currentPart = m_context.lock()->createPart(m_self.lock(), "Default");
@@ -397,7 +398,7 @@ namespace glwrap
 				//fq.lmcc = f.lmca;
 				//if (lightMapBuffer) lightMapBuffer->add(fq.lmcc);
 
-				m_faces.push_back(std::make_shared<Face>(fq));
+				m_faces.push_back(std::make_shared<TriFace>(fq));
 				currentPart->addFace(*(m_faces.end() - 1));
 			}
 		}
@@ -605,7 +606,7 @@ namespace glwrap
 		}
 	}
 
-	std::vector<std::shared_ptr<Face> > VertexArray::getFaces()
+	std::vector<std::shared_ptr<TriFace> > VertexArray::getFaces()
 	{
 		return m_faces;
 	}

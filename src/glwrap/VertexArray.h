@@ -7,7 +7,7 @@
 #include <string>
 namespace glwrap
 {
-	struct Face;
+	struct TriFace;
 
 	class Context;
 	class VertexBuffer;
@@ -74,7 +74,7 @@ namespace glwrap
 		/**
 		* \brief Retrieve all the tri information of the model
 		*/
-		std::vector<std::shared_ptr<Face> > getFaces();
+		std::vector<std::shared_ptr<TriFace> > getFaces();
 		/**
 		* \brief Retrieve all the parts that make up the model
 		*/
@@ -93,7 +93,7 @@ namespace glwrap
 		friend class ShaderProgram;
 
 		bool m_dirty; //!< If the buffers have been altered, update in GL
-		std::vector<std::shared_ptr<Face> > m_faces; //!< Retains information on all tris in the model
+		std::vector<std::shared_ptr<TriFace> > m_faces; //!< Retains information on all tris in the model
 		std::vector<std::shared_ptr<ObjPart> > m_parts; //!< Information on individual parts of the model
 		std::vector<std::shared_ptr<ObjAnimation> > m_animations; //!< List of animations attached to the model
 		std::weak_ptr<VertexArray> m_self; //!< Pointer to self to set in individual parts

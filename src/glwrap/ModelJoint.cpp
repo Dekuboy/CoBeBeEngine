@@ -1,9 +1,9 @@
-#include <glwrap/ObjPart.h>
+#include <glwrap/ModelJoint.h>
 #include <glwrap/TriFace.h>
 #include <glwrap/VertexBuffer.h>
-#include <glwrap/VertexArray.h>
-#include <glwrap/ObjFrame.h>
-#include <glwrap/ObjAnimation.h>
+#include <glwrap/GltfModel.h>
+//#include <glwrap/ModelFrame.h>
+//#include <glwrap/ModelAnimation.h>
 #include <glwrap/Material.h>
 #include <glwrap/Context.h>
 #include <glwrap/ShaderProgram.h>
@@ -12,7 +12,7 @@
 
 namespace glwrap
 {
-	ObjPart::ObjPart(std::shared_ptr<VertexArray> _mesh, std::string _name)
+	ModelJoint::ModelJoint(std::shared_ptr<GltfModel> _mesh, std::string _name)
 	{
 		m_name = _name;
 		m_model = _mesh;
@@ -22,22 +22,22 @@ namespace glwrap
 		generateArrays();
 	}
 
-	ObjPart::~ObjPart()
+	ModelJoint::~ModelJoint()
 	{
 
 	}
 
-	std::string ObjPart::getName()
+	std::string ModelJoint::getName()
 	{
 		return m_name;
 	}
 
-	std::vector<std::shared_ptr<TriFace> >& ObjPart::getFaces()
+	std::vector<std::shared_ptr<TriFace> >& ModelJoint::getFaces()
 	{
 		return m_faces;
 	}
 
-	void ObjPart::addFace(std::shared_ptr<TriFace> _face)
+	void ModelJoint::addFace(std::shared_ptr<TriFace> _face)
 	{
 		m_faces.push_back(_face);
 
@@ -89,7 +89,7 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	void ObjPart::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
+	void ModelJoint::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
 	{
 		if (_attribute == "in_Position")
 		{
@@ -131,7 +131,7 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	int ObjPart::getVertexCount(int _materialId)
+	int ModelJoint::getVertexCount(int _materialId)
 	{
 		if (m_buffers.size() < 1)
 		{
@@ -141,7 +141,7 @@ namespace glwrap
 		return m_buffers.at(_materialId).at(0)->getDataSize() / m_buffers.at(_materialId).at(0)->getComponents();
 	}
 
-	GLuint ObjPart::getId(int _materialId)
+	GLuint ModelJoint::getId(int _materialId)
 	{
 		if (m_dirty)
 		{
@@ -174,7 +174,7 @@ namespace glwrap
 		return m_idList.at(_materialId);
 	}
 
-	void ObjPart::draw()
+	void ModelJoint::draw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
@@ -185,7 +185,7 @@ namespace glwrap
 		drawArrays();
 	}
 
-	void ObjPart::cullAndDraw()
+	void ModelJoint::cullAndDraw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
@@ -236,108 +236,46 @@ namespace glwrap
 		}
 	}
 
-	void ObjPart::draw(std::string _textureUniform)
-	{
-		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-
-		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate();
-		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
-
-		drawArrays(_textureUniform);
-	}
-
-	void ObjPart::cullAndDraw(std::string _textureUniform)
-	{
-		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
-
-		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate();
-		glm::mat4 partMatrix = m_animationUniform;
-		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
-
-		if (m_model.lock()->getCullAnimation())
-		{
-			if (shader->checkModelInView() && m_animationUniform == glm::mat4(1))
-			{
-				drawArrays(_textureUniform);
-			}
-			else
-			{
-				glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
-				glm::mat3 partRotation = glm::mat3(m_animationUniform);
-				glm::vec3 partSize = getSize();
-
-				if (shader->
-					checkViewingFrustum(partCentre, partSize, partRotation))
-				{
-					drawArrays(_textureUniform);
-				}
-				else
-				{
-					m_animationUniform = glm::mat4(1);
-				}
-			}
-		}
-		else
-		{
-			glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
-			glm::mat3 partRotation = glm::mat3(m_animationUniform);
-			glm::vec3 partSize = getSize();
-
-			if (shader->
-				checkViewingFrustum(partCentre, partSize, partRotation))
-			{
-				drawArrays(_textureUniform);
-			}
-			else
-			{
-				m_animationUniform = glm::mat4(1);
-			}
-		}
-	}
-
-	glm::vec3 ObjPart::getSize()
+	glm::vec3 ModelJoint::getSize()
 	{
 		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
 	}
 
-	void ObjPart::translate()
+	void ModelJoint::translate()
 	{
-		std::vector<std::shared_ptr<ObjAnimation> > animations =
-			m_model.lock()->getAnimations();
-		std::shared_ptr<ObjFrame> frame;
-		std::shared_ptr<Translation> translation;
+		//std::vector<std::shared_ptr<ModelAnimation> > animations =
+		//	m_model.lock()->getAnimations();
+		//std::shared_ptr<ModelFrame> frame;
+		//std::shared_ptr<Translation> translation;
 
-		glm::vec3 translateVector(0);
+		//glm::vec3 translateVector(0);
 
-		for (std::vector<std::shared_ptr<ObjAnimation> >::iterator itr = animations.begin();
-			itr != animations.end(); itr++)
-		{
-			if ((*itr)->getEnabled())
-			{
-				frame = (*itr)->getMergeFrame();
-				translation = frame->getTranslation(m_self.lock());
+		//for (std::vector<std::shared_ptr<ObjAnimation> >::iterator itr = animations.begin();
+		//	itr != animations.end(); itr++)
+		//{
+		//	if ((*itr)->getEnabled())
+		//	{
+		//		frame = (*itr)->getMergeFrame();
+		//		translation = frame->getTranslation(m_self.lock());
 
-				if (translation != nullptr)
-				{
-					translateVector = glm::vec3(translation->getX(), translation->getY(),
-						translation->getZ());
-					m_animationUniform = glm::translate(m_animationUniform, translateVector);
+		//		if (translation != nullptr)
+		//		{
+		//			translateVector = glm::vec3(translation->getX(), translation->getY(),
+		//				translation->getZ());
+		//			m_animationUniform = glm::translate(m_animationUniform, translateVector);
 
-					m_animationUniform = glm::rotate(m_animationUniform,
-						translation->getZRotation(), glm::vec3(0, 0, 1));
-					m_animationUniform = glm::rotate(m_animationUniform,
-						translation->getYRotation(), glm::vec3(0, 1, 0));
-					m_animationUniform = glm::rotate(m_animationUniform,
-						translation->getXRotation(), glm::vec3(1, 0, 0));
-				}
-			}
-		}
+		//			m_animationUniform = glm::rotate(m_animationUniform,
+		//				translation->getZRotation(), glm::vec3(0, 0, 1));
+		//			m_animationUniform = glm::rotate(m_animationUniform,
+		//				translation->getYRotation(), glm::vec3(0, 1, 0));
+		//			m_animationUniform = glm::rotate(m_animationUniform,
+		//				translation->getXRotation(), glm::vec3(1, 0, 0));
+		//		}
+		//	}
+		//}
 	}
 
-	void ObjPart::drawArrays()
+	void ModelJoint::drawArrays()
 	{
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
 			getCurrentShader();
@@ -374,38 +312,7 @@ namespace glwrap
 		}
 	}
 
-	void ObjPart::drawArrays(std::string _textureUniform)
-	{
-		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
-			getCurrentShader();
-
-		bool check = false;
-
-		if (m_animationUniform != glm::mat4(1))
-		{
-			shader->setUniform("in_Animate", m_animationUniform);
-			check = true;
-		}
-
-		int listItr = 0;
-		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
-			itr != m_materials.end(); itr++)
-		{
-			m_context.lock()->getCurrentShader()->setUniform(_textureUniform, (*itr)->m_textureMap.lock());
-
-			glBindVertexArray(getId(listItr));
-			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
-			listItr++;
-		}
-
-		if (check)
-		{
-			m_animationUniform = glm::mat4(1);
-			shader->setUniform("in_Animate", m_animationUniform);
-		}
-	}
-
-	void ObjPart::generateArrays()
+	void ModelJoint::generateArrays()
 	{
 		m_buffers.resize(m_buffers.size() + 1);
 		m_idList.resize(m_idList.size() + 1);

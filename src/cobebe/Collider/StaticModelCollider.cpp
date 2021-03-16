@@ -12,7 +12,7 @@ namespace cobebe
 {
 	bool ColliderColumn::isColliding(glm::vec3 _position, glm::vec3 _size)
 	{
-		for (std::vector<glwrap::Face>::iterator i = m_faces.begin(); i != m_faces.end(); i++)
+		for (std::vector<glwrap::TriFace>::iterator i = m_faces.begin(); i != m_faces.end(); i++)
 		{
 			float f[3][3] = { 0 };
 			f[0][0] = i->pa.x;
@@ -44,9 +44,9 @@ namespace cobebe
 	}
 
 	void ColliderColumn::getColliding(glm::vec3 _position, glm::vec3 _size,
-		std::vector<glwrap::Face>& _collisions)
+		std::vector<glwrap::TriFace>& _collisions)
 	{
-		for (std::vector<glwrap::Face>::iterator i = m_faces.begin(); i != m_faces.end(); i++)
+		for (std::vector<glwrap::TriFace>::iterator i = m_faces.begin(); i != m_faces.end(); i++)
 		{
 			float f[3][3] = { 0 };
 			f[0][0] = i->pa.x;
@@ -98,7 +98,7 @@ namespace cobebe
 		return m_extent;
 	}
 
-	bool StaticModelCollider::isColliding(glwrap::Face& _face, glm::vec3 _position,
+	bool StaticModelCollider::isColliding(glwrap::TriFace& _face, glm::vec3 _position,
 		glm::vec3 _size)
 	{
 		float f[3][3] = { 0 };
@@ -131,7 +131,7 @@ namespace cobebe
 
 	bool StaticModelCollider::isColliding(glm::vec3 _position, glm::vec3 _size)
 	{
-		for (std::vector<glwrap::Face>::iterator i = m_collisions.begin();
+		for (std::vector<glwrap::TriFace>::iterator i = m_collisions.begin();
 			i != m_collisions.end(); i++)
 		{
 			float f[3][3] = { 0 };
@@ -191,7 +191,7 @@ namespace cobebe
 		}
 
 		// Favour Y faces first.
-		for (std::vector<glwrap::Face>::iterator it = m_collisions.begin();
+		for (std::vector<glwrap::TriFace>::iterator it = m_collisions.begin();
 			it != m_collisions.end(); it++)
 		{
 			if (!isColliding(*it, solve, _size))
@@ -238,7 +238,7 @@ namespace cobebe
 			glm::vec3 total;
 
 			// Try to uncollide using face normals
-			for (std::vector<glwrap::Face>::iterator it = m_collisions.begin();
+			for (std::vector<glwrap::TriFace>::iterator it = m_collisions.begin();
 				it != m_collisions.end(); it++)
 			{
 				glm::vec3 n = faceNormal(*it);
@@ -281,7 +281,7 @@ namespace cobebe
 	void StaticModelCollider::generateExtent()
 	{
 		std::vector<glm::vec3> positions;
-		std::vector<std::shared_ptr<glwrap::Face> > faces;
+		std::vector<std::shared_ptr<glwrap::TriFace> > faces;
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		std::shared_ptr<Mesh> model = mr->getMesh();
 		std::shared_ptr<WavefrontModel> objMtlModel = mr->getWavefrontModel();
@@ -297,7 +297,7 @@ namespace cobebe
 
 		for (size_t f = 0; f < faces.size(); f++)
 		{
-			glwrap::Face face = *faces.at(f);
+			glwrap::TriFace face = *faces.at(f);
 			positions.push_back(modelMatrix * face.pa);
 			positions.push_back(modelMatrix * face.pb);
 			positions.push_back(modelMatrix * face.pc);
@@ -320,7 +320,7 @@ namespace cobebe
 		m_extent.m_max = m_extent.m_max + glm::vec3(1);
 	}
 
-	void StaticModelCollider::addFace(glwrap::Face _face)
+	void StaticModelCollider::addFace(glwrap::TriFace _face)
 	{
 		glm::mat3 modelMatrix = getTransform()->getModel();
 		glm::vec3 vertexPosition = modelMatrix * _face.pa;
@@ -370,7 +370,7 @@ namespace cobebe
 		}
 	}
 
-	glm::vec3 StaticModelCollider::faceNormal(glwrap::Face& _face)
+	glm::vec3 StaticModelCollider::faceNormal(glwrap::TriFace& _face)
 	{
 		glm::vec3 N = glm::cross(
 			_face.pa - _face.pc,
@@ -390,7 +390,7 @@ namespace cobebe
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		if (mr)
 		{
-			std::vector<std::shared_ptr<glwrap::Face> > faces;
+			std::vector<std::shared_ptr<glwrap::TriFace> > faces;
 			std::shared_ptr<Mesh> model = mr->getMesh();
 			std::shared_ptr<WavefrontModel> objMtlModel = mr->getWavefrontModel();
 			if (model)
@@ -434,7 +434,7 @@ namespace cobebe
 				}
 			}
 
-			glwrap::Face face;
+			glwrap::TriFace face;
 
 			for (size_t f = 0; f < faces.size(); f++)
 			{

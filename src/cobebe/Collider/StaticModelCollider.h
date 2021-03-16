@@ -23,7 +23,7 @@ namespace cobebe
 	{
 		glm::vec3 m_position; //!< Position of column
 		glm::vec3 m_size; //!< Scale of column
-		std::vector<glwrap::Face> m_faces; //!< Faces within column
+		std::vector<glwrap::TriFace> m_faces; //!< Faces within column
 
 		/**
 		* \brief Checks if input is colliding with column faces
@@ -34,7 +34,7 @@ namespace cobebe
 		* \brief Returns all faces currently colliding
 		*/
 		void getColliding(glm::vec3 _position, glm::vec3 _size,
-			std::vector<glwrap::Face>& _collisions);
+			std::vector<glwrap::TriFace>& _collisions);
 	};
 
 	/**
@@ -55,7 +55,7 @@ namespace cobebe
 		/**
 		* \brief Check for collision with face
 		*/
-		bool isColliding(glwrap::Face& _face, glm::vec3 _position,
+		bool isColliding(glwrap::TriFace& _face, glm::vec3 _position,
 			glm::vec3 _size);
 
 		/**
@@ -83,7 +83,7 @@ namespace cobebe
 		float m_tryInc; //!< Distance to increment per test
 		float m_maxInc; //!< Max increment for cludge
 
-		std::vector<glwrap::Face> m_collisions; //!< Faces currently colliding
+		std::vector<glwrap::TriFace> m_collisions; //!< Faces currently colliding
 
 		/**
 		* \brief Find the max and min xyz values
@@ -92,11 +92,11 @@ namespace cobebe
 		/**
 		* \brief Add face to partition
 		*/
-		void addFace(glwrap::Face _face);
+		void addFace(glwrap::TriFace _face);
 		/**
 		* \brief Find face normal
 		*/
-		glm::vec3 faceNormal(glwrap::Face& _face);
+		glm::vec3 faceNormal(glwrap::TriFace& _face);
 
 		void onInit();
 
