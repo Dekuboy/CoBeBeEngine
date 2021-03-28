@@ -18,11 +18,11 @@ namespace glwrap
 	/**
 	* \brief Stores information on individual joints of a model
 	*/
-	class ModelJoint
+	class ModelMesh
 	{
 	public:
-		ModelJoint(std::shared_ptr<GltfModel> _mesh, std::string _name);
-		~ModelJoint();
+		ModelMesh(std::shared_ptr<GltfModel> _mesh, std::string _name);
+		~ModelMesh();
 
 		/**
 		* \brief Retrieve name of joint
@@ -64,16 +64,15 @@ namespace glwrap
 		std::vector<GLuint> m_idList; //!< List of vertex array GL Ids
 
 		bool m_dirty; //!< If a buffer has been added, buffer information must be sent to the GPU
-		std::weak_ptr<GltfModel> m_model; //!< Pointer to model that joint is attached to
+		std::weak_ptr<GltfModel> m_model; //!< Pointer to model that mesh is attached to
 		std::vector<std::shared_ptr<TriFace> > m_faces; //!< List of tris in part
 		std::vector<std::vector<std::shared_ptr<VertexBuffer> > > 
-			m_buffers; //!< List of different buffers in joint, separated by Material ([mat][])
+			m_buffers; //!< List of different buffers in mesh, separated by Primitives ([prims][])
 		glm::mat4 m_animationUniform; //!< Transformation matrix based on animated movement
 
-		bool m_useMaterial; //!< Stores if the part is separated by Material
 		std::list<std::shared_ptr<Material> > m_materials; //!< List of Material used in part
 
-		std::weak_ptr<ModelJoint> m_self; //!< Pointer to self to find Translation referring to this part
+		std::weak_ptr<ModelMesh> m_self; //!< Pointer to self to find Translation referring to this part
 		std::weak_ptr<Context> m_context; //!< Pointer to glwrap context
 
 		float m_offsetX; //!< x Offset from obj centre
@@ -88,7 +87,7 @@ namespace glwrap
 		float m_minZ; //!< Min z value in part
 
 		/**
-		* \brief Translate joint by base models animation
+		* \brief Translate mesh by base models animation
 		*/
 		void translate();
 		/**
@@ -106,8 +105,8 @@ namespace glwrap
 		*/
 		void draw();
 		/**
-		* \brief Draw all vertex arrays represented within this joint that appear in view
-		* -useful for large models where joints are too distant to always be in view
+		* \brief Draw all vertex arrays represented within this mesh that appear in view
+		* -useful for large models where meshes are too distant to always be in view
 		*/
 		void cullAndDraw();
 

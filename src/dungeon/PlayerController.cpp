@@ -5,7 +5,6 @@
 void PlayerController::onInit()
 {
 	m_transform = getTransform();
-	m_transform.lock()->m_scale = glm::vec3(0.8f);
 	m_keyboard = getKeyboard();
 	m_mouse = getMouse();
 	m_gamepad = getGamepad();

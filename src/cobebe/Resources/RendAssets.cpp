@@ -3,16 +3,6 @@
 
 namespace cobebe
 {
-	Mesh::Mesh()
-	{
-		m_tanBitan = false;
-	}
-
-	Mesh::Mesh(bool _calcTanBitan)
-	{
-		m_tanBitan = _calcTanBitan;
-	}
-
 	std::vector<std::shared_ptr<glwrap::TriFace> > Mesh::getFaces()
 	{
 		if (m_internal)
@@ -22,23 +12,39 @@ namespace cobebe
 		return std::vector < std::shared_ptr<glwrap::TriFace> >();
 	}
 
-	void Mesh::setAnimationCulling(bool _switch)
+	std::shared_ptr<glwrap::Texture> Mesh::getTexture(std::shared_ptr<Texture> _texture)
 	{
-		m_internal->setCullAnimation(_switch);
+		return _texture->m_internal;
 	}
 
-	void Mesh::onLoad(const std::string& _path)
+	SimpleModel::SimpleModel()
+	{
+		m_tanBitan = false;
+	}
+
+	SimpleModel::SimpleModel(bool _calcTanBitan)
+	{
+		m_tanBitan = _calcTanBitan;
+	}
+
+	void SimpleModel::setAnimationCulling(bool _switch)
+	{
+		m_simpleModel->setCullAnimation(_switch);
+	}
+
+	void SimpleModel::onLoad(const std::string& _path)
 	{
 		m_path = _path;
-		m_internal = m_context.lock()->createMesh(_path, m_tanBitan);
+		m_simpleModel = m_context.lock()->createMesh(_path, m_tanBitan);
+		m_internal = m_simpleModel;
 	}
 
-	WavefrontModel::WavefrontModel() : Mesh()
+	WavefrontModel::WavefrontModel() : SimpleModel()
 	{
 
 	}
 
-	WavefrontModel::WavefrontModel(bool _calcTanBitan) : Mesh(_calcTanBitan)
+	WavefrontModel::WavefrontModel(bool _calcTanBitan) : SimpleModel(_calcTanBitan)
 	{
 
 	}
@@ -46,18 +52,57 @@ namespace cobebe
 	void WavefrontModel::onLoad(const std::string& _path)
 	{
 		m_path = _path;
-		m_internal = m_context.lock()->createObjMtlMesh(_path, m_tanBitan);
+		std::shared_ptr<glwrap::ObjMtlModel> obj = m_context.lock()->createObjMtlMesh(_path, m_tanBitan);
 
-		m_internal = m_internalModel;
+		m_internal = obj;
+		m_simpleModel = obj;
 
-		std::list<std::shared_ptr<glwrap::Material> > matList = m_internalModel->getMatList();
+		std::list<std::shared_ptr<glwrap::Material> > matList = obj->getMatList();
 		std::shared_ptr<Texture> currentTex;
-
+		std::string texPath = "";
 		for (std::list<std::shared_ptr<glwrap::Material> >::iterator itr = matList.begin();
 			itr != matList.end(); ++itr)
 		{
-			currentTex = m_resources.lock()->load<Texture>((*itr)->getTexturePath());
-			(*itr)->setTexture(currentTex->m_internal);
+			texPath = (*itr)->getTexturePath();
+			if (texPath == "")
+			{
+				texPath = "images\\white.png";
+			}
+			currentTex = m_resources.lock()->load<Texture>(texPath);
+			(*itr)->setTexture(getTexture(currentTex));
+		}
+	}
+
+	SkinModel::SkinModel()
+	{
+		m_tanBitan = false;
+	}
+
+	SkinModel::SkinModel(bool _calcTanBitan)
+	{
+		m_tanBitan = _calcTanBitan;
+	}
+
+	void SkinModel::onLoad(const std::string& _path)
+	{
+		m_path = _path;
+		std::shared_ptr<glwrap::GltfModel> gltf = m_context.lock()->createModel(_path, m_tanBitan);
+
+		m_internal = gltf;
+
+		std::list<std::shared_ptr<glwrap::Material> > matList = gltf->getMatList();
+		std::shared_ptr<Texture> currentTex;
+		std::string texPath = "";
+		for (std::list<std::shared_ptr<glwrap::Material> >::iterator itr = matList.begin();
+			itr != matList.end(); ++itr)
+		{
+			texPath = (*itr)->getTexturePath();
+			if (texPath == "")
+			{
+				texPath = "images\\white.png";
+			}
+			currentTex = m_resources.lock()->load<Texture>(texPath);
+			(*itr)->setTexture(getTexture(currentTex));
 		}
 	}
 

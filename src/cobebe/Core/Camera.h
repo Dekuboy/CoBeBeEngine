@@ -61,26 +61,15 @@ namespace cobebe
 		/**
 		* \brief Draws to cameras RenderTexture
 		*/
-		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal);
+		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model3D> _meshInternal);
 		/**
 		* \brief Draws to cameras RenderTexture
 		*/
 		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
 		/**
-		* \brief Draws to cameras RenderTexture
-		*/
-		void draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::ObjMtlModel> _meshInternal, std::string _textureUniform);
-
-		/**
 		* \brief Draws to cameras RenderTexture (Culls parts individually)
 		*/
-		void cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal);
-		/**
-		* \brief Draws to cameras RenderTexture (Culls parts individually)
-		*/
-		void cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::ObjMtlModel> _meshInternal, std::string _textureUniform);
-
-
+		void cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model3D> _meshInternal);
 
 		/**
 		* \brief Draw from GBuffer to RenderTexture

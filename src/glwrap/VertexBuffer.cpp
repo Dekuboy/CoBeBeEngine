@@ -6,6 +6,7 @@ namespace glwrap
 	{
 		m_components = 0;
 		m_dirty = false;
+		m_isFloat = true;
 
 		glGenBuffers(1, &m_id);
 
@@ -22,8 +23,8 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		m_data.push_back(_value.x);
-		m_data.push_back(_value.y);
+		m_floatData.push_back(_value.x);
+		m_floatData.push_back(_value.y);
 		m_components = 2;
 		m_dirty = true;
 	}
@@ -35,9 +36,9 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		m_data.push_back(_value.x);
-		m_data.push_back(_value.y);
-		m_data.push_back(_value.z);
+		m_floatData.push_back(_value.x);
+		m_floatData.push_back(_value.y);
+		m_floatData.push_back(_value.z);
 		m_components = 3;
 		m_dirty = true;
 	}
@@ -49,11 +50,56 @@ namespace glwrap
 			throw std::exception();
 		}
 
-		m_data.push_back(_value.x);
-		m_data.push_back(_value.y);
-		m_data.push_back(_value.z);
-		m_data.push_back(_value.w);
+		m_floatData.push_back(_value.x);
+		m_floatData.push_back(_value.y);
+		m_floatData.push_back(_value.z);
+		m_floatData.push_back(_value.w);
 		m_components = 4;
+		m_dirty = true;
+	}
+
+	void VertexBuffer::add(glm::ivec2 _value)
+	{
+		if (m_components != 4 && m_components != 0)
+		{
+			throw std::exception();
+		}
+
+		m_intData.push_back(_value.x);
+		m_intData.push_back(_value.y);
+		m_components = 4;
+		m_isFloat = false;
+		m_dirty = true;
+	}
+
+	void VertexBuffer::add(glm::ivec3 _value)
+	{
+		if (m_components != 4 && m_components != 0)
+		{
+			throw std::exception();
+		}
+
+		m_intData.push_back(_value.x);
+		m_intData.push_back(_value.y);
+		m_intData.push_back(_value.z);
+		m_components = 4;
+		m_isFloat = false;
+		m_dirty = true;
+	}
+
+	void VertexBuffer::add(glm::ivec4 _value)
+	{
+		if (m_components != 4 && m_components != 0)
+		{
+			throw std::exception();
+		}
+
+		m_intData.push_back(_value.x);
+		m_intData.push_back(_value.y);
+		m_intData.push_back(_value.z);
+		m_intData.push_back(_value.w);
+		m_components = 4;
+		m_isFloat = false;
 		m_dirty = true;
 	}
 
@@ -64,7 +110,8 @@ namespace glwrap
 
 	int VertexBuffer::getDataSize()
 	{
-		return m_data.size();
+		if (m_isFloat) { return m_floatData.size(); }
+		return m_intData.size();
 	}
 
 	GLuint VertexBuffer::getId()
@@ -72,7 +119,14 @@ namespace glwrap
 		if (m_dirty)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, m_id);
-			glBufferData(GL_ARRAY_BUFFER, m_data.size() * sizeof(float), &m_data.at(0), GL_STATIC_DRAW);
+			if (m_isFloat)
+			{
+				glBufferData(GL_ARRAY_BUFFER, m_floatData.size() * sizeof(float), &m_floatData.at(0), GL_STATIC_DRAW);
+			}
+			else
+			{
+				glBufferData(GL_ARRAY_BUFFER, m_intData.size() * sizeof(int), &m_intData.at(0), GL_STATIC_DRAW);
+			}
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			m_dirty = false;
 		}

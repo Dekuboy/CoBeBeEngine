@@ -7,6 +7,7 @@
 #include <glwrap/Material.h>
 #include <glwrap/Context.h>
 #include <glwrap/ShaderProgram.h>
+#include <glwrap/TextureUniforms.h>
 #include <glwrap/ViewingFrustum.h>
 #include <glm/ext.hpp>
 
@@ -236,68 +237,6 @@ namespace glwrap
 		}
 	}
 
-	void ObjPart::draw(std::string _textureUniform)
-	{
-		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-
-		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate();
-		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
-
-		drawArrays(_textureUniform);
-	}
-
-	void ObjPart::cullAndDraw(std::string _textureUniform)
-	{
-		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
-
-		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate();
-		glm::mat4 partMatrix = m_animationUniform;
-		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
-
-		if (m_model.lock()->getCullAnimation())
-		{
-			if (shader->checkModelInView() && m_animationUniform == glm::mat4(1))
-			{
-				drawArrays(_textureUniform);
-			}
-			else
-			{
-				glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
-				glm::mat3 partRotation = glm::mat3(m_animationUniform);
-				glm::vec3 partSize = getSize();
-
-				if (shader->
-					checkViewingFrustum(partCentre, partSize, partRotation))
-				{
-					drawArrays(_textureUniform);
-				}
-				else
-				{
-					m_animationUniform = glm::mat4(1);
-				}
-			}
-		}
-		else
-		{
-			glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
-			glm::mat3 partRotation = glm::mat3(m_animationUniform);
-			glm::vec3 partSize = getSize();
-
-			if (shader->
-				checkViewingFrustum(partCentre, partSize, partRotation))
-			{
-				drawArrays(_textureUniform);
-			}
-			else
-			{
-				m_animationUniform = glm::mat4(1);
-			}
-		}
-	}
-
 	glm::vec3 ObjPart::getSize()
 	{
 		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
@@ -308,7 +247,7 @@ namespace glwrap
 		std::vector<std::shared_ptr<ObjAnimation> > animations =
 			m_model.lock()->getAnimations();
 		std::shared_ptr<ObjFrame> frame;
-		std::shared_ptr<Translation> translation;
+		std::shared_ptr<ObjTranslation> translation;
 
 		glm::vec3 translateVector(0);
 
@@ -352,10 +291,22 @@ namespace glwrap
 
 		if (m_useMaterial)
 		{
+			std::string textureCheck;
+
+			shader->getUniforms()->getUniformName(0, textureCheck);
+
 			int listItr = 0;
 			for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
 				itr != m_materials.end(); itr++)
 			{
+				if ((*itr)->m_colourMap.lock())
+				{
+					if (textureCheck != "")
+					{
+						shader->setUniform(textureCheck, (*itr)->m_colourMap.lock());
+					}
+				}
+
 				glBindVertexArray(getId(listItr));
 				glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
 				listItr++;
@@ -365,37 +316,6 @@ namespace glwrap
 		{
 			glBindVertexArray(getId(0));
 			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(0));
-		}
-
-		if (check)
-		{
-			m_animationUniform = glm::mat4(1);
-			shader->setUniform("in_Animate", m_animationUniform);
-		}
-	}
-
-	void ObjPart::drawArrays(std::string _textureUniform)
-	{
-		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
-			getCurrentShader();
-
-		bool check = false;
-
-		if (m_animationUniform != glm::mat4(1))
-		{
-			shader->setUniform("in_Animate", m_animationUniform);
-			check = true;
-		}
-
-		int listItr = 0;
-		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
-			itr != m_materials.end(); itr++)
-		{
-			m_context.lock()->getCurrentShader()->setUniform(_textureUniform, (*itr)->m_textureMap.lock());
-
-			glBindVertexArray(getId(listItr));
-			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
-			listItr++;
 		}
 
 		if (check)

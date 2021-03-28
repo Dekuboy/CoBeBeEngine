@@ -16,6 +16,7 @@ namespace glwrap
 	class DepthBuffer;
 	class DepthCube;
 	class ViewingFrustum;
+	class TextureUniforms;
 
 	/**
 	* \brief Type of buffer if sample is a GBuffer
@@ -41,6 +42,9 @@ namespace glwrap
 
 	/**
 	* \brief Manages GL shader and its properties
+	* -holds Shader Id
+	* -allows culling if ViewingFrustum is set
+	* -allows uniform name retrieval if TextureUniforms is set to a derived class
 	*/
 	class ShaderProgram
 	{
@@ -66,31 +70,19 @@ namespace glwrap
 		* \brief Draw ShaderProgram with current set uniforms
 		* -draws input model to current set frame buffer and viewport
 		*/
-		void draw(std::shared_ptr<VertexArray> _vertexArray);
+		void draw(std::shared_ptr<Model3D> _vertexArray);
 		/**
 		* \brief Draw ShaderProgram with current set uniforms
 		* -draws input model to input frame buffer
 		*/
-		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray);
-		/**
-		* \brief Draw ShaderProgram with current set uniforms
-		* -draws input model to current set frame buffer and viewport
-		* -applies Material texture to input uniform name
-		*/
-		void draw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform);
-		/**
-		* \brief Draw ShaderProgram with current set uniforms
-		* -draws input model to input frame buffer
-		* -applies Material texture to input uniform name
-		*/
-		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform);
+		void draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model3D> _vertexArray);
 
 		/**
 		* \brief Draw ShaderProgram with current set uniforms if model is in view
 		* -draws input model to current set frame buffer and viewport
 		* -culls based on input values applied to model
 		*/
-		void cullAndDraw(std::shared_ptr<VertexArray> _vertexArray, 
+		void cullAndDraw(std::shared_ptr<Model3D> _vertexArray, 
 			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
 		/**
 		* \brief Draw ShaderProgram with current set uniforms if model is in view
@@ -98,24 +90,7 @@ namespace glwrap
 		* -culls based on input values applied to model
 		*/
 		void cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, 
-			std::shared_ptr<VertexArray> _vertexArray, 
-			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
-		/**
-		* \brief Draw ShaderProgram with current set uniforms if model is in view
-		* -draws input model to current set frame buffer and viewport
-		* -applies Material texture to input uniform name
-		* -culls based on input values applied to model
-		*/
-		void cullAndDraw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform,
-			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
-		/**
-		* \brief Draw ShaderProgram with current set uniforms if model is in view
-		* -draws input model to input frame buffer
-		* -applies Material texture to input uniform name
-		* -culls based on input values applied to model
-		*/
-		void cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, 
-			std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform, 
+			std::shared_ptr<Model3D> _vertexArray, 
 			glm::vec3 &_centre, glm::vec3 &_size, glm::mat3 &_rotation);
 
 		/**
@@ -137,6 +112,27 @@ namespace glwrap
 		* \brief When drawing a model, check if the inanimate model is in View
 		*/
 		bool checkModelInView();
+		
+		/**
+		* \brief Retrieves TextureUniforms used
+		*/
+		std::shared_ptr<TextureUniforms> getUniforms();
+
+		/**
+		* \brief Updates the uniforms holder to a derived class
+		* -allows objects to query for uniform names used in the shader e.g:
+		*     Materials query for where to put certain Texture maps using PBRUniforms
+		*/
+		template <class T>
+		std::shared_ptr<T> setTextureUniformsType()
+		{
+			std::shared_ptr<T> test = std::make_shared<T>();
+			std::shared_ptr<TextureUniforms> suTest = test;
+			suTest->m_uniformIds = m_uniforms->m_uniformIds;
+			suTest->m_uniformNames = m_uniforms->m_uniformNames;
+			m_uniforms = test;
+			return test;
+		}
 
 		/**
 		* \brief Set uniform of name _uniform to _value
@@ -212,6 +208,7 @@ namespace glwrap
 		friend class Context;
 
 		GLuint m_id; //!< Id of shader in GL
+		std::shared_ptr<TextureUniforms> m_uniforms; //!< List of uniforms used in shader
 		std::vector <Sampler> m_samplers; //!< List of texture samplers used when drawing
 		bool m_isDrawing; //!< True if ShaderProgram is currently in its draw function
 		bool m_modelInView; //!< When culling, confirms the base model is in view
@@ -223,6 +220,11 @@ namespace glwrap
 		std::shared_ptr<VertexArray> m_simpleShape; //!< Simple quad for drawing to screens entirety
 		std::weak_ptr<ShaderProgram> m_self; //!< Pointer to self
 		std::weak_ptr<Context> m_context; //!< Pointer to glwrap cpntext
+
+		/**
+		* \brief Checks current uniforms for uniform Id
+		*/
+		int checkUniforms(std::string& _uniform);
 
 		/**
 		* \brief Sets the texture uniforms in GL when drawing

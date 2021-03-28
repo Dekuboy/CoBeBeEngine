@@ -15,6 +15,7 @@ namespace glwrap
 	class ShaderProgram;
 	class ObjMtlModel;
 	class GltfModel;
+	class ModelMesh;
 
 	/**
 	* \brief The OpenGL Context
@@ -84,6 +85,10 @@ namespace glwrap
 		* -precalculate tangentBitangentNormal matrix if _calcTanBitan
 		*/
 		std::shared_ptr<GltfModel> createModel(std::string _path, bool _calcTanBitan);
+		/**
+		* \brief Create ModelMesh within glwrap Context
+		*/
+		std::shared_ptr<ModelMesh> createModelMesh(std::shared_ptr<GltfModel> _mesh, std::string _name);
 		/**
 		* \brief Create ObjAnimation within glwrap Context
 		*/

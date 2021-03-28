@@ -11,9 +11,11 @@ namespace glwrap {};
 #include <glwrap/VertexArray.h>
 #include <glwrap/ObjPart.h>
 #include <glwrap/ObjMtlModel.h>
-#include <glwrap/ModelJoint.h>
+#include <glwrap/ModelMesh.h>
 #include <glwrap/GltfModel.h>
 #include <glwrap/Material.h>
+#include <glwrap/TextureUniforms.h>
+#include <glwrap/PBRUniforms.h>
 #include <glwrap/ObjAnimation.h>
 #include <glwrap/ObjFrame.h>
 #include <glwrap/ShaderProgram.h>

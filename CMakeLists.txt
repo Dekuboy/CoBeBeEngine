@@ -26,6 +26,9 @@ add_library(glwrap
 	src/glwrap/GBuffer.h
 	src/glwrap/GBuffer.cpp
 	
+	src/glwrap/TriFace.h
+	src/glwrap/TriFace.cpp
+
 	src/glwrap/VertexBuffer.h
 	src/glwrap/VertexBuffer.cpp
 	src/glwrap/VertexArray.h
@@ -35,6 +38,14 @@ add_library(glwrap
 	src/glwrap/ShaderProgram.cpp
 	src/glwrap/ViewingFrustum.h
 	src/glwrap/ViewingFrustum.cpp
+	src/glwrap/TextureUniforms.h
+
+	src/glwrap/Model3D.h
+	src/glwrap/PBRUniforms.h
+	src/glwrap/PBRUniforms.cpp
+	
+	src/glwrap/Animation.h
+	src/glwrap/Animation.cpp
 
 	src/glwrap/ObjAnimation.h
 	src/glwrap/ObjAnimation.cpp
@@ -48,11 +59,14 @@ add_library(glwrap
 	src/glwrap/Material.h
 	src/glwrap/Material.cpp
 
-	src/glwrap/ModelJoint.h
-	src/glwrap/ModelJoint.cpp
-
+	src/glwrap/ModelMesh.h
+	src/glwrap/ModelMesh.cpp
+	src/glwrap/GltfParse.h
 	src/glwrap/GltfModel.h
 	src/glwrap/GltfModel.cpp
+
+	src/glwrap/ModelAnimation.h
+	src/glwrap/ModelAnimation.cpp
 
 	src/glwrap/stb_image.h
 )

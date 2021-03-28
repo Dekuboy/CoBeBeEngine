@@ -284,15 +284,14 @@ namespace cobebe
 		std::vector<std::shared_ptr<glwrap::TriFace> > faces;
 		std::shared_ptr<Renderer> mr = getEntity()->getComponent<Renderer>();
 		std::shared_ptr<Mesh> model = mr->getMesh();
-		std::shared_ptr<WavefrontModel> objMtlModel = mr->getWavefrontModel();
 		glm::mat3 modelMatrix = getTransform()->getModel();
 		if (model)
 		{
 			faces = model->getFaces();
 		}
-		else if (objMtlModel)
+		else
 		{
-			faces = objMtlModel->getFaces();
+			return;
 		}
 
 		for (size_t f = 0; f < faces.size(); f++)
@@ -392,14 +391,9 @@ namespace cobebe
 		{
 			std::vector<std::shared_ptr<glwrap::TriFace> > faces;
 			std::shared_ptr<Mesh> model = mr->getMesh();
-			std::shared_ptr<WavefrontModel> objMtlModel = mr->getWavefrontModel();
 			if (model)
 			{
 				faces = model->getFaces();
-			}
-			else if (objMtlModel)
-			{
-				faces = objMtlModel->getFaces();
 			}
 			else
 			{

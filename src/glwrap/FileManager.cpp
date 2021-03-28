@@ -29,7 +29,14 @@ std::string FileManager::returnPath(std::string _path)
 {
 	init();
 	std::string path = _path;
-#if defined(__EMSCRIPTEN__)
+#if defined(WIN32)
+	int id = path.find_first_of('/');
+	while (id > -1)
+	{
+		path.at(id) = '\\';
+		id = path.find_first_of('/');
+	}
+#else if defined(__EMSCRIPTEN__)
 	path = "";
 	int itr = 0;
 	while (itr < _path.length())
@@ -47,6 +54,7 @@ std::string FileManager::returnPath(std::string _path)
 		}
 		itr++;
 	}
+	
 #endif
 	return m_folderPath + path;
 }

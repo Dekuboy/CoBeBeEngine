@@ -168,7 +168,7 @@ namespace cobebe
 		_shadowShader->m_internal->setUniform("in_DepthBuff", m_depthMap);
 	}
 
-	void Lighting::draw(std::shared_ptr<glwrap::VertexArray> _meshInternal,
+	void Lighting::draw(std::shared_ptr<glwrap::Model3D> _meshInternal,
 		std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat)
 	{
 		ShadowModel tempModel;
@@ -176,6 +176,11 @@ namespace cobebe
 		tempModel.m_animation = _animation;
 		tempModel.m_model = _modelMat;
 		m_shadowModels.push_back(tempModel);
+	}
+
+	void Lighting::cullAndDraw(std::shared_ptr<glwrap::Model3D> _meshInternal, std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat)
+	{
+
 	}
 
 	void Lighting::setGlobalLightPos(std::shared_ptr<Camera> _camera)

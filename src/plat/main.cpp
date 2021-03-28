@@ -33,7 +33,8 @@ int main()
 
 		std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
 		//renderer->setWavefrontModel("speedhighway\\speed.obj");
-		renderer->setShader("deferred_shaders\\renderGAni.shad");
+		renderer->setGltfMesh("gltf\\speed.gltf");
+		renderer->setShader("deferred_shaders\\renderG.shad");
 
 		entity->addComponent<cobebe::StaticModelCollider>();
 
@@ -47,24 +48,26 @@ int main()
 		//pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
 
 		entity = App->addEntity();
-		entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, -5.0f);
-		entity->getTransform()->m_scale = glm::vec3(2);
+		entity->getTransform()->m_position = glm::vec3(0.0f, 0.0f, -5.0f);
 		entity->addComponent<CamController>();
 
 		renderer = entity->addComponent<cobebe::Renderer>();
-		std::shared_ptr<cobebe::Mesh> mesh = App->loadAsset<cobebe::Mesh>
-			("objs\\curuthers.obj");
-		renderer->setMesh(mesh);
-		renderer->setTexture("images\\curuthers_diffuse.png");
-		renderer->setShader("deferred_shaders\\renderGAni.shad");
-		std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
-		renderer->loadAnimation("animations\\run.anm");
+		renderer->setGltfMesh("gltf\\Character Running.gltf");
+		renderer->setShader("deferred_shaders\\renderGSkin.shad");
+		//std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
+		//renderer->loadAnimation("animations\\run.anm");
 
-		anm->playAnimation(0, 1);
+		//anm->playAnimation(0, 1);
 
-		std::shared_ptr<glwrap::Context> glContext = App->getGLContext();
+		entity = App->addEntity();
+		entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, -10.0f);
+		entity->getTransform()->m_scale = glm::vec3(2);
 
-		std::shared_ptr<glwrap::GltfModel> cube = glContext->createModel("gltf\\Cube.gltf");
+		renderer = entity->addComponent<cobebe::Renderer>();
+		std::shared_ptr<cobebe::SkinModel> cube = 
+			App->loadAsset<cobebe::SkinModel>("gltf\\Cube.gltf");
+		renderer->setGltfMesh(cube);
+		renderer->setShader("deferred_shaders\\renderG.shad");
 
 	}
 	App->run();
@@ -150,7 +153,7 @@ void CamController::onTick()
 		m_camera.lock()->m_position += x;
 	}
 
-	getEntity()->getComponent<cobebe::ObjAnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());
+	//getEntity()->getComponent<cobebe::ObjAnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());
 }
 
 void CamController::onPostDisplay()

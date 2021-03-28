@@ -86,7 +86,7 @@ namespace glwrap
 							if (parts.at(partIndex)->getName() == parameters.at(1))
 							{
 								m_frames.at(m_frames.size() - 1)->m_translations.push_back(
-									std::make_shared<Translation>(parts.at(partIndex),
+									std::make_shared<ObjTranslation>(parts.at(partIndex),
 										v,
 										rotation));
 								found = true;

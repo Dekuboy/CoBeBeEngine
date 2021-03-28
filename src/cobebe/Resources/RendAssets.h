@@ -11,20 +11,41 @@ namespace cobebe
 	class Lighting;
 	class Camera;
 	class ObjAnimationController;
+	class Texture;
 
 	/**
-	* \brief Stores a VertexArray to set in Renderer
+	* \brief Base class for 3D models
 	*/
 	class Mesh : public Asset
 	{
 	public:
-		Mesh();
-		Mesh(bool _calcTanBitan);
-
 		/**
 		* \brief Retrieves all VertexArray faces
 		*/
 		std::vector<std::shared_ptr<glwrap::TriFace> > getFaces();
+
+	protected:
+		friend class Renderer;
+
+		std::shared_ptr<glwrap::Model3D> m_internal; //!< Pointer to OpenGL Model
+		bool m_tanBitan; //!< True if internal has calculated Tangent and Bitangent values
+
+		/**
+		* \brief Retrieve OpenGL Texture
+		*/
+		std::shared_ptr<glwrap::Texture> getTexture(std::shared_ptr<Texture> _texture);
+
+		virtual void onLoad(const std::string& _path) {}
+	};
+
+	/**
+	* \brief Stores a VertexArray to set in Renderer
+	*/
+	class SimpleModel : public Mesh
+	{
+	public:
+		SimpleModel();
+		SimpleModel(bool _calcTanBitan);
 
 		/**
 		* \brief Sets the model to cull animated parts individually
@@ -34,30 +55,36 @@ namespace cobebe
 		void setAnimationCulling(bool _switch);
 
 	protected:
-		friend class Renderer;
-
-		std::shared_ptr<glwrap::VertexArray> m_internal; //!< Pointer to OpenGL VertexArray
-		bool m_tanBitan; //!< True if internal has calculated Tangent and Bitangent values
+		std::shared_ptr<glwrap::VertexArray> m_simpleModel;
 
 		virtual void onLoad(const std::string& _path);
 
 	};
 
-
 	/**
 	* \brief Stores a Model to set in Renderer
 	*/
-	class WavefrontModel : public Mesh
+	class WavefrontModel : public SimpleModel
 	{
 	public:
 		WavefrontModel();
 		WavefrontModel(bool _calcTanBitan);
 
 	private:
-		friend class Renderer;
+		void onLoad(const std::string& _path);
 
-		std::shared_ptr<glwrap::ObjMtlModel> m_internalModel; //!< Pointer to OpenGL Model
+	};
 
+	/**
+	* \brief Stores a Model to set in Renderer
+	*/
+	class SkinModel : public Mesh
+	{
+	public:
+		SkinModel();
+		SkinModel(bool _calcTanBitan);
+
+	private:
 		void onLoad(const std::string& _path);
 
 	};
@@ -73,7 +100,7 @@ namespace cobebe
 	private:
 		friend class Renderer;
 		friend class Canvas;
-		friend class WavefrontModel;
+		friend class Mesh;
 
 		std::shared_ptr<glwrap::Texture> m_internal; //!< Pointer to OpenGL Texture
 

@@ -372,32 +372,32 @@ namespace glwrap
 		m_size = m_maxPoint - m_minPoint;
 	}
 
-	void ObjMtlModel::draw(std::string _textureUniform)
+	void ObjMtlModel::draw()
 	{
 		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
-			(*itr)->draw(_textureUniform);
+			(*itr)->draw();
 		}
 	}
 
-	void ObjMtlModel::cullAndDraw(std::string _textureUniform)
+	void ObjMtlModel::cullAndDraw()
 	{
 		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
-			(*itr)->cullAndDraw(_textureUniform);
+			(*itr)->cullAndDraw();
 		}
 	}
 
-	void ObjMtlModel::drawPart(std::string _partName, std::string _textureUniform)
+	void ObjMtlModel::drawPart(std::string _partName)
 	{
 		for (std::vector<std::shared_ptr<ObjPart> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			if ((*itr)->getName() == _partName)
 			{
-				(*itr)->draw(_textureUniform);
+				(*itr)->draw();
 				return;
 			}
 		}
@@ -417,7 +417,7 @@ namespace glwrap
 
 		std::string filePath = "";
 		int pos = 0;
-		pos = _path.find_last_of("\\", _path.length());
+		pos = _path.find_last_of('\\');
 		if (!(pos == std::string::npos))
 		{
 			filePath = _path.substr(0, pos + 1);
@@ -444,13 +444,13 @@ namespace glwrap
 			}
 			else if (splitLine.at(0) == "map_Kd")
 			{
-				currentMaterial->m_mapPath = filePath + line.substr(7, line.length());
-				pos = currentMaterial->m_mapPath.find("\\\\", 0);
+				currentMaterial->m_colourPath = filePath + line.substr(7, line.length());
+				pos = currentMaterial->m_colourPath.find("\\\\", 0);
 				while (pos != std::string::npos)
 				{
-					currentMaterial->m_mapPath.replace(pos, 2, "\\");
+					currentMaterial->m_colourPath.replace(pos, 2, "\\");
 					pos ++;
-					pos = currentMaterial->m_mapPath.find("\\\\", pos);
+					pos = currentMaterial->m_colourPath.find("\\\\", pos);
 				}
 			}
 		}

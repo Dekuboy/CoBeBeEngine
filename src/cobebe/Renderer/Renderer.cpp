@@ -14,24 +14,40 @@ namespace cobebe
 		m_camera = _camera;
 	}
 
-	void Renderer::setMesh(std::shared_ptr<Mesh> _mesh)
+	void Renderer::setWavefrontModel(std::shared_ptr<WavefrontModel> _mesh)
 	{
 		m_mesh = _mesh;
-	}
-
-	void Renderer::setMesh(std::string _path)
-	{
-		m_mesh = getCore()->loadAsset<Mesh>(_path);
-	}
-
-	void Renderer::setWavefrontModel(std::shared_ptr<WavefrontModel> _wavefrontModel)
-	{
-		m_objMtlModel = _wavefrontModel;
+		m_modelType = cobebeModel::objMtl;
 	}
 
 	void Renderer::setWavefrontModel(std::string _path)
 	{
-		m_objMtlModel = getCore()->loadAsset<WavefrontModel>(_path);
+		m_mesh = getCore()->loadAsset<WavefrontModel>(_path);
+		m_modelType = cobebeModel::objMtl;
+	}
+
+	void Renderer::setGltfMesh(std::shared_ptr<SkinModel> _mesh)
+	{
+		m_mesh = _mesh;
+		m_modelType = cobebeModel::skin;
+	}
+
+	void Renderer::setGltfMesh(std::string _path)
+	{
+		m_mesh = getCore()->loadAsset<SkinModel>(_path);
+		m_modelType = cobebeModel::skin;
+	}
+
+	void Renderer::setMesh(std::shared_ptr<Mesh> _mesh)
+	{
+		m_mesh = _mesh;
+		m_modelType = cobebeModel::singleTexObj;
+	}
+
+	void Renderer::setMesh(std::string _path)
+	{
+		m_mesh = getCore()->loadAsset<SimpleModel>(_path);
+		m_modelType = cobebeModel::singleTexObj;
 	}
 
 	void Renderer::setTexture(std::shared_ptr<Texture> _texture)
@@ -52,6 +68,7 @@ namespace cobebe
 	void Renderer::setShader(std::string _path)
 	{
 		m_shader = getCore()->loadAsset<Shader>(_path);
+		m_shader->m_internal->setTextureUniformsType<glwrap::SingleUniform>();
 	}
 
 	void Renderer::setCullByPart(bool _switch)
@@ -64,17 +81,19 @@ namespace cobebe
 		return m_mesh;
 	}
 
-	std::shared_ptr<WavefrontModel> Renderer::getWavefrontModel()
-	{
-		return m_objMtlModel;
-	}
-
 	std::shared_ptr<ObjAnimationController> Renderer::addAnimationController()
 	{
 		if (m_mesh)
 		{
-			m_animationController = getEntity()->addComponent<ObjAnimationController>(m_mesh->m_internal);
-			return m_animationController;
+			if (m_mesh->m_internal && m_modelType < 2 && m_modelType > -1)
+			{
+				std::shared_ptr<glwrap::VertexArray> va = std::dynamic_pointer_cast<glwrap::VertexArray>(m_mesh->m_internal);
+				if (va)
+				{
+					m_animationController = getEntity()->addComponent<ObjAnimationController>(va);
+					return m_animationController;
+				}
+			}
 		}
 		return nullptr;
 	}
@@ -111,33 +130,36 @@ namespace cobebe
 	{
 		if (m_shader)
 		{
+			if (!m_mesh)
+			{
+				return;
+			}
+			else
+			{
+				if (!m_mesh->m_internal)
+				{
+					return;
+				}
+			}
+			if (m_modelType == 0)
+			{
+				if (!m_texture)
+				{
+					return;
+				}
+			}
 			if (!m_shader->getUniformCheck())
 			{
 				m_shader->setUniformCheck(true);
 			}
-			if (m_mesh && m_texture)
+			glm::mat4 model = m_transform.lock()->getModel();
+			if (m_cullByPart)
 			{
-				glm::mat4 model = m_transform.lock()->getModel();
-				if (m_cullByPart)
-				{
-					m_lighting->draw(m_mesh->m_internal, m_animationController, model);
-				}
-				else
-				{
-					m_lighting->draw(m_mesh->m_internal, m_animationController, model);
-				}
+				m_lighting->draw(m_mesh->m_internal, m_animationController, model);
 			}
-			else if (m_objMtlModel)
+			else
 			{
-				glm::mat4 model = m_transform.lock()->getModel();
-				if (m_cullByPart)
-				{
-					m_lighting->draw(m_objMtlModel->m_internal, m_animationController, model);
-				}
-				else
-				{
-					m_lighting->draw(m_objMtlModel->m_internal, m_animationController, model);
-				}
+				m_lighting->draw(m_mesh->m_internal, m_animationController, model);
 			}
 		}
 	}
@@ -146,56 +168,54 @@ namespace cobebe
 	{
 		if (m_shader)
 		{
-			if ((m_mesh && m_texture) || m_objMtlModel)
+			if (!m_mesh)
 			{
-				std::shared_ptr<Camera> currentCam;
-				glm::mat4 model = m_transform.lock()->getModel();
-				m_shader->m_internal->setUniform("in_Model", model);
+				return;
+			}
+			else
+			{
+				if (!m_mesh->m_internal)
+				{
+					return;
+				}
+			}
+			if (m_modelType == 0)
+			{
+				if (!m_texture)
+				{
+					return;
+				}
 				m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
-				//m_shader->m_internal->setUniform("in_Animate", glm::mat4(1));
-				
-				if (m_animationController)
-				{
-					m_animationController->setToDraw();
-				}
+			}
+			std::shared_ptr<Camera> currentCam;
+			glm::mat4 model = m_transform.lock()->getModel();
+			m_shader->m_internal->setUniform("in_Model", model);
+			//m_shader->m_internal->setUniform("in_Animate", glm::mat4(1));
 
-				if (m_camera)
-				{
-					currentCam = m_camera;
-					m_shader->setCam(currentCam);
-				}
-				else
-				{
-					currentCam = getCore()->getCurrentCamera();
-					m_shader->setCam(currentCam);
-				}
+			if (m_animationController)
+			{
+				m_animationController->setToDraw();
+			}
 
-				if (m_objMtlModel)
-				{
-					if (m_cullByPart)
-					{
-						m_camera->cullAndDraw(m_shader->m_internal, m_transform.lock(),
-							m_objMtlModel->m_internalModel, "in_Texture");
-					}
-					else
-					{
-						m_camera->draw(m_shader->m_internal, m_transform.lock(),
-							m_objMtlModel->m_internalModel, "in_Texture");
-					}
-				}
-				else
-				{
-					if (m_cullByPart)
-					{
-						currentCam->cullAndDraw(m_shader->m_internal,
-							m_transform.lock(), m_mesh->m_internal);
-					}
-					else
-					{
-						currentCam->draw(m_shader->m_internal,
-							m_transform.lock(), m_mesh->m_internal);
-					}
-				}
+			if (m_camera)
+			{
+				currentCam = m_camera;
+				m_shader->setCam(currentCam);
+			}
+			else
+			{
+				currentCam = getCore()->getCurrentCamera();
+				m_shader->setCam(currentCam);
+			}
+			if (m_cullByPart)
+			{
+				currentCam->cullAndDraw(m_shader->m_internal,
+					m_transform.lock(), m_mesh->m_internal);
+			}
+			else
+			{
+				currentCam->draw(m_shader->m_internal,
+					m_transform.lock(), m_mesh->m_internal);
 			}
 		}
 	}

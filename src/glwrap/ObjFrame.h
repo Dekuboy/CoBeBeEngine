@@ -10,12 +10,12 @@ namespace glwrap
 	/**
 	* \brief Store information on part movement during animation frame
 	*/
-	class Translation
+	class ObjTranslation
 	{
 	public:
-		Translation(std::shared_ptr<ObjPart> _part, glm::vec3 _position,
+		ObjTranslation(std::shared_ptr<ObjPart> _part, glm::vec3 _position,
 			glm::vec3 _rotation);
-		~Translation();
+		~ObjTranslation();
 		
 		/**
 		* \brief Get ObjPart that Translation applies to
@@ -78,18 +78,18 @@ namespace glwrap
 		/**
 		* \brief Get list of different part movements in frame
 		*/
-		std::vector<std::shared_ptr<Translation> > getTranslations();
+		std::vector<std::shared_ptr<ObjTranslation> > getTranslations();
 		/**
 		* \brief Get translation of a specific part of the object 
 		* -if _add, add a translation to base position if there is no part translation
 		*/
-		std::shared_ptr<Translation> getTranslation(std::shared_ptr<ObjPart> _part, bool _add = false);
+		std::shared_ptr<ObjTranslation> getTranslation(std::shared_ptr<ObjPart> _part, bool _add = false);
 
 	private:
 		friend class ObjAnimation;
 
 		std::weak_ptr<ObjAnimation> m_animation; //!< Parent animation that frame is attached to
-		std::vector<std::shared_ptr<Translation> > m_translations; //!< The translations that apply to separate parts during frame
+		std::vector<std::shared_ptr<ObjTranslation> > m_translations; //!< The translations that apply to separate parts during frame
 
 	};
 }

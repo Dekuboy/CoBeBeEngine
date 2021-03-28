@@ -95,15 +95,17 @@ namespace glwrap
 		}
 	}
 
-	VertexArray::VertexArray() : m_dirty(false)
+	VertexArray::VertexArray()
 	{
+		m_dirty = false;
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
 		m_cullAnimated = false;
 	}
 
-	VertexArray::VertexArray(std::string _path) : m_dirty(false)
+	VertexArray::VertexArray(std::string _path)
 	{
+		m_dirty = false;
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
 		m_cullAnimated = false;
@@ -469,16 +471,6 @@ namespace glwrap
 		return m_size;
 	}
 
-	void VertexArray::setCullAnimation(bool _switch)
-	{
-		m_cullAnimated = _switch;
-	}
-
-	bool VertexArray::getCullAnimation()
-	{
-		return m_cullAnimated;
-	}
-
 	std::shared_ptr<ObjAnimation> VertexArray::addAnimation(std::string _path)
 	{
 		std::shared_ptr<ObjAnimation> anim = m_context.lock()->createAnimation(
@@ -629,7 +621,7 @@ namespace glwrap
 		throw std::exception();
 	}
 
-	std::vector<std::shared_ptr<ObjAnimation> > VertexArray::getAnimations()
+	std::vector<std::shared_ptr<ObjAnimation> >& VertexArray::getAnimations()
 	{
 		return m_animations;
 	}

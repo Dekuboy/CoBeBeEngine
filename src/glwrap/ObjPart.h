@@ -97,11 +97,6 @@ namespace glwrap
 		* \brief Draws vertex arrays
 		*/
 		void drawArrays();
-		/**
-		* \brief Draws vertex arrays
-		* -applies material texture to input uniform name
-		*/
-		void drawArrays(std::string _textureUniform);
 
 		/**
 		* \brief Generates a vertex array Id in GL
@@ -117,17 +112,6 @@ namespace glwrap
 		* -useful for large objects where parts are too distant to always be in view
 		*/
 		void cullAndDraw();
-		/**
-		* \brief Draw all vertex arrays represented within this part
-		* -applies material texture to input uniform name
-		*/
-		void draw(std::string _textureUniform);
-		/**
-		* \brief Draw all vertex arrays represented within this part if in view
-		* -applies material texture to input uniform name
-		* -useful for large objects where parts are too distant to always be in view
-		*/
-		void cullAndDraw(std::string _textureUniform);
 
 	};
 }

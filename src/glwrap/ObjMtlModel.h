@@ -43,22 +43,20 @@ namespace glwrap
 		void parseMtl(std::string _path);
 
 		/**
-		* \brief Refer to each part and draw arrays
-		* -to be called by ShaderProgram to ensure that the shader is approriately set
-		* -applies material texture to input uniform name
+		* \brief Calls upon the part list and draws vertex arrays
+		* -to be called by ShaderProgram
 		*/
-		void draw(std::string _textureUniform);
+		void draw();
 		/**
-		* \brief Refer to each part and draw arrays if the part is in view
-		* -to be called by ShaderProgram to ensure that the shader is approriately set
-		* -applies material texture to input uniform name
-		* -useful for large objects where parts are too distant to always be in view
+		* \brief Calls upon the part list and draws vertex arrays if in view
+		* -to be called by ShaderProgram
+		* -uses values from current active ShaderProgram to cull
 		*/
-		void cullAndDraw(std::string _textureUniform);
+		void cullAndDraw();
 		/**
-		* \brief Draw an individual part from the model
+		* \brief Draws individual part of object by name
 		*/
-		void drawPart(std::string _partName, std::string _textureUniform);
+		void drawPart(std::string _partName);
 
 	};
 }

@@ -44,6 +44,7 @@ namespace glwrap
 		m_drawingCentre = glm::vec3(0);
 		m_drawingSize = glm::vec3(0);
 		m_drawingRotation = glm::mat4(1);
+		m_uniforms = std::make_shared<TextureUniforms>();
 	}
 
 	ShaderProgram::ShaderProgram(std::string _path)
@@ -52,6 +53,7 @@ namespace glwrap
 		m_drawingCentre = glm::vec3(0);
 		m_drawingSize = glm::vec3(0);
 		m_drawingRotation = glm::mat4(1);
+		m_uniforms = std::make_shared<TextureUniforms>();
 
 		std::string vertShader;
 		std::string fragShader;
@@ -339,7 +341,7 @@ namespace glwrap
 		draw(_renderTexture, m_simpleShape);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<VertexArray> _vertexArray)
+	void ShaderProgram::draw(std::shared_ptr<Model3D> _vertexArray)
 	{
 		//  glUseProgram(id);
 		//  glBindVertexArray(vertexArray->getId());
@@ -365,7 +367,7 @@ namespace glwrap
 		glBindVertexArray(0);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray)
+	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model3D> _vertexArray)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
 		glm::vec4 lastViewport = m_viewport;
@@ -375,36 +377,7 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
-	void ShaderProgram::draw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform)
-	{
-		glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
-		m_context.lock()->setCurrentShader(m_self.lock());
-
-		setSamplers();
-
-		m_isDrawing = true;
-		_model->draw(_textureUniform);
-		m_isDrawing = false;
-
-		//glBindVertexArray(_vertexArray->getId());
-		//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
-
-		resetSamplers();
-
-		glBindVertexArray(0);
-	}
-
-	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
-		glm::vec4 lastViewport = m_viewport;
-		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
-		draw(_model, _textureUniform);
-		m_viewport = lastViewport;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	void ShaderProgram::cullAndDraw(std::shared_ptr<VertexArray> _vertexArray,
+	void ShaderProgram::cullAndDraw(std::shared_ptr<Model3D> _vertexArray,
 		glm::vec3& _centre, glm::vec3& _size, glm::mat3& _rotation)
 	{
 		if (m_viewingFrustum)
@@ -436,57 +409,13 @@ namespace glwrap
 		}
 	}
 
-	void ShaderProgram::cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<VertexArray> _vertexArray,
+	void ShaderProgram::cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture, std::shared_ptr<Model3D> _vertexArray,
 		glm::vec3& _centre, glm::vec3& _size, glm::mat3& _rotation)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
 		glm::vec4 lastViewport = m_viewport;
 		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
 		cullAndDraw(_vertexArray, _centre, _size, _rotation);
-		m_viewport = lastViewport;
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	}
-
-	void ShaderProgram::cullAndDraw(std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform,
-		glm::vec3& _centre, glm::vec3& _size, glm::mat3& _rotation)
-	{
-		if (m_viewingFrustum)
-		{
-			m_drawingCentre = _centre;
-			m_drawingSize = _size;
-			m_drawingRotation = _rotation;
-
-			m_modelInView = checkViewingFrustum(_centre, _size, _rotation);
-			if (m_modelInView || _model->getCullAnimation())
-			{
-
-				glViewport(m_viewport.x, m_viewport.y, m_viewport.z, m_viewport.w);
-				m_context.lock()->setCurrentShader(m_self.lock());
-
-				setSamplers();
-
-				m_isDrawing = true;
-				_model->cullAndDraw(_textureUniform);
-				m_isDrawing = false;
-
-				//glBindVertexArray(_vertexArray->getId());
-				//glDrawArrays(GL_TRIANGLES, 0, _vertexArray->getVertexCount());
-
-				resetSamplers();
-
-				glBindVertexArray(0);
-			}
-		}
-	}
-
-	void ShaderProgram::cullAndDraw(std::shared_ptr<RenderTexture> _renderTexture,
-		std::shared_ptr<ObjMtlModel> _model, std::string _textureUniform,
-		glm::vec3& _centre, glm::vec3& _size, glm::mat3& _rotation)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, _renderTexture->getFbId());
-		glm::vec4 lastViewport = m_viewport;
-		m_viewport = glm::vec4(0, 0, _renderTexture->getSize().x, _renderTexture->getSize().y);
-		cullAndDraw(_model, _textureUniform, _centre, _size, _rotation);
 		m_viewport = lastViewport;
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -535,14 +464,14 @@ namespace glwrap
 		return m_modelInView;
 	}
 
+	std::shared_ptr<TextureUniforms> ShaderProgram::getUniforms()
+	{
+		return m_uniforms;
+	}
+
 	void ShaderProgram::setUniform(std::string _uniform, int _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform1i(uniformId, _value);
@@ -550,12 +479,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::vec4 _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform4f(uniformId, _value.x, _value.y, _value.z, _value.w);
@@ -563,12 +487,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::vec3 _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform3f(uniformId, _value.x, _value.y, _value.z);
@@ -576,12 +495,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::vec2 _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform2f(uniformId, _value.x, _value.y);
@@ -589,12 +503,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3>& _vectors)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform3fv(uniformId, _vectors.size(), glm::value_ptr(_vectors.at(0)));
@@ -602,12 +511,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, float _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform1f(uniformId, _value);
@@ -615,12 +519,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<float>& _floats)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniform1fv(uniformId, _floats.size(), reinterpret_cast<GLfloat*>(_floats.data()));
@@ -628,12 +527,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<Texture> _texture)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 
@@ -672,12 +566,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, glm::mat4& _value)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniformMatrix4fv(uniformId, 1, 0, glm::value_ptr(_value));
@@ -685,12 +574,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::mat4>& _matrices)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 		glUniformMatrix4fv(uniformId, _matrices.size(), 0, glm::value_ptr(_matrices.at(0)));
@@ -698,12 +582,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthBuffer> _depth)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 
@@ -730,12 +609,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::shared_ptr<DepthCube> _depthCube)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		m_context.lock()->setCurrentShader(m_self.lock());
 
@@ -762,12 +636,7 @@ namespace glwrap
 
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<std::shared_ptr<DepthCube> >& _cubes)
 	{
-		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
-
-		if (uniformId == -1)
-		{
-			throw std::exception();
-		}
+		GLint uniformId = checkUniforms(_uniform);
 
 		bool skip = false;
 		int count = 0;
@@ -811,17 +680,13 @@ namespace glwrap
 		int buffer = 0;
 		bool skip = false;
 		GLint uniformId;
+		std::string pos = "in_GPosition", norm = "in_GNormal", col = "in_GAlbedoSpec";
 		m_context.lock()->setCurrentShader(m_self.lock());
 		while (buffer < 3)
 		{
-			if (buffer == 0) uniformId = glGetUniformLocation(m_id, "in_GPosition");
-			else if (buffer == 1) uniformId = glGetUniformLocation(m_id, "in_GNormal");
-			else if (buffer == 2) uniformId = glGetUniformLocation(m_id, "in_GAlbedoSpec");
-
-			if (uniformId == -1)
-			{
-				throw std::exception();
-			}
+			if (buffer == 0) uniformId = checkUniforms(pos);
+			else if (buffer == 1) uniformId = checkUniforms(norm);
+			else if (buffer == 2) uniformId = checkUniforms(col);
 
 			for (int i = 0; i < m_samplers.size(); i++)
 			{
@@ -859,6 +724,30 @@ namespace glwrap
 	void ShaderProgram::setViewport(glm::vec4 _viewport)
 	{
 		this->m_viewport = _viewport;
+	}
+
+	int ShaderProgram::checkUniforms(std::string& _uniform)
+	{
+		int size = m_uniforms->m_uniformNames.size();
+		for (int i = 0; i < size; i++)
+		{
+			if (m_uniforms->m_uniformNames.at(i) == _uniform)
+			{
+				return m_uniforms->m_uniformIds.at(i);
+			}
+		}
+
+		GLint uniformId = glGetUniformLocation(m_id, _uniform.c_str());
+
+		if (uniformId == -1)
+		{
+			throw std::exception();
+		}
+
+		m_uniforms->m_uniformNames.push_back(_uniform);
+		m_uniforms->m_uniformIds.push_back(uniformId);
+
+		return uniformId;
 	}
 
 	void ShaderProgram::setSamplers()

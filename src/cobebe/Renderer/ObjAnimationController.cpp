@@ -6,6 +6,10 @@ namespace cobebe
 {
 	ObjAnimationController::ObjAnimationController(std::shared_ptr<glwrap::VertexArray> _model)
 	{
+		if (!_model)
+		{
+			throw Exception("NO MODEL ATTACHED TO ANIMATION CONTROLLER");
+		}
 		m_model = _model;
 
 		std::vector<std::shared_ptr<glwrap::ObjAnimation> > animations = m_model->getAnimations();

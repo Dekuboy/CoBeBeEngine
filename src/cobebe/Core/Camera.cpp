@@ -58,7 +58,7 @@ namespace cobebe
 		m_frustum->constructFrustum(m_projection * glm::inverse(getView()));
 	}
 
-	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal)
+	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model3D> _meshInternal)
 	{
 		if (m_isOn)
 		{
@@ -85,25 +85,7 @@ namespace cobebe
 		}
 	}
 
-	void Camera::draw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::ObjMtlModel> _meshInternal, std::string _textureUniform)
-	{
-		if (m_isOn)
-		{
-			bool inView;
-			_shaderInternal->setViewingFrustum(m_frustum);
-			glm::vec3 size = _transform->m_scale * _meshInternal->getSize();
-			inView = _shaderInternal->checkViewingFrustum(_transform->m_position,
-				size, _transform->m_rotation);
-
-			if (inView)
-			{
-				//_shaderInternal->draw(m_texture);
-				_shaderInternal->draw(m_gBuffer, _meshInternal, _textureUniform);
-			}
-		}
-	}
-
-	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::VertexArray> _meshInternal)
+	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::Model3D> _meshInternal)
 	{
 		if (m_isOn)
 		{
@@ -113,20 +95,6 @@ namespace cobebe
 
 			//_shaderInternal->draw(m_texture);
 			_shaderInternal->cullAndDraw(m_gBuffer, _meshInternal,
-				_transform->m_position, size, _transform->m_rotation);
-		}
-	}
-
-	void Camera::cullAndDraw(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal, std::shared_ptr<Transform> _transform, std::shared_ptr<glwrap::ObjMtlModel> _meshInternal, std::string _textureUniform)
-	{
-		if (m_isOn)
-		{
-			bool inView;
-			_shaderInternal->setViewingFrustum(m_frustum);
-			glm::vec3 size = _transform->m_scale * _meshInternal->getSize();
-
-			//_shaderInternal->draw(m_texture);
-			_shaderInternal->cullAndDraw(m_gBuffer, _meshInternal, _textureUniform,
 				_transform->m_position, size, _transform->m_rotation);
 		}
 	}

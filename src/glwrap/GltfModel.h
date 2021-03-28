@@ -1,146 +1,76 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glwrap/Model3D.h>
 
 #include <vector>
 #include <list>
 #include <string>
+
+namespace gltfparse
+{
+	struct Scene;
+	struct Node;
+	struct Image;
+	struct MatTex;
+	struct PBRMR;
+	struct Mat;
+	struct Sampler;
+	struct Prim;
+	struct Mesh;
+	struct Skin;
+	struct Tex;
+	struct Channel;
+	struct AniSampler;
+	struct Animation;
+	struct Accessor;
+	struct AccessData;
+	struct BufferView;
+	struct Buffer;
+}
+
 namespace glwrap
 {
 	struct TriFace;
 
 	class Context;
 	class VertexBuffer;
-	class ModelJoint;
+	class ModelMesh;
 	class ModelAnimation;
 	class ShaderProgram;
+	class Material;
 
-	namespace gltfparse
+	/**
+	* \brief Contains node space values
+	*/
+	struct NodeTransform
 	{
-		struct Scene
-		{
-			std::string m_name;
-			std::list<int> m_nodes;
-		};
+		~NodeTransform();
 
-		struct Node
-		{
-			std::string m_name;
-			std::list<int> m_children;
-			int m_mesh;
-			int m_skin;
-			glm::vec3 m_translation;
-			glm::vec3 m_scale;
-			glm::vec4 m_rotation;
-			glm::mat4 m_matrix;
-		};
+		void translateTriPos(std::shared_ptr<TriFace> _face);
+		void translateTriNorm(std::shared_ptr<TriFace> _face);
 
-		struct Image
-		{
-			std::string m_uri;
-			int m_bufferView;
-			std::string m_mimeType;
-		};
+		glm::vec3* m_translate;
+		glm::vec3* m_scale;
+		glm::vec4* m_quat;
+		glm::mat4* m_matrix;
+	};
 
-		struct MatTex
-		{
-			int m_index;
-			int m_texCoord;
-			float m_scale;
-			float m_strength;
-		};
+	/**
+	* \brief Stores info on node hierarchy
+	*/
+	struct ModelNode
+	{
+		std::string m_name;
+		std::weak_ptr<ModelMesh> m_mesh;
+		std::vector<ModelNode> m_children;
 
-		struct PBRMR
-		{
-			MatTex m_baseColour;
-			glm::vec4 m_colourFactor;
-			MatTex m_metallicRoughness;
-			float m_metallicFactor;
-			float m_roughnessFactor;
-		};
-
-		struct Mat
-		{
-			std::string m_name;
-			bool m_doubleSided;
-			PBRMR m_pbrMetallicRoughness;
-			MatTex m_normalTexture;
-			MatTex m_occlusionTexture;
-			MatTex m_emissiveTexture;
-			glm::vec3 m_emissiveFactor;
-		};
-
-		struct Sampler
-		{
-			int m_magFilter;
-			int m_minFilter;
-			int m_wrapS;
-			int m_wrapT;
-		};
-
-		struct Prim
-		{
-			int m_positionId;
-			int m_normalId;
-			int m_colorId;
-			int m_texCoordId;
-			int m_jointsId;
-			int m_weightsId;
-			int m_tangentId;
-			int m_indices;
-			int m_material;
-			int m_mode;
-		};
-
-		struct Mesh
-		{
-			std::string m_name;
-			std::list<Prim> m_prims;
-		};
-
-		struct Skin
-		{
-			std::string m_name;
-			int m_invBindMat;
-			std::list<int> m_joints;
-		};
-
-		struct Tex
-		{
-			int m_source;
-			int m_sampler;
-		};
-
-		struct Accessor
-		{
-			int m_bufferView;
-			int m_byteOffset;
-			int m_compType;
-			int m_count;
-			std::list<float> m_max;
-			std::list<float> m_min;
-			std::string m_type;
-		};
-
-		struct BufferView
-		{
-			int m_buffer;
-			int m_byteLength;
-			int m_target;
-			int m_byteOffset;
-			int m_byteStride;
-		};
-
-		struct Buffer
-		{
-			int m_byteLength;
-			std::string m_uri;
-		};
-	}
+		NodeTransform m_translation;
+	};
 
 	/**
 	* \brief Holds information on a model loaded into GL (glTF)
 	*/
-	class GltfModel
+	class GltfModel : public Model3D
 	{
 	public:
 		GltfModel();
@@ -157,23 +87,6 @@ namespace glwrap
 		virtual void parse(std::string, bool _tanBitan);
 
 		/**
-		* \brief Retrieve the size of model based on xyz values
-		*/
-		glm::vec3 getSize();
-		/**
-		* \brief Set cull animation
-		* -if(true) when ShaderProgram calls cullAndDraw() then
-		*    ModelJoint will assume non-moving parts are within the view if the
-		*    model is in view
-		* -useful for smaller objects with moving parts with a larger reach
-		*/
-		void setCullAnimation(bool _switch);
-		/**
-		* \brief Get cull animation
-		*/
-		bool getCullAnimation();
-
-		/**
 		* \brief Attach Animation to object from file path
 		*/
 		//std::shared_ptr<ModelAnimation> addAnimation(std::string _path);
@@ -188,38 +101,32 @@ namespace glwrap
 		void disableAllAnimations();
 
 		/**
-		* \brief Retrieve all the tri information of the model
-		*/
-		std::vector<std::shared_ptr<TriFace> > getFaces();
-		/**
 		* \brief Retrieve all the joints that make up the model
 		*/
-		std::vector<std::shared_ptr<ModelJoint> > getJoints();
+		std::vector<std::shared_ptr<ModelMesh> > getMeshes();
 		/**
-		* \brief Retrieve joint that is called _name
+		* \brief Retrieve mesh that is called _name
 		*/
-		std::shared_ptr<ModelJoint> getJoint(std::string _name);
+		std::shared_ptr<ModelMesh> getMesh(std::string _name);
 		/**
 		* Retrieve list of attached animations
 		*/
-		//std::vector<std::shared_ptr<ModelAnimation> > getAnimations();
+		std::vector<std::shared_ptr<ModelAnimation> >& getAnimations();
+
+		/**
+		* \brief Retrieve the list of Material types
+		*/
+		std::list<std::shared_ptr<Material> >& getMatList();
 
 	protected:
 		friend class Context;
 		friend class ShaderProgram;
 
-		bool m_dirty; //!< If the buffers have been altered, update in GL
-		std::vector<std::shared_ptr<TriFace> > m_faces; //!< Retains information on all tris in the model
-		std::vector<std::shared_ptr<ModelJoint> > m_parts; //!< Information on individual joints of the model
-		//std::vector<std::shared_ptr<ModelAnimation> > m_animations; //!< List of animations attached to the model
+		std::vector<std::shared_ptr<ModelMesh> > m_parts; //!< Information on individual meshes of the model
+		std::list<std::shared_ptr<Material> > m_materialList;
+		std::vector<std::shared_ptr<ModelNode>> m_nodes; //!< Retains node hierarchy of the model
+		std::vector<std::shared_ptr<ModelAnimation> > m_animations; //!< List of animations attached to the model
 		std::weak_ptr<GltfModel> m_self; //!< Pointer to self to set in individual joints
-		std::weak_ptr<Context> m_context; //!< Pointer to glwrap context
-
-		glm::vec3 m_minPoint; //!< Minimum xyz values
-		glm::vec3 m_maxPoint; //!< Maximum xyz values
-		glm::vec3 m_size; //!< total size of the model
-
-		bool m_cullAnimated; //!< Set to cull parts individually and assume part is on screen if model is
 
 		/**
 		* \brief Checks if character is white space
@@ -263,6 +170,10 @@ namespace glwrap
 		*/
 		void parseMeshes(std::list<std::string>& _splitLine, std::vector<gltfparse::Mesh>& _meshes);
 		/**
+		* \brief Prepare Animations for model to use
+		*/
+		void parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::Animation>& _animations);
+		/**
 		* \brief Prepare accessors for parsing .bin
 		*/
 		void parseAccessors(std::list<std::string>& _splitLine, std::vector<gltfparse::Accessor>& _accessors);
@@ -277,7 +188,11 @@ namespace glwrap
 		/**
 		* \brief Checks if vertex values are the minimum or maximum of the model
 		*/
-		void checkMinMax(glm::vec3& _vertexPosition);
+		void checkMin(glm::vec3& _vertexPosition);
+		/**
+		* \brief Checks if vertex values are the minimum or maximum of the model
+		*/
+		void checkMax(glm::vec3& _vertexPosition);
 
 		/**
 		* \brief Calls upon the part list and draws vertex arrays
@@ -290,10 +205,6 @@ namespace glwrap
 		* -uses values from current active ShaderProgram to cull
 		*/
 		void cullAndDraw();
-		/**
-		* \brief Draws individual part of object by name
-		*/
-		void drawPart(std::string _partName);
 
 	};
 }

@@ -1,4 +1,4 @@
-#include <glwrap/ModelJoint.h>
+#include <glwrap/ModelMesh.h>
 #include <glwrap/TriFace.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/GltfModel.h>
@@ -7,89 +7,42 @@
 #include <glwrap/Material.h>
 #include <glwrap/Context.h>
 #include <glwrap/ShaderProgram.h>
+#include <glwrap/TextureUniforms.h>
 #include <glwrap/ViewingFrustum.h>
 #include <glm/ext.hpp>
 
 namespace glwrap
 {
-	ModelJoint::ModelJoint(std::shared_ptr<GltfModel> _mesh, std::string _name)
+	ModelMesh::ModelMesh(std::shared_ptr<GltfModel> _mesh, std::string _name)
 	{
 		m_name = _name;
 		m_model = _mesh;
 		m_animationUniform = glm::mat4(1);
-		m_useMaterial = false;
-
-		generateArrays();
 	}
 
-	ModelJoint::~ModelJoint()
+	ModelMesh::~ModelMesh()
 	{
 
 	}
 
-	std::string ModelJoint::getName()
+	std::string ModelMesh::getName()
 	{
 		return m_name;
 	}
 
-	std::vector<std::shared_ptr<TriFace> >& ModelJoint::getFaces()
+	std::vector<std::shared_ptr<TriFace> >& ModelMesh::getFaces()
 	{
 		return m_faces;
 	}
 
-	void ModelJoint::addFace(std::shared_ptr<TriFace> _face)
+	void ModelMesh::addFace(std::shared_ptr<TriFace> _face)
 	{
 		m_faces.push_back(_face);
-
-		if (m_faces.size() == 1)
-		{
-			m_maxX = std::numeric_limits<float>::min();
-			m_maxY = std::numeric_limits<float>::min();
-			m_maxZ = std::numeric_limits<float>::min();
-
-			m_minX = std::numeric_limits<float>::max();
-			m_minY = std::numeric_limits<float>::max();
-			m_minZ = std::numeric_limits<float>::max();
-		}
-
-		if (m_faces.at(m_faces.size() - 1)->getMaxX() > m_maxX)
-		{
-			m_maxX = _face->getMaxX();
-		}
-
-		if (m_faces.at(m_faces.size() - 1)->getMaxY() > m_maxY)
-		{
-			m_maxY = _face->getMaxY();
-		}
-
-		if (m_faces.at(m_faces.size() - 1)->getMaxZ() > m_maxZ)
-		{
-			m_maxZ = _face->getMaxZ();
-		}
-
-		if (m_faces.at(m_faces.size() - 1)->getMinX() < m_minX)
-		{
-			m_minX = _face->getMinX();
-		}
-
-		if (m_faces.at(m_faces.size() - 1)->getMinY() < m_minY)
-		{
-			m_minY = _face->getMinY();
-		}
-
-		if (m_faces.at(m_faces.size() - 1)->getMinZ() < m_minZ)
-		{
-			m_minZ = _face->getMinZ();
-		}
-
-		m_offsetX = (m_minX + m_maxX) / 2;
-		m_offsetY = (m_minY + m_maxY) / 2;
-		m_offsetZ = (m_minZ + m_maxZ) / 2;
 
 		m_dirty = true;
 	}
 
-	void ModelJoint::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
+	void ModelMesh::setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer, int _materialId)
 	{
 		if (_attribute == "in_Position")
 		{
@@ -131,7 +84,7 @@ namespace glwrap
 		m_dirty = true;
 	}
 
-	int ModelJoint::getVertexCount(int _materialId)
+	int ModelMesh::getVertexCount(int _materialId)
 	{
 		if (m_buffers.size() < 1)
 		{
@@ -141,7 +94,7 @@ namespace glwrap
 		return m_buffers.at(_materialId).at(0)->getDataSize() / m_buffers.at(_materialId).at(0)->getComponents();
 	}
 
-	GLuint ModelJoint::getId(int _materialId)
+	GLuint ModelMesh::getId(int _materialId)
 	{
 		if (m_dirty)
 		{
@@ -174,7 +127,7 @@ namespace glwrap
 		return m_idList.at(_materialId);
 	}
 
-	void ModelJoint::draw()
+	void ModelMesh::draw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
@@ -185,7 +138,7 @@ namespace glwrap
 		drawArrays();
 	}
 
-	void ModelJoint::cullAndDraw()
+	void ModelMesh::cullAndDraw()
 	{
 		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
@@ -195,53 +148,27 @@ namespace glwrap
 		glm::mat4 partMatrix = m_animationUniform;
 		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
-		if (m_model.lock()->getCullAnimation())
-		{
-			if (shader->checkModelInView() && m_animationUniform == glm::mat4(1))
-			{
-				drawArrays();
-			}
-			else
-			{
-				glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
-				glm::mat3 partRotation = glm::mat3(m_animationUniform);
-				glm::vec3 partSize = getSize();
+		glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
+		glm::mat3 partRotation = glm::mat3(m_animationUniform);
+		glm::vec3 partSize = getSize();
 
-				if (shader->
-					checkViewingFrustum(partCentre, partSize, partRotation))
-				{
-					drawArrays();
-				}
-				else
-				{
-					m_animationUniform = glm::mat4(1);
-				}
-			}
+		if (shader->
+			checkViewingFrustum(partCentre, partSize, partRotation))
+		{
+			drawArrays();
 		}
 		else
 		{
-			glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
-			glm::mat3 partRotation = glm::mat3(m_animationUniform);
-			glm::vec3 partSize = getSize();
-
-			if (shader->
-				checkViewingFrustum(partCentre, partSize, partRotation))
-			{
-				drawArrays();
-			}
-			else
-			{
-				m_animationUniform = glm::mat4(1);
-			}
+			m_animationUniform = glm::mat4(1);
 		}
 	}
 
-	glm::vec3 ModelJoint::getSize()
+	glm::vec3 ModelMesh::getSize()
 	{
 		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
 	}
 
-	void ModelJoint::translate()
+	void ModelMesh::translate()
 	{
 		//std::vector<std::shared_ptr<ModelAnimation> > animations =
 		//	m_model.lock()->getAnimations();
@@ -275,7 +202,7 @@ namespace glwrap
 		//}
 	}
 
-	void ModelJoint::drawArrays()
+	void ModelMesh::drawArrays()
 	{
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
 			getCurrentShader();
@@ -288,21 +215,29 @@ namespace glwrap
 			check = true;
 		}
 
-		if (m_useMaterial)
+
+		std::string textureCheck[5];
+
+		for (int i = 0; i < 5; i++)
 		{
-			int listItr = 0;
-			for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
-				itr != m_materials.end(); itr++)
-			{
-				glBindVertexArray(getId(listItr));
-				glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
-				listItr++;
-			}
+			shader->getUniforms()->getUniformName(i, textureCheck[i]);
 		}
-		else
+
+		int listItr = 0;
+		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
+			itr != m_materials.end(); itr++)
 		{
-			glBindVertexArray(getId(0));
-			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(0));
+			if ((*itr)->m_colourMap.lock())
+			{
+				if (textureCheck[0] != "")
+				{
+					shader->setUniform(textureCheck[0], (*itr)->m_colourMap.lock());
+				}
+			}
+
+			glBindVertexArray(getId(listItr));
+			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
+			listItr++;
 		}
 
 		if (check)
@@ -312,7 +247,7 @@ namespace glwrap
 		}
 	}
 
-	void ModelJoint::generateArrays()
+	void ModelMesh::generateArrays()
 	{
 		m_buffers.resize(m_buffers.size() + 1);
 		m_idList.resize(m_idList.size() + 1);

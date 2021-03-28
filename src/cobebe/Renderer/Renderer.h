@@ -6,12 +6,24 @@
 #include <cobebe/Core/Component.h>
 #include <string>
 
+namespace cobebeModel
+{
+	enum ModelType
+	{
+		singleTexObj,
+		objMtl,
+		skin
+	};
+}
+
 namespace cobebe
 {
+
 	class Camera;
 	class Transform;
 	class Mesh;
 	class WavefrontModel;
+	class SkinModel;
 	class Texture;
 	class Shader;
 	class Lighting;
@@ -30,19 +42,27 @@ namespace cobebe
 		/**
 		* \brief Sets Mesh for Renderer to draw
 		*/
+		void setWavefrontModel(std::shared_ptr<WavefrontModel> _mesh);
+		/**
+		* \brief Sets Mesh for Renderer to draw
+		*/
+		void setWavefrontModel(std::string _path);
+		/**
+		* \brief Sets Mesh for Renderer to draw
+		*/
+		void setGltfMesh(std::shared_ptr<SkinModel> _mesh);
+		/**
+		* \brief Sets Mesh for Renderer to draw
+		*/
+		void setGltfMesh(std::string _path);
+		/**
+		* \brief Sets Mesh for Renderer to draw
+		*/
 		void setMesh(std::shared_ptr<Mesh> _mesh);
 		/**
 		* \brief Sets Mesh for Renderer to draw
 		*/
 		void setMesh(std::string _path);
-		/**
-		* \brief Sets WavefrontModel for Renderer to draw
-		*/
-		void setWavefrontModel(std::shared_ptr<WavefrontModel> _wavefrontModel);
-		/**
-		* \brief Sets WavefrontModel for Renderer to draw
-		*/
-		void setWavefrontModel(std::string _path);
 		/**
 		* \brief Sets Texture for Renderer to apply to Mesh
 		*/
@@ -69,10 +89,6 @@ namespace cobebe
 		* \brief Returns loaded mesh
 		*/
 		std::shared_ptr<Mesh> getMesh();
-		/**
-		* \brief Returns loaded model
-		*/
-		std::shared_ptr<WavefrontModel> getWavefrontModel();
 
 		/**
 		*
@@ -87,8 +103,9 @@ namespace cobebe
 		std::shared_ptr<Camera> m_camera; //!< Stores Camera to draw to when set
 		std::weak_ptr<Transform> m_transform; //!< Pointer to Transform component
 		std::shared_ptr<Lighting> m_lighting; //!< Pointer to Lighting to get uniforms
-		std::shared_ptr<Mesh> m_mesh; //!< Loaded Mesh to draw
-		std::shared_ptr<WavefrontModel> m_objMtlModel; //!< Loaded WavefrontModel to draw
+
+		cobebeModel::ModelType m_modelType; //!< Type of Mesh/Model to draw
+		std::shared_ptr<Mesh> m_mesh; //!< Loaded Mesh/Model to draw
 		std::shared_ptr<Texture> m_texture; //!< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; //!< Loaded Shader to draw with
 		std::shared_ptr<ObjAnimationController> m_animationController; //!< Stores animation info

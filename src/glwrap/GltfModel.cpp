@@ -1,18 +1,87 @@
 #include <glwrap/GltfModel.h>
 #include <glwrap/VertexBuffer.h>
 #include <glwrap/FileManager.h>
-#include <glwrap/ModelJoint.h>
+#include <glwrap/ModelMesh.h>
 #include <glwrap/TriFace.h>
 #include <glwrap/Material.h>
-//#include <glwrap/ModelAnimation.h>
+#include <glwrap/ModelAnimation.h>
 #include <glwrap/Context.h>
+#include <glwrap/GltfParse.h>
 
+#include <glm/ext.hpp>
 #include <fstream>
 #include <iostream>
 
 namespace glwrap
 {
 	using namespace gltfparse;
+
+	NodeTransform::~NodeTransform()
+	{
+		if (m_translate)
+		{
+			delete m_translate;
+		}
+		if (m_scale)
+		{
+			delete m_scale;
+		}
+		if (m_quat)
+		{
+			delete m_quat;
+		}
+		if (m_matrix)
+		{
+			delete m_matrix;
+		}
+	}
+
+	void NodeTransform::translateTriPos(std::shared_ptr<TriFace> _face)
+	{
+		if (m_matrix)
+		{
+			_face->pa = glm::vec4(_face->pa, 1.0f) * (*m_matrix);
+			_face->pb = glm::vec4(_face->pb, 1.0f) * (*m_matrix);
+			_face->pc = glm::vec4(_face->pc, 1.0f) * (*m_matrix);
+		}
+		if (m_scale)
+		{
+			_face->pa *= (*m_scale);
+			_face->pb *= (*m_scale);
+			_face->pc *= (*m_scale);
+		}
+		if (m_quat)
+		{
+			glm::quat quat = glm::quat(-m_quat->w, m_quat->x, m_quat->y, m_quat->z);
+			_face->pa = _face->pa * quat;
+			_face->pb = _face->pb * quat;
+			_face->pc = _face->pc * quat;
+		}
+		if (m_translate)
+		{
+			_face->pa += (*m_translate);
+			_face->pb += (*m_translate);
+			_face->pc += (*m_translate);
+		}
+	}
+
+	void NodeTransform::translateTriNorm(std::shared_ptr<TriFace> _face)
+	{
+		if (m_matrix)
+		{
+			glm::mat3 matrix = *m_matrix;
+			_face->na = _face->na * matrix;
+			_face->nb = _face->nb * matrix;
+			_face->nc = _face->nc * matrix;
+		}
+		if (m_quat)
+		{
+			glm::quat quat = glm::quat(-m_quat->w, m_quat->x, m_quat->y, m_quat->z);
+			_face->na = _face->na * quat;
+			_face->nb = _face->nb * quat;
+			_face->nc = _face->nc * quat;
+		}
+	}
 
 	bool GltfModel::checkWhiteSpace(const char& _checkChar)
 	{
@@ -61,7 +130,7 @@ namespace glwrap
 				itr = _splitLine.erase(itr);
 				while (bracket > stack && itr != _splitLine.end())
 				{
-					tempStr == *itr;
+					tempStr = *itr;
 					if (tempStr == "]")
 					{
 						bracket--;
@@ -81,7 +150,6 @@ namespace glwrap
 	void GltfModel::parseNodes(std::list<std::string>& _splitLine, std::vector<gltfparse::Node>& _nodes)
 	{
 		std::string tempStr;
-		glm::vec4 tempVec;
 		Node newNode;
 		int bracket = 1;
 		int stack;
@@ -108,9 +176,9 @@ namespace glwrap
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
-				newNode.m_name = atoi(tempStr.c_str());
+				newNode.m_name = tempStr;
 			}
-			else if ("children")
+			else if (tempStr == "children")
 			{
 				stack = bracket;
 				bracket++;
@@ -131,83 +199,60 @@ namespace glwrap
 				}
 				itr--;
 			}
-			else if ("mesh")
+			else if (tempStr == "mesh")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newNode.m_mesh = atoi(tempStr.c_str());
 			}
-			else if ("skin")
+			else if (tempStr == "skin")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newNode.m_skin = atoi(tempStr.c_str());
 			}
-			else if ("translation")
+			else if (tempStr == "translation")
 			{
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_translation.x = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_translation.y = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_translation.z = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-			}
-			else if ("scale")
-			{
-				itr = _splitLine.erase(itr);
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_scale.x = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_scale.y = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_scale.z = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-			}
-			else if ("rotation")
-			{
-				itr = _splitLine.erase(itr);
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_rotation.x = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_rotation.y = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_rotation.z = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-				tempStr = *itr;
-				newNode.m_rotation.w = atof(tempStr.c_str());
-				itr = _splitLine.erase(itr);
-			}
-			else if ("matrix")
-			{
-				itr = _splitLine.erase(itr);
-				itr = _splitLine.erase(itr);
-				for (int i = 0; i > 4; i++)
+				for (int i = 0; i < 3; i++)
 				{
 					tempStr = *itr;
-					tempVec.x = atof(tempStr.c_str());
+					newNode.m_translation.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
+				}
+			}
+			else if (tempStr == "scale")
+			{
+				itr = _splitLine.erase(itr);
+				itr = _splitLine.erase(itr);
+				for (int i = 0; i < 3; i++)
+				{
 					tempStr = *itr;
-					tempVec.y = atof(tempStr.c_str());
+					newNode.m_scale.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
+				}
+			}
+			else if (tempStr == "rotation")
+			{
+				itr = _splitLine.erase(itr);
+				itr = _splitLine.erase(itr);
+				for (int i = 0; i < 4; i++)
+				{
 					tempStr = *itr;
-					tempVec.z = atof(tempStr.c_str());
+					newNode.m_rotation.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
+				}
+			}
+			else if (tempStr == "matrix")
+			{
+				itr = _splitLine.erase(itr);
+				itr = _splitLine.erase(itr);
+				for (int i = 0; i < 16; i++)
+				{
 					tempStr = *itr;
-					tempVec.w = atof(tempStr.c_str());
+					newNode.m_matrix.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
-
-					newNode.m_matrix[i] = tempVec;
 				}
 			}
 			itr = _splitLine.erase(itr);
@@ -222,7 +267,7 @@ namespace glwrap
 		std::list<std::string>::iterator itr = _splitLine.begin();
 		itr++;
 		itr = _splitLine.erase(itr);
-		while (itr != _splitLine.end())
+		while (bracket > 0 && itr != _splitLine.end())
 		{
 			tempStr = *itr;
 			if (tempStr == "{" || tempStr == "[")
@@ -440,7 +485,7 @@ namespace glwrap
 			{
 				_itr = _splitLine.erase(_itr);
 				tempStr = *_itr;
-				_tex.m_texCoord = atoi(tempStr.c_str());
+				_tex.m_texCoord = tempStr.c_str()[0];
 			}
 			else if (tempStr == "scale")
 			{
@@ -452,7 +497,7 @@ namespace glwrap
 			{
 				_itr = _splitLine.erase(_itr);
 				tempStr = *_itr;
-				_tex.m_strength = atof(tempStr.c_str());
+				_tex.m_scale = atof(tempStr.c_str());
 			}
 			_itr = _splitLine.erase(_itr);
 		}
@@ -656,6 +701,7 @@ namespace glwrap
 					else if (tempStr == "attributes")
 					{
 						itr = _splitLine.erase(itr);
+						bracket++;
 					}
 					else if (tempStr == "POSITION")
 					{
@@ -716,6 +762,164 @@ namespace glwrap
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_mode = atoi(tempStr.c_str());
+					}
+					itr = _splitLine.erase(itr);
+				}
+				itr--;
+			}
+			itr = _splitLine.erase(itr);
+		}
+	}
+
+	void GltfModel::parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::Animation>& _animations)
+	{
+		std::string tempStr;
+		Animation newAnimation;
+		Channel newChannel;
+		AniSampler newSampler;
+		int bracket = 1;
+		int stack;
+		std::list<std::string>::iterator itr = _splitLine.begin();
+		itr++;
+		itr = _splitLine.erase(itr);
+		while (bracket > 0 && itr != _splitLine.end())
+		{
+			tempStr = *itr;
+			if (tempStr == "{" || tempStr == "[")
+			{
+				bracket++;
+			}
+			else if (tempStr == "}" || tempStr == "]")
+			{
+				bracket--;
+				if (bracket == 1)
+				{
+					_animations.push_back(newAnimation);
+					newAnimation = gltfparse::Animation();
+				}
+			}
+			else if (tempStr == "name")
+			{
+				itr = _splitLine.erase(itr);
+				tempStr = *itr;
+				newAnimation.m_name = tempStr;
+			}
+			else if (tempStr == "channels")
+			{
+				stack = bracket;
+				bracket++;
+				itr++;
+				itr = _splitLine.erase(itr);
+				while (bracket > stack && itr != _splitLine.end())
+				{
+					tempStr = *itr;
+
+					if (tempStr == "{" || tempStr == "[")
+					{
+						bracket++;
+					}
+					else if (tempStr == "}" || tempStr == "]")
+					{
+						bracket--;
+						if (bracket == stack + 1)
+						{
+							newAnimation.m_channels.push_back(newChannel);
+							newChannel = Channel();
+						}
+					}
+					else if (tempStr == "sampler")
+					{
+						itr = _splitLine.erase(itr);
+						tempStr = *itr;
+						newChannel.m_sampler = atoi(tempStr.c_str());
+					}
+					else if (tempStr == "target")
+					{
+						itr = _splitLine.erase(itr);
+						bracket++;
+					}
+					else if (tempStr == "node")
+					{
+						itr = _splitLine.erase(itr);
+						tempStr = *itr;
+						newChannel.m_node = atoi(tempStr.c_str());
+					}
+					else if (tempStr == "path")
+					{
+						itr = _splitLine.erase(itr);
+						tempStr = *itr;
+						if (tempStr == "translation")
+						{
+							newChannel.m_path = 't';
+						}
+						else if (tempStr == "rotation")
+						{
+							newChannel.m_path = 'r';
+						}
+						else if (tempStr == "scale")
+						{
+							newChannel.m_path = 's';
+						}
+						else if (tempStr == "weights")
+						{
+							newChannel.m_path = 'w';
+						}
+					}
+					itr = _splitLine.erase(itr);
+				}
+				itr--;
+			}
+			else if (tempStr == "samplers")
+			{
+				stack = bracket;
+				bracket++;
+				itr++;
+				itr = _splitLine.erase(itr);
+				while (bracket > stack && itr != _splitLine.end())
+				{
+					tempStr = *itr;
+
+					if (tempStr == "{" || tempStr == "[")
+					{
+						bracket++;
+					}
+					else if (tempStr == "}" || tempStr == "]")
+					{
+						bracket--;
+						if (bracket == stack + 1)
+						{
+							newAnimation.m_samplers.push_back(newSampler);
+							newSampler = AniSampler();
+						}
+					}
+					else if (tempStr == "input")
+					{
+						itr = _splitLine.erase(itr);
+						tempStr = *itr;
+						newSampler.m_input = atoi(tempStr.c_str());
+					}
+					else if (tempStr == "output")
+					{
+						itr = _splitLine.erase(itr);
+						tempStr = *itr;
+						newSampler.m_output = atoi(tempStr.c_str());
+					}
+					else if (tempStr == "interpolation")
+					{
+						itr = _splitLine.erase(itr);
+						tempStr = *itr;
+						if (tempStr == "LINEAR")
+						{
+							newSampler.m_interpolate = 'l';
+						}
+						else if (tempStr == "STEP")
+						{
+							newSampler.m_interpolate = 's';
+						}
+						else if (tempStr == "CUBICSPLINE")
+						{
+							newSampler.m_interpolate = 'c';
+						}
 					}
 					itr = _splitLine.erase(itr);
 				}
@@ -820,7 +1024,30 @@ namespace glwrap
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
-				newAccessor.m_type = tempStr;
+				if (tempStr == "VEC2")
+				{
+					newAccessor.m_type = 2;
+				}
+				else if (tempStr == "VEC3")
+				{
+					newAccessor.m_type = 3;
+				}
+				else if (tempStr == "VEC4" || tempStr == "MAT2")
+				{
+					newAccessor.m_type = 4;
+				}
+				else if (tempStr == "MAT3")
+				{
+					newAccessor.m_type = 9;
+				}
+				else if (tempStr == "MAT4")
+				{
+					newAccessor.m_type = 16;
+				}
+				else
+				{
+					newAccessor.m_type = 1;
+				}
 			}
 			itr = _splitLine.erase(itr);
 		}
@@ -893,7 +1120,7 @@ namespace glwrap
 		std::list<std::string>::iterator itr = _splitLine.begin();
 		itr++;
 		itr = _splitLine.erase(itr);
-		while (itr != _splitLine.end())
+		while (bracket > 0 && itr != _splitLine.end())
 		{
 			tempStr = *itr;
 			if (tempStr == "{" || tempStr == "[")
@@ -925,46 +1152,50 @@ namespace glwrap
 		}
 	}
 
-	void GltfModel::checkMinMax(glm::vec3& _vertexPosition)
+	void GltfModel::checkMin(glm::vec3& _vertexPosition)
 	{
 		if (_vertexPosition.x < m_minPoint.x)
 		{
 			m_minPoint.x = _vertexPosition.x;
 		}
-		else if (_vertexPosition.x > m_maxPoint.x)
-		{
-			m_maxPoint.x = _vertexPosition.x;
-		}
 		if (_vertexPosition.y < m_minPoint.y)
 		{
 			m_minPoint.y = _vertexPosition.y;
-		}
-		else if (_vertexPosition.y > m_maxPoint.y)
-		{
-			m_maxPoint.y = _vertexPosition.y;
 		}
 		if (_vertexPosition.z < m_minPoint.z)
 		{
 			m_minPoint.z = _vertexPosition.z;
 		}
-		else if (_vertexPosition.z > m_maxPoint.z)
+	}
+
+	void GltfModel::checkMax(glm::vec3& _vertexPosition)
+	{
+		if (_vertexPosition.x > m_maxPoint.x)
+		{
+			m_maxPoint.x = _vertexPosition.x;
+		}
+		if (_vertexPosition.y > m_maxPoint.y)
+		{
+			m_maxPoint.y = _vertexPosition.y;
+		}
+		if (_vertexPosition.z > m_maxPoint.z)
 		{
 			m_maxPoint.z = _vertexPosition.z;
 		}
 	}
 
-	GltfModel::GltfModel() : m_dirty(false)
+	GltfModel::GltfModel()
 	{
+		m_dirty = false;
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
-		m_cullAnimated = false;
 	}
 
-	GltfModel::GltfModel(std::string _path) : m_dirty(false)
+	GltfModel::GltfModel(std::string _path)
 	{
+		m_dirty = false;
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
-		m_cullAnimated = false;
 		parse(_path);
 	}
 
@@ -984,11 +1215,12 @@ namespace glwrap
 		}
 
 		std::string tempStr = "";
+		int start = -1, end;
 		std::list<std::string> splitLine;
 
 		{
 			std::string line;
-			int start = -1, end, bracket = 0;
+			int bracket = 0;
 			bool inQuotes = false;
 			char checkChar;
 
@@ -1076,8 +1308,9 @@ namespace glwrap
 					}
 				}
 			}
-			file.close();
 		}
+
+		file.close();
 
 		int currentScene;
 		std::vector<Scene> scenes;
@@ -1089,6 +1322,7 @@ namespace glwrap
 		std::vector<Mat> materials;
 		std::vector<Mesh> meshes;
 		std::vector<Accessor> accessors;
+		std::vector<Animation> animations;
 		std::vector<BufferView> views;
 		std::vector<Buffer> buffers;
 
@@ -1139,6 +1373,10 @@ namespace glwrap
 			{
 				parseAccessors(splitLine, accessors);
 			}
+			else if (tempStr == "animations")
+			{
+				parseAnimations(splitLine, animations);
+			}
 			else if (tempStr == "bufferViews")
 			{
 				parseBufferViews(splitLine, views);
@@ -1150,41 +1388,515 @@ namespace glwrap
 			itr = splitLine.erase(itr);
 		}
 
-		std::shared_ptr<ModelJoint> currentPart;
+		std::vector<AccessData> data;
+		Accessor* accPointer;
+		data.resize(accessors.size());
+
+		{
+			std::vector<char> readBin;
+			readBin.resize(buffers.at(0).m_byteLength);
+
+			int identifier = filePath.find_last_of("\\");
+			filePath = filePath.substr(0, identifier + 1);
+			filePath += buffers.at(0).m_uri;
+
+			file.open(filePath, std::ios::out | std::ios::binary);
+			if (!file.is_open())
+			{
+				throw std::exception();
+			}
+			file.read((char*)&readBin[0], buffers.at(0).m_byteLength);
+			file.close();
+
+			filePath = filePath.substr(0, identifier + 1);
+
+			AccessData* dataPointer;
+			BufferView* viewPointer;
+			int stride, dataItr, count;
+			identifier = accessors.size();
+			for (int accItr = 0; accItr < identifier; accItr++)
+			{
+				dataPointer = &data.at(accItr);
+				accPointer = &accessors.at(accItr);
+				viewPointer = &views.at(accPointer->m_bufferView);
+
+				start = accPointer->m_byteOffset + viewPointer->m_byteOffset;
+				end = start + viewPointer->m_byteLength;
+				dataItr = 0;
+				count = accPointer->m_count;
+				count *= accPointer->m_type;
+				if (accPointer->m_compType == 5126)
+				{
+					dataPointer->m_float.resize(count);
+					stride = 4 + viewPointer->m_byteStride;
+					for (int i = start; i < end && dataItr < count; i += stride)
+					{
+						dataPointer->m_float.at(dataItr) = *(GLfloat*)&readBin.at(i);
+						dataItr++;
+					}
+				}
+				else if (accPointer->m_compType == 5123)
+				{
+					dataPointer->m_ushort.resize(count);
+					stride = 2 + viewPointer->m_byteStride;
+					for (int i = start; i < end && dataItr < count; i += stride)
+					{
+						dataPointer->m_ushort.at(dataItr) = *(GLushort*)&readBin.at(i);
+						dataItr++;
+					}
+				}
+				else if (accPointer->m_compType == 5122)
+				{
+					dataPointer->m_short.resize(count);
+					stride = 2 + viewPointer->m_byteStride;
+					for (int i = start; i < end && dataItr < count; i += stride)
+					{
+						dataPointer->m_short.at(dataItr) = *(GLshort*)&readBin.at(i);
+						dataItr++;
+					}
+				}
+				else if (accPointer->m_compType == 5121)
+				{
+					dataPointer->m_ubyte.resize(count);
+					stride = 1 + viewPointer->m_byteStride;
+					for (int i = start; i < end && dataItr < count; i += stride)
+					{
+						dataPointer->m_ubyte.at(dataItr) = *(GLubyte*)&readBin.at(i);
+						dataItr++;
+					}
+				}
+				else if (accPointer->m_compType == 5120)
+				{
+					dataPointer->m_byte.resize(count);
+					stride = 2 + viewPointer->m_byteStride;
+					for (int i = start; i < end && dataItr < count; i += stride)
+					{
+						dataPointer->m_byte.at(dataItr) = *(GLbyte*)&readBin.at(i);
+						dataItr++;
+					}
+				}
+			}
+		}
+
+		std::shared_ptr<ModelMesh> currentPart;
+		std::vector<std::shared_ptr<Material>> glMatList;
+		int id;
 
 		std::shared_ptr<VertexBuffer> positionBuffer;
+		std::shared_ptr<VertexBuffer> colourbuffer;
 		std::shared_ptr<VertexBuffer> texCoordBuffer;
 		std::shared_ptr<VertexBuffer> normalBuffer;
+		std::shared_ptr<VertexBuffer> jointsBuffer;
+		std::shared_ptr<VertexBuffer> weightsBuffer;
 		std::shared_ptr<VertexBuffer> tangentBuffer;
 		std::shared_ptr<VertexBuffer> bitangentBuffer;
 
-		TriFace f;
-
 		glm::vec3 vertexPosition, edge1, edge2, normal;
 		glm::vec2 deltaUV1, deltaUV2;
+		glm::vec4 colour;
+		glm::ivec4 joints;
 		float factor;
+		std::shared_ptr<Material> currentMaterial;
 
-		Scene* sceneContext = &scenes.at(currentScene);
+		{
+			glMatList.resize(materials.size());
+			MatTex* matTex;
+			PBRMR* pbr;
+			std::vector<Mat>::iterator matItr = materials.begin();
+			std::vector<std::shared_ptr<Material>>::iterator
+				glMatItr = glMatList.begin();
+			id = _path.find_last_of('\\');
+			tempStr = _path.substr(0, id + 1);
 
-		//if (positionBuffer) currentPart->setBuffer("in_Position", positionBuffer, 0);
-		//if (texCoordBuffer) currentPart->setBuffer("in_TexCoord", texCoordBuffer, 0);
-		//if (normalBuffer)
-		//{
-		//	currentPart->setBuffer("in_Normal", normalBuffer, 0);
-		//	if (_tanBitan)
-		//	{
-		//		currentPart->setBuffer("in_Tangent", tangentBuffer, 0);
-		//		currentPart->setBuffer("in_Bitangent", bitangentBuffer, 0);
-		//	}
-		//}
-		//if (currentPart) m_parts.push_back(currentPart);
+			while (matItr != materials.end())
+			{
+				currentMaterial = std::make_shared<Material>();
+
+				currentMaterial->m_name = matItr->m_name;
+				pbr = &matItr->m_pbrMetallicRoughness;
+
+				matTex = &pbr->m_baseColour;
+				if (matTex->m_index > -1)
+				{
+					currentMaterial->m_colourPath = tempStr +
+						images.at(textures.at(matTex->m_index).m_source).m_uri;
+					currentMaterial->m_colourAttrib = matTex->m_texCoord;
+				}
+				currentMaterial->m_colourFactor = pbr->m_colourFactor;
+
+				matTex = &pbr->m_metallicRoughness;
+				if (matTex->m_index > -1)
+				{
+					currentMaterial->m_metalRoughPath = tempStr +
+						images.at(textures.at(matTex->m_index).m_source).m_uri;
+					currentMaterial->m_metalRoughAttrib = matTex->m_texCoord;
+				}
+				currentMaterial->m_metalRoughFactor = glm::vec2(pbr->m_metallicFactor, pbr->m_roughnessFactor);
+
+				matTex = &matItr->m_normalTexture;
+				if (matTex->m_index > -1)
+				{
+					currentMaterial->m_normalPath = tempStr +
+						images.at(textures.at(matTex->m_index).m_source).m_uri;
+					currentMaterial->m_normalAttrib = matTex->m_texCoord;
+				}
+				currentMaterial->m_normalFactor = matTex->m_scale;
+
+				matTex = &matItr->m_occlusionTexture;
+				if (matTex->m_index > -1)
+				{
+					currentMaterial->m_occlusionPath = tempStr +
+						images.at(textures.at(matTex->m_index).m_source).m_uri;
+					currentMaterial->m_occlusionAttrib = matTex->m_texCoord;
+				}
+				currentMaterial->m_occlusionFactor = matTex->m_scale;
+
+				matTex = &matItr->m_emissiveTexture;
+				if (matTex->m_index > -1)
+				{
+					currentMaterial->m_emissivePath = tempStr +
+						images.at(textures.at(matTex->m_index).m_source).m_uri;
+					currentMaterial->m_emissiveAttrib = matTex->m_texCoord;
+				}
+				currentMaterial->m_emissiveFactor = matItr->m_emissiveFactor;
+
+				*glMatItr = currentMaterial;
+				matItr++;
+				glMatItr++;
+			}
+		}
+
+		{
+			std::shared_ptr<ModelNode> currentModelNode;
+			Node* currentNode;
+			Scene* sceneContext = &scenes.at(currentScene);
+			Mesh* currentMesh;
+			glm::vec3* vec3Ptr;
+			glm::vec4* vec4Ptr;
+			glm::mat4* mat4Ptr;
+			int matCount;
+			bool checkMat;
+			std::vector<GLushort>* indicesData;
+			std::vector<int>::iterator nodeItr = sceneContext->m_nodes.begin();
+			std::vector<GLbyte>* byteList;
+			std::vector<GLubyte>* ubyteList;
+			std::vector<GLshort>* shortList;
+			std::vector<GLfloat>* floatList;
+			std::vector<GLushort>* ushortList;
+			std::shared_ptr<TriFace> f;
+			std::vector<std::shared_ptr<TriFace>> partFaces;
+
+			while (nodeItr != sceneContext->m_nodes.end())
+			{
+				m_nodes.push_back(std::make_shared<ModelNode>());
+				currentModelNode = m_nodes.back();
+				currentNode = &nodes.at(*nodeItr);
+
+				currentModelNode->m_name = currentNode->m_name;
+
+				{
+					if (currentNode->m_translation.size() == 3)
+					{
+						vec3Ptr = new glm::vec3();
+						vec3Ptr->x = currentNode->m_translation.at(0);
+						vec3Ptr->y = currentNode->m_translation.at(1);
+						vec3Ptr->z = currentNode->m_translation.at(2);
+						currentModelNode->m_translation.m_translate = vec3Ptr;
+					}
+					if (currentNode->m_scale.size() == 3)
+					{
+						vec3Ptr = new glm::vec3();
+						vec3Ptr->x = currentNode->m_scale.at(0);
+						vec3Ptr->y = currentNode->m_scale.at(1);
+						vec3Ptr->z = currentNode->m_scale.at(2);
+						currentModelNode->m_translation.m_scale = vec3Ptr;
+					}
+					if (currentNode->m_rotation.size() == 4)
+					{
+						vec4Ptr = new glm::vec4();
+						vec4Ptr->x = currentNode->m_rotation.at(0);
+						vec4Ptr->y = currentNode->m_rotation.at(1);
+						vec4Ptr->z = currentNode->m_rotation.at(2);
+						vec4Ptr->w = currentNode->m_rotation.at(3);
+						currentModelNode->m_translation.m_quat = vec4Ptr;
+					}
+					if (currentNode->m_matrix.size() == 16)
+					{
+						mat4Ptr = new glm::mat4();
+						for (int i = 0; i < 4; i++)
+						{
+							for (int j = 0; j < 4; j++)
+							{
+								(*mat4Ptr)[i][j] = currentNode->m_rotation.at(4 * i + j);
+							}
+						}
+						currentModelNode->m_translation.m_matrix = mat4Ptr;
+					}
+				}
+				//currentModelNode->m_children;
+				//currentModelNode->m_skin;
+
+				id = currentNode->m_mesh;
+				if (id > -1)
+				{
+					currentMesh = &meshes.at(id);
+					currentPart = getMesh(currentMesh->m_name);
+					if (!currentPart)
+					{
+						currentPart = m_context.lock()->createModelMesh(m_self.lock(), currentMesh->m_name);
+						matCount = 0;
+						for (std::list<Prim>::iterator primItr = currentMesh->m_prims.begin();
+							primItr != currentMesh->m_prims.end(); primItr++)
+						{
+							currentPart->generateArrays();
+							indicesData = &data.at(primItr->m_indices).m_ushort;
+
+							positionBuffer = std::make_shared<VertexBuffer>();
+							{
+								accPointer = &accessors.at(primItr->m_positionId);
+								if ((accPointer->m_max.size() == 3) &&
+									(accPointer->m_min.size() == 3))
+								{
+									vertexPosition.x = accPointer->m_max.at(0);
+									vertexPosition.y = accPointer->m_max.at(1);
+									vertexPosition.z = accPointer->m_max.at(2);
+									if (currentPart->m_maxX < vertexPosition.x)
+									{
+										currentPart->m_maxX = vertexPosition.x;
+									}
+									if (currentPart->m_maxY < vertexPosition.y)
+									{
+										currentPart->m_maxY = vertexPosition.y;
+									}
+									if (currentPart->m_maxZ < vertexPosition.z)
+									{
+										currentPart->m_maxZ = vertexPosition.z;
+									}
+									checkMax(vertexPosition);
+									vertexPosition.x = accPointer->m_min.at(0);
+									vertexPosition.y = accPointer->m_min.at(1);
+									vertexPosition.z = accPointer->m_min.at(2);
+									if (currentPart->m_minX > vertexPosition.x)
+									{
+										currentPart->m_minX = vertexPosition.x;
+									}
+									if (currentPart->m_minY > vertexPosition.y)
+									{
+										currentPart->m_minY = vertexPosition.y;
+									}
+									if (currentPart->m_minZ > vertexPosition.z)
+									{
+										currentPart->m_minZ = vertexPosition.z;
+									}
+									checkMin(vertexPosition);
+								}
+								floatList = &data.at(primItr->m_positionId).m_float;
+								for (int i = 0; i < indicesData->size(); )
+								{
+									f = std::make_shared<TriFace>();
+									vertexPosition.x = floatList->at(indicesData->at(i) * 3);
+									vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
+									vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
+									i++;
+									f->pa = vertexPosition;
+									vertexPosition.x = floatList->at(indicesData->at(i) * 3);
+									vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
+									vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
+									i++;
+									f->pb = vertexPosition;
+									vertexPosition.x = floatList->at(indicesData->at(i) * 3);
+									vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
+									vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
+									i++;
+									f->pc = vertexPosition;
+									currentModelNode->m_translation.translateTriPos(f);
+									positionBuffer->add(f->pa);
+									positionBuffer->add(f->pb);
+									positionBuffer->add(f->pc);
+									m_faces.push_back(f);
+									currentPart->addFace(f);
+								}
+								currentPart->setBuffer("in_Position", positionBuffer, matCount);
+							}
+
+							partFaces = currentPart->getFaces();
+
+							if (primItr->m_normalId > -1)
+							{
+								normalBuffer = std::make_shared<VertexBuffer>();
+								floatList = &data.at(primItr->m_normalId).m_float;
+								for (int i = 0; i < indicesData->size(); )
+								{
+									f = partFaces.at(i / 3);
+									normal.x = floatList->at(indicesData->at(i) * 3);
+									normal.y = floatList->at(indicesData->at(i) * 3 + 1);
+									normal.z = floatList->at(indicesData->at(i) * 3 + 2);
+									i++;
+									f->na = normal;
+									normal.x = floatList->at(indicesData->at(i) * 3);
+									normal.y = floatList->at(indicesData->at(i) * 3 + 1);
+									normal.z = floatList->at(indicesData->at(i) * 3 + 2);
+									i++;
+									f->nb = normal;
+									normal.x = floatList->at(indicesData->at(i) * 3);
+									normal.y = floatList->at(indicesData->at(i) * 3 + 1);
+									normal.z = floatList->at(indicesData->at(i) * 3 + 2);
+									i++;
+									f->nc = normal;
+									currentModelNode->m_translation.translateTriNorm(f);
+									normalBuffer->add(f->na);
+									normalBuffer->add(f->nb);
+									normalBuffer->add(f->nc);
+								}
+								currentPart->setBuffer("in_Normal", normalBuffer, matCount);
+							}
+							if (primItr->m_texCoordId > -1)
+							{
+								texCoordBuffer = std::make_shared<VertexBuffer>();
+								floatList = &data.at(primItr->m_texCoordId).m_float;
+								for (int i = 0; i < indicesData->size(); )
+								{
+									f = partFaces.at(i / 6);
+									deltaUV1.x = floatList->at(indicesData->at(i) * 2);
+									deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
+									i++;
+									f->tca = deltaUV1;
+									deltaUV1.x = floatList->at(indicesData->at(i) * 2);
+									deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
+									i++;
+									f->tcb = deltaUV1;
+									deltaUV1.x = floatList->at(indicesData->at(i) * 2);
+									deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
+									i++;
+									f->tcc = deltaUV1;
+									texCoordBuffer->add(f->tca);
+									texCoordBuffer->add(f->tcb);
+									texCoordBuffer->add(f->tcc);
+								}
+								currentPart->setBuffer("in_TexCoord", texCoordBuffer, matCount);
+							}
+							if (primItr->m_jointsId > -1)
+							{
+								jointsBuffer = std::make_shared<VertexBuffer>();
+								accPointer = &accessors.at(primItr->m_jointsId);
+								if (accPointer->m_compType == 5121)
+								{
+									ubyteList = &data.at(primItr->m_jointsId).m_ubyte;
+									for (int i = 0; i < indicesData->size(); )
+									{
+										//f = partFaces.at(i / 12);
+										joints.x = ubyteList->at(indicesData->at(i) * 4);
+										joints.y = ubyteList->at(indicesData->at(i) * 4 + 1);
+										joints.z = ubyteList->at(indicesData->at(i) * 4 + 2);
+										joints.w = ubyteList->at(indicesData->at(i) * 4 + 3);
+										jointsBuffer->add(joints);
+										i++;
+										//f-> = colour;
+										//joints.x = floatList->at(indicesData->at(i) * 4);
+										//joints.y = floatList->at(indicesData->at(i) * 4 + 1);
+										//joints.z = floatList->at(indicesData->at(i) * 4 + 2);
+										//joints.w = floatList->at(indicesData->at(i) * 4 + 3);
+										//i++;
+										//f-> = joints;
+										//colour.x = floatList->at(indicesData->at(i) * 4);
+										//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
+										//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
+										//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
+										//i++;
+										//f-> = colour;
+										//jointsBuffer->add();
+										//jointsBuffer->add();
+										//jointsBuffer->add();
+									}
+								}
+								else if (accPointer->m_compType == 5123)
+								{
+									ushortList = &data.at(primItr->m_jointsId).m_ushort;
+									for (int i = 0; i < indicesData->size(); )
+									{
+										//f = partFaces.at(i / 12);
+										joints.x = ushortList->at(indicesData->at(i) * 4);
+										joints.y = ushortList->at(indicesData->at(i) * 4 + 1);
+										joints.z = ushortList->at(indicesData->at(i) * 4 + 2);
+										joints.w = ushortList->at(indicesData->at(i) * 4 + 3);
+										jointsBuffer->add(joints);
+										i++;
+									}
+								}
+
+								currentPart->setBuffer("in_JointIDs", jointsBuffer, matCount);
+							}
+							if (primItr->m_weightsId > -1)
+							{
+								weightsBuffer = std::make_shared<VertexBuffer>();
+								floatList = &data.at(primItr->m_weightsId).m_float;
+								for (int i = 0; i < indicesData->size(); )
+								{
+									//f = partFaces.at(i / 12);
+									colour.x = floatList->at(indicesData->at(i) * 4);
+									colour.y = floatList->at(indicesData->at(i) * 4 + 1);
+									colour.z = floatList->at(indicesData->at(i) * 4 + 2);
+									colour.w = floatList->at(indicesData->at(i) * 4 + 3);
+									weightsBuffer->add(colour);
+									i++;
+									//f-> = colour;
+									//colour.x = floatList->at(indicesData->at(i) * 4);
+									//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
+									//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
+									//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
+									//i++;
+									//f-> = colour;
+									//colour.x = floatList->at(indicesData->at(i) * 4);
+									//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
+									//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
+									//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
+									//i++;
+									//f-> = colour;
+									//jointsBuffer->add();
+									//jointsBuffer->add();
+									//jointsBuffer->add();
+								}
+								currentPart->setBuffer("in_Weights", weightsBuffer, matCount);
+							}
+
+							if (primItr->m_material > -1)
+							{
+								checkMat = false;
+								currentMaterial = glMatList.at(primItr->m_material);
+								for (std::list<std::shared_ptr<Material>>::iterator itr = m_materialList.begin();
+									itr != m_materialList.end(); itr++)
+								{
+									if (*itr == currentMaterial)
+									{
+										checkMat = true;
+									}
+								}
+								if (!checkMat)
+								{
+									m_materialList.push_back(currentMaterial);
+								}
+								currentPart->m_materials.push_back(currentMaterial);
+							}
+							matCount++;
+						}
+						m_parts.push_back(currentPart);
+					}
+					currentModelNode->m_mesh = currentPart;
+				}
+				nodeItr++;
+			}
+		}
 
 		m_size = m_maxPoint - m_minPoint;
+
+		{
+
+		}
 	}
 
 	void GltfModel::draw()
 	{
-		for (std::vector<std::shared_ptr<ModelJoint> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ModelMesh> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->draw();
@@ -1193,39 +1905,11 @@ namespace glwrap
 
 	void GltfModel::cullAndDraw()
 	{
-		for (std::vector<std::shared_ptr<ModelJoint> >::iterator itr = m_parts.begin();
+		for (std::vector<std::shared_ptr<ModelMesh> >::iterator itr = m_parts.begin();
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->cullAndDraw();
 		}
-	}
-
-	void GltfModel::drawPart(std::string _partName)
-	{
-		for (std::vector<std::shared_ptr<ModelJoint> >::iterator itr = m_parts.begin();
-			itr != m_parts.end(); itr++)
-		{
-			if ((*itr)->getName() == _partName)
-			{
-				(*itr)->draw();
-				return;
-			}
-		}
-	}
-
-	glm::vec3 GltfModel::getSize()
-	{
-		return m_size;
-	}
-
-	void GltfModel::setCullAnimation(bool _switch)
-	{
-		m_cullAnimated = _switch;
-	}
-
-	bool GltfModel::getCullAnimation()
-	{
-		return m_cullAnimated;
 	}
 
 	//std::shared_ptr<ModelAnimation> GltfModel::addAnimation(std::string _path)
@@ -1360,17 +2044,12 @@ namespace glwrap
 		//}
 	}
 
-	std::vector<std::shared_ptr<TriFace> > GltfModel::getFaces()
-	{
-		return m_faces;
-	}
-
-	std::vector<std::shared_ptr<ModelJoint> > GltfModel::getJoints()
+	std::vector<std::shared_ptr<ModelMesh> > GltfModel::getMeshes()
 	{
 		return m_parts;
 	}
 
-	std::shared_ptr<ModelJoint> GltfModel::getJoint(std::string _name)
+	std::shared_ptr<ModelMesh> GltfModel::getMesh(std::string _name)
 	{
 		for (int partIndex = 0; partIndex < m_parts.size(); partIndex++)
 		{
@@ -1379,12 +2058,16 @@ namespace glwrap
 				return m_parts.at(partIndex);
 			}
 		}
-
-		throw std::exception();
+		return nullptr;
 	}
 
-	//std::vector<std::shared_ptr<ModelAnimation> > GltfModel::getAnimations()
-	//{
-	//	return m_animations;
-	//}
+	std::vector<std::shared_ptr<ModelAnimation> >& GltfModel::getAnimations()
+	{
+		return m_animations;
+	}
+
+	std::list<std::shared_ptr<Material> >& GltfModel::getMatList()
+	{
+		return m_materialList;
+	}
 }
