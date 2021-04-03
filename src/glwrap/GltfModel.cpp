@@ -52,10 +52,9 @@ namespace glwrap
 		}
 		if (m_quat)
 		{
-			glm::quat quat = glm::quat(-m_quat->w, m_quat->x, m_quat->y, m_quat->z);
-			_face->pa = _face->pa * quat;
-			_face->pb = _face->pb * quat;
-			_face->pc = _face->pc * quat;
+			_face->pa = _face->pa * *m_quat;
+			_face->pb = _face->pb * *m_quat;
+			_face->pc = _face->pc * *m_quat;
 		}
 		if (m_translate)
 		{
@@ -70,16 +69,39 @@ namespace glwrap
 		if (m_matrix)
 		{
 			glm::mat3 matrix = *m_matrix;
-			_face->na = _face->na * matrix;
-			_face->nb = _face->nb * matrix;
-			_face->nc = _face->nc * matrix;
+			_face->na = glm::normalize(_face->na * matrix);
+			_face->nb = glm::normalize(_face->nb * matrix);
+			_face->nc = glm::normalize(_face->nc * matrix);
+			return;
+		}
+		if (m_quat)
+		{
+			_face->na = glm::normalize(_face->na * *m_quat);
+			_face->nb = glm::normalize(_face->nb * *m_quat);
+			_face->nc = glm::normalize(_face->nc * *m_quat);
+			return;
+		}
+	}
+
+	void NodeTransform::getModelMat(glm::mat4& _idMatrix)
+	{
+		if (m_matrix)
+		{
+			_idMatrix = *m_matrix;
+			return;
+		}
+		if (m_translate)
+		{
+			glm::translate(_idMatrix, *m_translate);
 		}
 		if (m_quat)
 		{
 			glm::quat quat = glm::quat(-m_quat->w, m_quat->x, m_quat->y, m_quat->z);
-			_face->na = _face->na * quat;
-			_face->nb = _face->nb * quat;
-			_face->nc = _face->nc * quat;
+			_idMatrix = _idMatrix * glm::mat4_cast(quat);
+		}
+		if (m_scale)
+		{
+			glm::scale(_idMatrix, *m_scale);
 		}
 	}
 
@@ -771,10 +793,10 @@ namespace glwrap
 		}
 	}
 
-	void GltfModel::parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::Animation>& _animations)
+	void GltfModel::parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::AniParse>& _animations)
 	{
 		std::string tempStr;
-		Animation newAnimation;
+		AniParse newAnimation;
 		Channel newChannel;
 		AniSampler newSampler;
 		int bracket = 1;
@@ -795,7 +817,7 @@ namespace glwrap
 				if (bracket == 1)
 				{
 					_animations.push_back(newAnimation);
-					newAnimation = gltfparse::Animation();
+					newAnimation = gltfparse::AniParse();
 				}
 			}
 			else if (tempStr == "name")
@@ -1152,6 +1174,565 @@ namespace glwrap
 		}
 	}
 
+	void GltfModel::assembleModelMaterials(std::vector<std::shared_ptr<Material>>& _glMatList, std::string _path,
+		std::vector<gltfparse::Mat>& _materials, std::vector<gltfparse::Tex>& _textures,
+		std::vector<gltfparse::Image>& _images)
+	{
+		int id;
+
+		std::shared_ptr<Material> currentMaterial;
+
+		_glMatList.resize(_materials.size());
+		MatTex* matTex;
+		PBRMR* pbr;
+		std::vector<Mat>::iterator matItr = _materials.begin();
+		std::vector<std::shared_ptr<Material>>::iterator
+			glMatItr = _glMatList.begin();
+
+		while (matItr != _materials.end())
+		{
+			currentMaterial = std::make_shared<Material>();
+
+			currentMaterial->m_name = matItr->m_name;
+			pbr = &matItr->m_pbrMetallicRoughness;
+
+			matTex = &pbr->m_baseColour;
+			if (matTex->m_index > -1)
+			{
+				currentMaterial->m_colourPath = _path +
+					_images.at(_textures.at(matTex->m_index).m_source).m_uri;
+				currentMaterial->m_colourAttrib = matTex->m_texCoord;
+			}
+			currentMaterial->m_colourFactor = pbr->m_colourFactor;
+
+			matTex = &pbr->m_metallicRoughness;
+			if (matTex->m_index > -1)
+			{
+				currentMaterial->m_metalRoughPath = _path +
+					_images.at(_textures.at(matTex->m_index).m_source).m_uri;
+				currentMaterial->m_metalRoughAttrib = matTex->m_texCoord;
+			}
+			currentMaterial->m_metalRoughFactor = glm::vec2(pbr->m_metallicFactor, pbr->m_roughnessFactor);
+
+			matTex = &matItr->m_normalTexture;
+			if (matTex->m_index > -1)
+			{
+				currentMaterial->m_normalPath = _path +
+					_images.at(_textures.at(matTex->m_index).m_source).m_uri;
+				currentMaterial->m_normalAttrib = matTex->m_texCoord;
+			}
+			currentMaterial->m_normalFactor = matTex->m_scale;
+
+			matTex = &matItr->m_occlusionTexture;
+			if (matTex->m_index > -1)
+			{
+				currentMaterial->m_occlusionPath = _path +
+					_images.at(_textures.at(matTex->m_index).m_source).m_uri;
+				currentMaterial->m_occlusionAttrib = matTex->m_texCoord;
+			}
+			currentMaterial->m_occlusionFactor = matTex->m_scale;
+
+			matTex = &matItr->m_emissiveTexture;
+			if (matTex->m_index > -1)
+			{
+				currentMaterial->m_emissivePath = _path +
+					_images.at(_textures.at(matTex->m_index).m_source).m_uri;
+				currentMaterial->m_emissiveAttrib = matTex->m_texCoord;
+			}
+			currentMaterial->m_emissiveFactor = matItr->m_emissiveFactor;
+
+			*glMatItr = currentMaterial;
+			matItr++;
+			glMatItr++;
+		}
+	}
+
+	void GltfModel::assembleModelMesh(std::shared_ptr<ModelMesh> _part, std::shared_ptr<ModelNode> _modelNode,
+		gltfparse::Mesh* _currentMesh, std::vector<gltfparse::Accessor>& _accessors,
+		std::vector<gltfparse::AccessData>& _data, std::vector<gltfparse::Mesh>& _meshes,
+		std::vector<std::shared_ptr<Material>>& _materials)
+	{
+		std::shared_ptr<VertexBuffer> positionBuffer;
+		std::shared_ptr<VertexBuffer> colourbuffer;
+		std::shared_ptr<VertexBuffer> texCoordBuffer;
+		std::shared_ptr<VertexBuffer> normalBuffer;
+		std::shared_ptr<VertexBuffer> jointsBuffer;
+		std::shared_ptr<VertexBuffer> weightsBuffer;
+		std::shared_ptr<VertexBuffer> tangentBuffer;
+		std::shared_ptr<VertexBuffer> bitangentBuffer;
+
+		glm::vec3 vertexPosition, normal;
+		glm::vec2 deltaUV1;
+		glm::vec4 colour;
+		glm::ivec4 joints;
+		float factor;
+
+		Accessor* accPointer;
+		std::shared_ptr<Material> currentMaterial;
+		int matCount = 0;
+		bool checkRotation, checkMat;
+		std::vector<GLushort>* indicesData;
+		std::vector<GLbyte>* byteList;
+		std::vector<GLubyte>* ubyteList;
+		std::vector<GLshort>* shortList;
+		std::vector<GLushort>* ushortList;
+		std::vector<GLfloat>* floatList;
+		std::shared_ptr<TriFace> f;
+		std::vector<std::shared_ptr<TriFace>> partFaces;
+		for (std::list<Prim>::iterator primItr = _currentMesh->m_prims.begin();
+			primItr != _currentMesh->m_prims.end(); primItr++)
+		{
+			_part->generateArrays();
+			indicesData = &_data.at(primItr->m_indices).m_ushort;
+
+			positionBuffer = std::make_shared<VertexBuffer>();
+			{
+				accPointer = &_accessors.at(primItr->m_positionId);
+				if ((accPointer->m_max.size() == 3) &&
+					(accPointer->m_min.size() == 3))
+				{
+					f = std::make_shared<TriFace>();
+					f->na = glm::vec3(1, 0, 0);
+					f->nb = glm::vec3(0, 1, 0);
+					f->nc = glm::vec3(0, 0, 1);
+					_modelNode->m_translation.translateTriNorm(f);
+					if (abs(f->na.x) == 1 || abs(f->na.y) == 1 || abs(f->na.z) == 1)
+					{
+						if (abs(f->nb.x) == 1 || abs(f->nb.y) == 1 || abs(f->nb.z) == 1)
+						{
+							checkRotation = false;
+							vertexPosition.x = accPointer->m_max.at(0);
+							vertexPosition.y = accPointer->m_max.at(1);
+							vertexPosition.z = accPointer->m_max.at(2);
+							f->pa = vertexPosition;
+							vertexPosition.x = accPointer->m_min.at(0);
+							vertexPosition.y = accPointer->m_min.at(1);
+							vertexPosition.z = accPointer->m_min.at(2);
+							f->pb = vertexPosition;
+							f->pc = glm::vec3(1);
+							_modelNode->m_translation.translateTriPos(f);
+
+							if (f->pa.x < f->pb.x)
+							{
+								factor = f->pa.x;
+								f->pa.x = f->pb.x;
+								f->pb.x = factor;
+							}
+							if (f->pa.y < f->pb.y)
+							{
+								factor = f->pa.y;
+								f->pa.y = f->pb.y;
+								f->pb.y = factor;
+							}
+							if (f->pa.z < f->pb.z)
+							{
+								factor = f->pa.z;
+								f->pa.z = f->pb.z;
+								f->pb.z = factor;
+							}
+
+							_part->checkMax(f->pa);
+							_part->checkMin(f->pb);
+							checkMax(f->pa);
+							checkMin(f->pb);
+						}
+						else
+						{
+							checkRotation = true;
+						}
+					}
+					else
+					{
+						checkRotation = true;
+					}
+				}
+				floatList = &_data.at(primItr->m_positionId).m_float;
+				for (int i = 0; i < indicesData->size(); )
+				{
+					f = std::make_shared<TriFace>();
+					vertexPosition.x = floatList->at(indicesData->at(i) * 3);
+					vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
+					vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
+					i++;
+					f->pa = vertexPosition;
+					vertexPosition.x = floatList->at(indicesData->at(i) * 3);
+					vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
+					vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
+					i++;
+					f->pb = vertexPosition;
+					vertexPosition.x = floatList->at(indicesData->at(i) * 3);
+					vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
+					vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
+					i++;
+					f->pc = vertexPosition;
+					_modelNode->m_translation.translateTriPos(f);
+					if (checkRotation)
+					{
+						_part->checkMinMax(f->pa);
+						_part->checkMinMax(f->pb);
+						_part->checkMinMax(f->pc);
+						checkMinMax(f->pa);
+						checkMinMax(f->pb);
+						checkMinMax(f->pc);
+					}
+					positionBuffer->add(f->pa);
+					positionBuffer->add(f->pb);
+					positionBuffer->add(f->pc);
+					m_faces.push_back(f);
+					_part->addFace(f);
+				}
+				_part->setBuffer("in_Position", positionBuffer, matCount);
+			}
+
+			partFaces = _part->getFaces();
+
+			if (primItr->m_normalId > -1)
+			{
+				normalBuffer = std::make_shared<VertexBuffer>();
+				floatList = &_data.at(primItr->m_normalId).m_float;
+				for (int i = 0; i < indicesData->size(); )
+				{
+					f = partFaces.at(i / 3);
+					normal.x = floatList->at(indicesData->at(i) * 3);
+					normal.y = floatList->at(indicesData->at(i) * 3 + 1);
+					normal.z = floatList->at(indicesData->at(i) * 3 + 2);
+					i++;
+					f->na = normal;
+					normal.x = floatList->at(indicesData->at(i) * 3);
+					normal.y = floatList->at(indicesData->at(i) * 3 + 1);
+					normal.z = floatList->at(indicesData->at(i) * 3 + 2);
+					i++;
+					f->nb = normal;
+					normal.x = floatList->at(indicesData->at(i) * 3);
+					normal.y = floatList->at(indicesData->at(i) * 3 + 1);
+					normal.z = floatList->at(indicesData->at(i) * 3 + 2);
+					i++;
+					f->nc = normal;
+					_modelNode->m_translation.translateTriNorm(f);
+					normalBuffer->add(f->na);
+					normalBuffer->add(f->nb);
+					normalBuffer->add(f->nc);
+				}
+				_part->setBuffer("in_Normal", normalBuffer, matCount);
+			}
+			if (primItr->m_texCoordId > -1)
+			{
+				texCoordBuffer = std::make_shared<VertexBuffer>();
+				floatList = &_data.at(primItr->m_texCoordId).m_float;
+				for (int i = 0; i < indicesData->size(); )
+				{
+					f = partFaces.at(i / 6);
+					deltaUV1.x = floatList->at(indicesData->at(i) * 2);
+					deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
+					i++;
+					f->tca = deltaUV1;
+					deltaUV1.x = floatList->at(indicesData->at(i) * 2);
+					deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
+					i++;
+					f->tcb = deltaUV1;
+					deltaUV1.x = floatList->at(indicesData->at(i) * 2);
+					deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
+					i++;
+					f->tcc = deltaUV1;
+					texCoordBuffer->add(f->tca);
+					texCoordBuffer->add(f->tcb);
+					texCoordBuffer->add(f->tcc);
+				}
+				_part->setBuffer("in_TexCoord", texCoordBuffer, matCount);
+			}
+			if (primItr->m_jointsId > -1)
+			{
+				jointsBuffer = std::make_shared<VertexBuffer>();
+				accPointer = &_accessors.at(primItr->m_jointsId);
+				if (accPointer->m_compType == 5121)
+				{
+					ubyteList = &_data.at(primItr->m_jointsId).m_ubyte;
+					for (int i = 0; i < indicesData->size(); )
+					{
+						//f = partFaces.at(i / 12);
+						joints.x = ubyteList->at(indicesData->at(i) * 4);
+						joints.y = ubyteList->at(indicesData->at(i) * 4 + 1);
+						joints.z = ubyteList->at(indicesData->at(i) * 4 + 2);
+						joints.w = ubyteList->at(indicesData->at(i) * 4 + 3);
+						jointsBuffer->add(joints);
+						i++;
+						//f-> = colour;
+						//joints.x = floatList->at(indicesData->at(i) * 4);
+						//joints.y = floatList->at(indicesData->at(i) * 4 + 1);
+						//joints.z = floatList->at(indicesData->at(i) * 4 + 2);
+						//joints.w = floatList->at(indicesData->at(i) * 4 + 3);
+						//i++;
+						//f-> = joints;
+						//colour.x = floatList->at(indicesData->at(i) * 4);
+						//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
+						//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
+						//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
+						//i++;
+						//f-> = colour;
+						//jointsBuffer->add();
+						//jointsBuffer->add();
+						//jointsBuffer->add();
+					}
+				}
+				else if (accPointer->m_compType == 5123)
+				{
+					ushortList = &_data.at(primItr->m_jointsId).m_ushort;
+					for (int i = 0; i < indicesData->size(); )
+					{
+						//f = partFaces.at(i / 12);
+						joints.x = ushortList->at(indicesData->at(i) * 4);
+						joints.y = ushortList->at(indicesData->at(i) * 4 + 1);
+						joints.z = ushortList->at(indicesData->at(i) * 4 + 2);
+						joints.w = ushortList->at(indicesData->at(i) * 4 + 3);
+						jointsBuffer->add(joints);
+						i++;
+					}
+				}
+
+				_part->setBuffer("in_JointIDs", jointsBuffer, matCount);
+			}
+			if (primItr->m_weightsId > -1)
+			{
+				weightsBuffer = std::make_shared<VertexBuffer>();
+				floatList = &_data.at(primItr->m_weightsId).m_float;
+				for (int i = 0; i < indicesData->size(); )
+				{
+					//f = partFaces.at(i / 12);
+					colour.x = floatList->at(indicesData->at(i) * 4);
+					colour.y = floatList->at(indicesData->at(i) * 4 + 1);
+					colour.z = floatList->at(indicesData->at(i) * 4 + 2);
+					colour.w = floatList->at(indicesData->at(i) * 4 + 3);
+					weightsBuffer->add(colour);
+					i++;
+				}
+				_part->setBuffer("in_Weights", weightsBuffer, matCount);
+			}
+
+			if (primItr->m_material > -1)
+			{
+				checkMat = false;
+				currentMaterial = _materials.at(primItr->m_material);
+				for (std::list<std::shared_ptr<Material>>::iterator itr = m_materialList.begin();
+					itr != m_materialList.end(); itr++)
+				{
+					if (*itr == currentMaterial)
+					{
+						checkMat = true;
+					}
+				}
+				if (!checkMat)
+				{
+					m_materialList.push_back(currentMaterial);
+				}
+				_part->m_materials.push_back(currentMaterial);
+			}
+			else
+			{
+				_part->m_materials.push_back(nullptr);
+			}
+			matCount++;
+		}
+		_part->m_size = _part->m_maxPoint - _part->m_minPoint;
+		m_parts.push_back(_part);
+	}
+
+	void GltfModel::assembleChildren(std::shared_ptr<ModelNode> _parentModelNode)
+	{
+		Node* parentNode = &m_parseNodes->at(_parentModelNode->m_id);
+		_parentModelNode->m_name = parentNode->m_name;
+		std::shared_ptr<ModelNode> child;
+		for (std::vector<int>::iterator itr = parentNode->m_children.begin();
+			itr != parentNode->m_children.end(); itr++)
+		{
+			if (m_checkNodes.at(*itr))
+			{
+				throw std::exception();
+			}
+			else
+			{
+				m_checkNodes.at(*itr) = true;
+			}
+			child = std::make_shared<ModelNode>();
+			child->m_id = *itr;
+			child->m_parent = _parentModelNode;
+			_parentModelNode->m_children.push_back(child);
+			m_allNodes.push_back(child);
+			assembleChildren(child);
+		}
+	}
+
+	void GltfModel::assembleModelNodes(gltfparse::Scene& _scene,
+		std::vector<gltfparse::Accessor>& _accessors, std::vector<gltfparse::AccessData>& _data,
+		std::vector<gltfparse::Mesh>& _meshes, std::vector<gltfparse::Skin>& _skins,
+		std::vector<std::shared_ptr<Material>>& _materials)
+	{
+		int id;
+
+		std::shared_ptr<ModelNode> currentModelNode;
+		std::shared_ptr<ModelMesh> currentPart;
+
+		Node* currentNode;
+		ModelSkin* currentModelSkin;
+		Skin* currentSkin;
+		Mesh* currentMesh;
+		glm::vec3* vec3Ptr;
+		glm::quat* quatPtr;
+		glm::mat4* mat4Ptr;
+		std::vector<int>::iterator nodeItr = _scene.m_nodes.begin();
+		std::vector<GLfloat>* floatList;
+
+		m_checkNodes.resize(m_parseNodes->size());
+		for (std::vector<bool>::iterator itr = m_checkNodes.begin();
+			itr != m_checkNodes.end(); itr++)
+		{
+			*itr = false;
+		}
+
+		while (nodeItr != _scene.m_nodes.end())
+		{
+			if (m_checkNodes.at(*nodeItr))
+			{
+				throw std::exception();
+			}
+			else
+			{
+				m_checkNodes.at(*nodeItr) = true;
+			}
+			currentModelNode = std::make_shared<ModelNode>();
+			m_sceneNodes.push_back(currentModelNode);
+			currentModelNode->m_id = *nodeItr;
+			m_allNodes.push_back(currentModelNode);
+			assembleChildren(currentModelNode);
+			nodeItr++;
+		}
+
+		m_checkNodes.clear();
+
+		m_minPoint = glm::vec3(0);
+		m_maxPoint = glm::vec3(0);
+
+		for (std::vector<std::shared_ptr<ModelNode>>::iterator itr = m_allNodes.begin();
+			itr != m_allNodes.end(); itr++)
+		{
+			currentModelNode = *itr;
+			currentNode = &m_parseNodes->at((*itr)->m_id);
+			{
+				if (currentNode->m_translation.size() == 3)
+				{
+					vec3Ptr = new glm::vec3();
+					vec3Ptr->x = currentNode->m_translation.at(0);
+					vec3Ptr->y = currentNode->m_translation.at(1);
+					vec3Ptr->z = currentNode->m_translation.at(2);
+					currentModelNode->m_translation.m_translate = vec3Ptr;
+				}
+				if (currentNode->m_scale.size() == 3)
+				{
+					vec3Ptr = new glm::vec3();
+					vec3Ptr->x = currentNode->m_scale.at(0);
+					vec3Ptr->y = currentNode->m_scale.at(1);
+					vec3Ptr->z = currentNode->m_scale.at(2);
+					currentModelNode->m_translation.m_scale = vec3Ptr;
+				}
+				if (currentNode->m_rotation.size() == 4)
+				{
+					quatPtr = new glm::quat();
+					quatPtr->x = currentNode->m_rotation.at(0);
+					quatPtr->y = currentNode->m_rotation.at(1);
+					quatPtr->z = currentNode->m_rotation.at(2);
+					quatPtr->w = -currentNode->m_rotation.at(3);
+					currentModelNode->m_translation.m_quat = quatPtr;
+				}
+				if (currentNode->m_matrix.size() == 16)
+				{
+					mat4Ptr = new glm::mat4();
+					for (int i = 0; i < 4; i++)
+					{
+						for (int j = 0; j < 4; j++)
+						{
+							(*mat4Ptr)[i][j] = currentNode->m_rotation.at(4 * i + j);
+						}
+					}
+					currentModelNode->m_translation.m_matrix = mat4Ptr;
+				}
+			}
+
+			id = currentNode->m_skin;
+			if (id > -1)
+			{
+				m_skins.push_back(ModelSkin());
+				currentModelSkin = &m_skins.back();
+				currentSkin = &_skins.at(id);
+
+				floatList = &_data.at(currentSkin->m_invBindMat).m_float;
+
+				currentModelSkin->m_invBindMats.resize(currentSkin->m_joints.size());
+				for (int i = 0; i < currentSkin->m_joints.size(); i++)
+				{
+					mat4Ptr = &currentModelSkin->m_invBindMats.at(i);
+					for (int x = 0; x < 4; x++)
+					{
+						for (int y = 0; y < 4; y++)
+						{
+							(*mat4Ptr)[x][y] =
+								floatList->at((16 * i) + (4 * x) + y);
+						}
+					}
+				}
+			}
+
+			id = currentNode->m_mesh;
+			if (id > -1)
+			{
+				currentMesh = &_meshes.at(id);
+				currentPart = getMesh(currentMesh->m_name);
+				if (!currentPart)
+				{
+					currentPart = m_context.lock()->createModelMesh(m_self.lock(), currentMesh->m_name);
+					assembleModelMesh(currentPart, currentModelNode,
+						currentMesh, _accessors, _data,
+						_meshes, _materials);
+				}
+				currentModelNode->m_mesh = currentPart;
+			}
+		}
+
+		m_parseNodes = nullptr;
+	}
+
+	void GltfModel::checkMinMax(glm::vec3& _vertexPosition)
+	{
+		if (m_minPoint.x > m_maxPoint.x)
+		{
+			m_minPoint = _vertexPosition;
+			m_maxPoint = _vertexPosition;
+			return;
+		}
+		if (_vertexPosition.x < m_minPoint.x)
+		{
+			m_minPoint.x = _vertexPosition.x;
+		}
+		else if (_vertexPosition.x > m_maxPoint.x)
+		{
+			m_maxPoint.x = _vertexPosition.x;
+		}
+		if (_vertexPosition.y < m_minPoint.y)
+		{
+			m_minPoint.y = _vertexPosition.y;
+		}
+		else if (_vertexPosition.y > m_maxPoint.y)
+		{
+			m_maxPoint.y = _vertexPosition.y;
+		}
+		if (_vertexPosition.z < m_minPoint.z)
+		{
+			m_minPoint.z = _vertexPosition.z;
+		}
+		else if (_vertexPosition.z > m_maxPoint.z)
+		{
+			m_maxPoint.z = _vertexPosition.z;
+		}
+	}
+
 	void GltfModel::checkMin(glm::vec3& _vertexPosition)
 	{
 		if (_vertexPosition.x < m_minPoint.x)
@@ -1187,15 +1768,17 @@ namespace glwrap
 	GltfModel::GltfModel()
 	{
 		m_dirty = false;
-		m_minPoint = glm::vec3(0);
-		m_maxPoint = glm::vec3(0);
+		m_minPoint = glm::vec3(std::numeric_limits<float>::max());
+		m_maxPoint = glm::vec3(std::numeric_limits<float>::min());
+		m_cullAnimated = false;
 	}
 
 	GltfModel::GltfModel(std::string _path)
 	{
 		m_dirty = false;
-		m_minPoint = glm::vec3(0);
-		m_maxPoint = glm::vec3(0);
+		m_minPoint = glm::vec3(std::numeric_limits<float>::max());
+		m_maxPoint = glm::vec3(std::numeric_limits<float>::min());
+		m_cullAnimated = false;
 		parse(_path);
 	}
 
@@ -1322,7 +1905,7 @@ namespace glwrap
 		std::vector<Mat> materials;
 		std::vector<Mesh> meshes;
 		std::vector<Accessor> accessors;
-		std::vector<Animation> animations;
+		std::vector<AniParse> animations;
 		std::vector<BufferView> views;
 		std::vector<Buffer> buffers;
 
@@ -1478,420 +2061,19 @@ namespace glwrap
 			}
 		}
 
-		std::shared_ptr<ModelMesh> currentPart;
 		std::vector<std::shared_ptr<Material>> glMatList;
-		int id;
+		tempStr = _path.substr(0, _path.find_last_of('\\') + 1);
 
-		std::shared_ptr<VertexBuffer> positionBuffer;
-		std::shared_ptr<VertexBuffer> colourbuffer;
-		std::shared_ptr<VertexBuffer> texCoordBuffer;
-		std::shared_ptr<VertexBuffer> normalBuffer;
-		std::shared_ptr<VertexBuffer> jointsBuffer;
-		std::shared_ptr<VertexBuffer> weightsBuffer;
-		std::shared_ptr<VertexBuffer> tangentBuffer;
-		std::shared_ptr<VertexBuffer> bitangentBuffer;
-
-		glm::vec3 vertexPosition, edge1, edge2, normal;
-		glm::vec2 deltaUV1, deltaUV2;
-		glm::vec4 colour;
-		glm::ivec4 joints;
-		float factor;
-		std::shared_ptr<Material> currentMaterial;
+		assembleModelMaterials(glMatList, tempStr, materials, textures, images);
+		m_parseNodes = &nodes;
+		assembleModelNodes(scenes.at(currentScene), accessors, data,
+			meshes, skins, glMatList);
 
 		{
-			glMatList.resize(materials.size());
-			MatTex* matTex;
-			PBRMR* pbr;
-			std::vector<Mat>::iterator matItr = materials.begin();
-			std::vector<std::shared_ptr<Material>>::iterator
-				glMatItr = glMatList.begin();
-			id = _path.find_last_of('\\');
-			tempStr = _path.substr(0, id + 1);
-
-			while (matItr != materials.end())
-			{
-				currentMaterial = std::make_shared<Material>();
-
-				currentMaterial->m_name = matItr->m_name;
-				pbr = &matItr->m_pbrMetallicRoughness;
-
-				matTex = &pbr->m_baseColour;
-				if (matTex->m_index > -1)
-				{
-					currentMaterial->m_colourPath = tempStr +
-						images.at(textures.at(matTex->m_index).m_source).m_uri;
-					currentMaterial->m_colourAttrib = matTex->m_texCoord;
-				}
-				currentMaterial->m_colourFactor = pbr->m_colourFactor;
-
-				matTex = &pbr->m_metallicRoughness;
-				if (matTex->m_index > -1)
-				{
-					currentMaterial->m_metalRoughPath = tempStr +
-						images.at(textures.at(matTex->m_index).m_source).m_uri;
-					currentMaterial->m_metalRoughAttrib = matTex->m_texCoord;
-				}
-				currentMaterial->m_metalRoughFactor = glm::vec2(pbr->m_metallicFactor, pbr->m_roughnessFactor);
-
-				matTex = &matItr->m_normalTexture;
-				if (matTex->m_index > -1)
-				{
-					currentMaterial->m_normalPath = tempStr +
-						images.at(textures.at(matTex->m_index).m_source).m_uri;
-					currentMaterial->m_normalAttrib = matTex->m_texCoord;
-				}
-				currentMaterial->m_normalFactor = matTex->m_scale;
-
-				matTex = &matItr->m_occlusionTexture;
-				if (matTex->m_index > -1)
-				{
-					currentMaterial->m_occlusionPath = tempStr +
-						images.at(textures.at(matTex->m_index).m_source).m_uri;
-					currentMaterial->m_occlusionAttrib = matTex->m_texCoord;
-				}
-				currentMaterial->m_occlusionFactor = matTex->m_scale;
-
-				matTex = &matItr->m_emissiveTexture;
-				if (matTex->m_index > -1)
-				{
-					currentMaterial->m_emissivePath = tempStr +
-						images.at(textures.at(matTex->m_index).m_source).m_uri;
-					currentMaterial->m_emissiveAttrib = matTex->m_texCoord;
-				}
-				currentMaterial->m_emissiveFactor = matItr->m_emissiveFactor;
-
-				*glMatItr = currentMaterial;
-				matItr++;
-				glMatItr++;
-			}
-		}
-
-		{
-			std::shared_ptr<ModelNode> currentModelNode;
-			Node* currentNode;
-			Scene* sceneContext = &scenes.at(currentScene);
-			Mesh* currentMesh;
-			glm::vec3* vec3Ptr;
-			glm::vec4* vec4Ptr;
-			glm::mat4* mat4Ptr;
-			int matCount;
-			bool checkMat;
-			std::vector<GLushort>* indicesData;
-			std::vector<int>::iterator nodeItr = sceneContext->m_nodes.begin();
-			std::vector<GLbyte>* byteList;
-			std::vector<GLubyte>* ubyteList;
-			std::vector<GLshort>* shortList;
-			std::vector<GLfloat>* floatList;
-			std::vector<GLushort>* ushortList;
-			std::shared_ptr<TriFace> f;
-			std::vector<std::shared_ptr<TriFace>> partFaces;
-
-			while (nodeItr != sceneContext->m_nodes.end())
-			{
-				m_nodes.push_back(std::make_shared<ModelNode>());
-				currentModelNode = m_nodes.back();
-				currentNode = &nodes.at(*nodeItr);
-
-				currentModelNode->m_name = currentNode->m_name;
-
-				{
-					if (currentNode->m_translation.size() == 3)
-					{
-						vec3Ptr = new glm::vec3();
-						vec3Ptr->x = currentNode->m_translation.at(0);
-						vec3Ptr->y = currentNode->m_translation.at(1);
-						vec3Ptr->z = currentNode->m_translation.at(2);
-						currentModelNode->m_translation.m_translate = vec3Ptr;
-					}
-					if (currentNode->m_scale.size() == 3)
-					{
-						vec3Ptr = new glm::vec3();
-						vec3Ptr->x = currentNode->m_scale.at(0);
-						vec3Ptr->y = currentNode->m_scale.at(1);
-						vec3Ptr->z = currentNode->m_scale.at(2);
-						currentModelNode->m_translation.m_scale = vec3Ptr;
-					}
-					if (currentNode->m_rotation.size() == 4)
-					{
-						vec4Ptr = new glm::vec4();
-						vec4Ptr->x = currentNode->m_rotation.at(0);
-						vec4Ptr->y = currentNode->m_rotation.at(1);
-						vec4Ptr->z = currentNode->m_rotation.at(2);
-						vec4Ptr->w = currentNode->m_rotation.at(3);
-						currentModelNode->m_translation.m_quat = vec4Ptr;
-					}
-					if (currentNode->m_matrix.size() == 16)
-					{
-						mat4Ptr = new glm::mat4();
-						for (int i = 0; i < 4; i++)
-						{
-							for (int j = 0; j < 4; j++)
-							{
-								(*mat4Ptr)[i][j] = currentNode->m_rotation.at(4 * i + j);
-							}
-						}
-						currentModelNode->m_translation.m_matrix = mat4Ptr;
-					}
-				}
-				//currentModelNode->m_children;
-				//currentModelNode->m_skin;
-
-				id = currentNode->m_mesh;
-				if (id > -1)
-				{
-					currentMesh = &meshes.at(id);
-					currentPart = getMesh(currentMesh->m_name);
-					if (!currentPart)
-					{
-						currentPart = m_context.lock()->createModelMesh(m_self.lock(), currentMesh->m_name);
-						matCount = 0;
-						for (std::list<Prim>::iterator primItr = currentMesh->m_prims.begin();
-							primItr != currentMesh->m_prims.end(); primItr++)
-						{
-							currentPart->generateArrays();
-							indicesData = &data.at(primItr->m_indices).m_ushort;
-
-							positionBuffer = std::make_shared<VertexBuffer>();
-							{
-								accPointer = &accessors.at(primItr->m_positionId);
-								if ((accPointer->m_max.size() == 3) &&
-									(accPointer->m_min.size() == 3))
-								{
-									vertexPosition.x = accPointer->m_max.at(0);
-									vertexPosition.y = accPointer->m_max.at(1);
-									vertexPosition.z = accPointer->m_max.at(2);
-									if (currentPart->m_maxX < vertexPosition.x)
-									{
-										currentPart->m_maxX = vertexPosition.x;
-									}
-									if (currentPart->m_maxY < vertexPosition.y)
-									{
-										currentPart->m_maxY = vertexPosition.y;
-									}
-									if (currentPart->m_maxZ < vertexPosition.z)
-									{
-										currentPart->m_maxZ = vertexPosition.z;
-									}
-									checkMax(vertexPosition);
-									vertexPosition.x = accPointer->m_min.at(0);
-									vertexPosition.y = accPointer->m_min.at(1);
-									vertexPosition.z = accPointer->m_min.at(2);
-									if (currentPart->m_minX > vertexPosition.x)
-									{
-										currentPart->m_minX = vertexPosition.x;
-									}
-									if (currentPart->m_minY > vertexPosition.y)
-									{
-										currentPart->m_minY = vertexPosition.y;
-									}
-									if (currentPart->m_minZ > vertexPosition.z)
-									{
-										currentPart->m_minZ = vertexPosition.z;
-									}
-									checkMin(vertexPosition);
-								}
-								floatList = &data.at(primItr->m_positionId).m_float;
-								for (int i = 0; i < indicesData->size(); )
-								{
-									f = std::make_shared<TriFace>();
-									vertexPosition.x = floatList->at(indicesData->at(i) * 3);
-									vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
-									vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
-									i++;
-									f->pa = vertexPosition;
-									vertexPosition.x = floatList->at(indicesData->at(i) * 3);
-									vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
-									vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
-									i++;
-									f->pb = vertexPosition;
-									vertexPosition.x = floatList->at(indicesData->at(i) * 3);
-									vertexPosition.y = floatList->at(indicesData->at(i) * 3 + 1);
-									vertexPosition.z = floatList->at(indicesData->at(i) * 3 + 2);
-									i++;
-									f->pc = vertexPosition;
-									currentModelNode->m_translation.translateTriPos(f);
-									positionBuffer->add(f->pa);
-									positionBuffer->add(f->pb);
-									positionBuffer->add(f->pc);
-									m_faces.push_back(f);
-									currentPart->addFace(f);
-								}
-								currentPart->setBuffer("in_Position", positionBuffer, matCount);
-							}
-
-							partFaces = currentPart->getFaces();
-
-							if (primItr->m_normalId > -1)
-							{
-								normalBuffer = std::make_shared<VertexBuffer>();
-								floatList = &data.at(primItr->m_normalId).m_float;
-								for (int i = 0; i < indicesData->size(); )
-								{
-									f = partFaces.at(i / 3);
-									normal.x = floatList->at(indicesData->at(i) * 3);
-									normal.y = floatList->at(indicesData->at(i) * 3 + 1);
-									normal.z = floatList->at(indicesData->at(i) * 3 + 2);
-									i++;
-									f->na = normal;
-									normal.x = floatList->at(indicesData->at(i) * 3);
-									normal.y = floatList->at(indicesData->at(i) * 3 + 1);
-									normal.z = floatList->at(indicesData->at(i) * 3 + 2);
-									i++;
-									f->nb = normal;
-									normal.x = floatList->at(indicesData->at(i) * 3);
-									normal.y = floatList->at(indicesData->at(i) * 3 + 1);
-									normal.z = floatList->at(indicesData->at(i) * 3 + 2);
-									i++;
-									f->nc = normal;
-									currentModelNode->m_translation.translateTriNorm(f);
-									normalBuffer->add(f->na);
-									normalBuffer->add(f->nb);
-									normalBuffer->add(f->nc);
-								}
-								currentPart->setBuffer("in_Normal", normalBuffer, matCount);
-							}
-							if (primItr->m_texCoordId > -1)
-							{
-								texCoordBuffer = std::make_shared<VertexBuffer>();
-								floatList = &data.at(primItr->m_texCoordId).m_float;
-								for (int i = 0; i < indicesData->size(); )
-								{
-									f = partFaces.at(i / 6);
-									deltaUV1.x = floatList->at(indicesData->at(i) * 2);
-									deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
-									i++;
-									f->tca = deltaUV1;
-									deltaUV1.x = floatList->at(indicesData->at(i) * 2);
-									deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
-									i++;
-									f->tcb = deltaUV1;
-									deltaUV1.x = floatList->at(indicesData->at(i) * 2);
-									deltaUV1.y = floatList->at(indicesData->at(i) * 2 + 1);
-									i++;
-									f->tcc = deltaUV1;
-									texCoordBuffer->add(f->tca);
-									texCoordBuffer->add(f->tcb);
-									texCoordBuffer->add(f->tcc);
-								}
-								currentPart->setBuffer("in_TexCoord", texCoordBuffer, matCount);
-							}
-							if (primItr->m_jointsId > -1)
-							{
-								jointsBuffer = std::make_shared<VertexBuffer>();
-								accPointer = &accessors.at(primItr->m_jointsId);
-								if (accPointer->m_compType == 5121)
-								{
-									ubyteList = &data.at(primItr->m_jointsId).m_ubyte;
-									for (int i = 0; i < indicesData->size(); )
-									{
-										//f = partFaces.at(i / 12);
-										joints.x = ubyteList->at(indicesData->at(i) * 4);
-										joints.y = ubyteList->at(indicesData->at(i) * 4 + 1);
-										joints.z = ubyteList->at(indicesData->at(i) * 4 + 2);
-										joints.w = ubyteList->at(indicesData->at(i) * 4 + 3);
-										jointsBuffer->add(joints);
-										i++;
-										//f-> = colour;
-										//joints.x = floatList->at(indicesData->at(i) * 4);
-										//joints.y = floatList->at(indicesData->at(i) * 4 + 1);
-										//joints.z = floatList->at(indicesData->at(i) * 4 + 2);
-										//joints.w = floatList->at(indicesData->at(i) * 4 + 3);
-										//i++;
-										//f-> = joints;
-										//colour.x = floatList->at(indicesData->at(i) * 4);
-										//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
-										//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
-										//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
-										//i++;
-										//f-> = colour;
-										//jointsBuffer->add();
-										//jointsBuffer->add();
-										//jointsBuffer->add();
-									}
-								}
-								else if (accPointer->m_compType == 5123)
-								{
-									ushortList = &data.at(primItr->m_jointsId).m_ushort;
-									for (int i = 0; i < indicesData->size(); )
-									{
-										//f = partFaces.at(i / 12);
-										joints.x = ushortList->at(indicesData->at(i) * 4);
-										joints.y = ushortList->at(indicesData->at(i) * 4 + 1);
-										joints.z = ushortList->at(indicesData->at(i) * 4 + 2);
-										joints.w = ushortList->at(indicesData->at(i) * 4 + 3);
-										jointsBuffer->add(joints);
-										i++;
-									}
-								}
-
-								currentPart->setBuffer("in_JointIDs", jointsBuffer, matCount);
-							}
-							if (primItr->m_weightsId > -1)
-							{
-								weightsBuffer = std::make_shared<VertexBuffer>();
-								floatList = &data.at(primItr->m_weightsId).m_float;
-								for (int i = 0; i < indicesData->size(); )
-								{
-									//f = partFaces.at(i / 12);
-									colour.x = floatList->at(indicesData->at(i) * 4);
-									colour.y = floatList->at(indicesData->at(i) * 4 + 1);
-									colour.z = floatList->at(indicesData->at(i) * 4 + 2);
-									colour.w = floatList->at(indicesData->at(i) * 4 + 3);
-									weightsBuffer->add(colour);
-									i++;
-									//f-> = colour;
-									//colour.x = floatList->at(indicesData->at(i) * 4);
-									//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
-									//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
-									//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
-									//i++;
-									//f-> = colour;
-									//colour.x = floatList->at(indicesData->at(i) * 4);
-									//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
-									//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
-									//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
-									//i++;
-									//f-> = colour;
-									//jointsBuffer->add();
-									//jointsBuffer->add();
-									//jointsBuffer->add();
-								}
-								currentPart->setBuffer("in_Weights", weightsBuffer, matCount);
-							}
-
-							if (primItr->m_material > -1)
-							{
-								checkMat = false;
-								currentMaterial = glMatList.at(primItr->m_material);
-								for (std::list<std::shared_ptr<Material>>::iterator itr = m_materialList.begin();
-									itr != m_materialList.end(); itr++)
-								{
-									if (*itr == currentMaterial)
-									{
-										checkMat = true;
-									}
-								}
-								if (!checkMat)
-								{
-									m_materialList.push_back(currentMaterial);
-								}
-								currentPart->m_materials.push_back(currentMaterial);
-							}
-							matCount++;
-						}
-						m_parts.push_back(currentPart);
-					}
-					currentModelNode->m_mesh = currentPart;
-				}
-				nodeItr++;
-			}
+			std::shared_ptr<ModelAnimation> currentAnimation;
 		}
 
 		m_size = m_maxPoint - m_minPoint;
-
-		{
-
-		}
 	}
 
 	void GltfModel::draw()

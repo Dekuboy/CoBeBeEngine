@@ -65,7 +65,8 @@ namespace cobebe
 			bool inView;
 			_shaderInternal->setViewingFrustum(m_frustum);
 			glm::vec3 size = _transform->m_scale * _meshInternal->getSize();
-			inView = _shaderInternal->checkViewingFrustum(_transform->m_position, size,
+			glm::vec3 centre = _transform->m_position + _meshInternal->getCentre();
+			inView = _shaderInternal->checkViewingFrustum(centre, size,
 				_transform->m_rotation);
 
 			if (inView)
@@ -89,9 +90,8 @@ namespace cobebe
 	{
 		if (m_isOn)
 		{
-			bool inView;
 			_shaderInternal->setViewingFrustum(m_frustum);
-			glm::vec3 size = _transform->m_scale * _meshInternal->getSize();
+			glm::vec3 size = _transform->m_scale;
 
 			//_shaderInternal->draw(m_texture);
 			_shaderInternal->cullAndDraw(m_gBuffer, _meshInternal,

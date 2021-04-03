@@ -69,6 +69,12 @@ namespace glwrap
 
 	void VertexArray::checkMinMax(glm::vec3& _vertexPosition)
 	{
+		if (m_minPoint.x > m_maxPoint.x)
+		{
+			m_minPoint = _vertexPosition;
+			m_maxPoint = _vertexPosition;
+			return;
+		}
 		if (_vertexPosition.x < m_minPoint.x)
 		{
 			m_minPoint.x = _vertexPosition.x;
@@ -98,16 +104,16 @@ namespace glwrap
 	VertexArray::VertexArray()
 	{
 		m_dirty = false;
-		m_minPoint = glm::vec3(0);
-		m_maxPoint = glm::vec3(0);
+		m_minPoint = glm::vec3(std::numeric_limits<float>::max());
+		m_maxPoint = glm::vec3(std::numeric_limits<float>::min());
 		m_cullAnimated = false;
 	}
 
 	VertexArray::VertexArray(std::string _path)
 	{
 		m_dirty = false;
-		m_minPoint = glm::vec3(0);
-		m_maxPoint = glm::vec3(0);
+		m_minPoint = glm::vec3(std::numeric_limits<float>::max());
+		m_maxPoint = glm::vec3(std::numeric_limits<float>::min());
 		m_cullAnimated = false;
 		parse(_path);
 	}
@@ -464,11 +470,6 @@ namespace glwrap
 				return;
 			}
 		}
-	}
-
-	glm::vec3 VertexArray::getSize()
-	{
-		return m_size;
 	}
 
 	std::shared_ptr<ObjAnimation> VertexArray::addAnimation(std::string _path)

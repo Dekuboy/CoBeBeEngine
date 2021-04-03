@@ -42,11 +42,6 @@ namespace glwrap
 		void setBuffer(std::string _attribute, std::shared_ptr<VertexBuffer> _buffer);
 
 		/**
-		* \brief Retrieve the size of VertexArray based on xyz values
-		*/
-		glm::vec3 getSize();
-
-		/**
 		* \brief Attach Animation to object from file path
 		*/
 		std::shared_ptr<ObjAnimation> addAnimation(std::string _path);

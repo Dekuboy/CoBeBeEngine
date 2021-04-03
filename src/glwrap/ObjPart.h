@@ -56,6 +56,10 @@ namespace glwrap
 		* \brief Retrieve the size of ObjPart based on xyz values
 		*/
 		glm::vec3 getSize();
+		/**
+		* \brief Retrieve the centre of ModelJoint
+		*/
+		glm::vec3 getCentre();
 
 	private:
 		friend class Context;

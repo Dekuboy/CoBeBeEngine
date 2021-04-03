@@ -21,7 +21,7 @@ namespace gltfparse
 	struct Tex;
 	struct Channel;
 	struct AniSampler;
-	struct Animation;
+	struct AniParse;
 	struct Accessor;
 	struct AccessData;
 	struct BufferView;
@@ -40,6 +40,15 @@ namespace glwrap
 	class Material;
 
 	/**
+	* \brief Contains Joint space values
+	*/
+	struct ModelSkin
+	{
+		std::string m_name;
+		std::vector<glm::mat4> m_invBindMats;
+	};
+
+	/**
 	* \brief Contains node space values
 	*/
 	struct NodeTransform
@@ -48,10 +57,11 @@ namespace glwrap
 
 		void translateTriPos(std::shared_ptr<TriFace> _face);
 		void translateTriNorm(std::shared_ptr<TriFace> _face);
+		void getModelMat(glm::mat4& _matrix);
 
 		glm::vec3* m_translate;
 		glm::vec3* m_scale;
-		glm::vec4* m_quat;
+		glm::quat* m_quat;
 		glm::mat4* m_matrix;
 	};
 
@@ -61,8 +71,10 @@ namespace glwrap
 	struct ModelNode
 	{
 		std::string m_name;
+		int m_id = -1;
 		std::weak_ptr<ModelMesh> m_mesh;
-		std::vector<ModelNode> m_children;
+		std::weak_ptr<ModelNode> m_parent;
+		std::vector<std::shared_ptr<ModelNode>> m_children;
 
 		NodeTransform m_translation;
 	};
@@ -123,10 +135,15 @@ namespace glwrap
 		friend class ShaderProgram;
 
 		std::vector<std::shared_ptr<ModelMesh> > m_parts; //!< Information on individual meshes of the model
-		std::list<std::shared_ptr<Material> > m_materialList;
-		std::vector<std::shared_ptr<ModelNode>> m_nodes; //!< Retains node hierarchy of the model
+		std::list<std::shared_ptr<Material> > m_materialList; //!< Material objects used in parts
+		std::vector<std::shared_ptr<ModelNode>> m_allNodes; //!< All nodes in Model
+		std::vector<std::shared_ptr<ModelNode>> m_sceneNodes; //!< Retains node hierarchy of the model
+		std::vector<ModelSkin> m_skins; //!< Skins contain inverse bind matrices
 		std::vector<std::shared_ptr<ModelAnimation> > m_animations; //!< List of animations attached to the model
 		std::weak_ptr<GltfModel> m_self; //!< Pointer to self to set in individual joints
+
+		std::vector<bool> m_checkNodes; //!< Checks nodes for repeats (1 node can't have multiple parents)
+		std::vector<gltfparse::Node>* m_parseNodes; //!< Parse nodes required for recursive function
 
 		/**
 		* \brief Checks if character is white space
@@ -172,7 +189,7 @@ namespace glwrap
 		/**
 		* \brief Prepare Animations for model to use
 		*/
-		void parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::Animation>& _animations);
+		void parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::AniParse>& _animations);
 		/**
 		* \brief Prepare accessors for parsing .bin
 		*/
@@ -185,6 +202,39 @@ namespace glwrap
 		* \brief Prepare buffers for parsing .bin
 		*/
 		void parseBuffers(std::list<std::string>& _splitLine, std::vector<gltfparse::Buffer>& _buffers);
+
+		/**
+		* /brief Assemble GL Material list for Model to use
+		*/
+		void assembleModelMaterials(std::vector<std::shared_ptr<Material>>& _glMatList, std::string _path,
+			std::vector<gltfparse::Mat>& _materials, std::vector<gltfparse::Tex>& _textures,
+			std::vector<gltfparse::Image>& _images);
+
+		/**
+		* \brief Assemble a GL ModelMesh for ModelNode to use
+		*/
+		void assembleModelMesh(std::shared_ptr<ModelMesh> _part, std::shared_ptr<ModelNode> _modelNode,
+			gltfparse::Mesh* _currentMesh, std::vector<gltfparse::Accessor>& _accessors,
+			std::vector<gltfparse::AccessData>& _data, std::vector<gltfparse::Mesh>& _meshes,
+			std::vector<std::shared_ptr<Material>>& _materials);
+
+		/**
+		* \brief Assemble a Node (Recursive function asssembles children)
+		*/
+		void assembleChildren(std::shared_ptr<ModelNode> _parentModelNode);
+
+		/**
+		* /brief Assemble GL Model for drawing
+		*/
+		void assembleModelNodes(gltfparse::Scene& _scene,
+			std::vector<gltfparse::Accessor>& _accessors, std::vector<gltfparse::AccessData>& _data,
+			std::vector<gltfparse::Mesh>& _meshes, std::vector<gltfparse::Skin>& _skins,
+			std::vector<std::shared_ptr<Material>>& _materials);
+		
+		/**
+		* \brief Checks if vertex values are the minimum or maximum of the model
+		*/
+		void checkMinMax(glm::vec3& _vertexPosition);
 		/**
 		* \brief Checks if vertex values are the minimum or maximum of the model
 		*/

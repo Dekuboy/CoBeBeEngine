@@ -386,7 +386,8 @@ namespace glwrap
 			m_drawingSize = _size;
 			m_drawingRotation = _rotation;
 
-			m_modelInView = checkViewingFrustum(_centre, _size, _rotation);
+			m_modelInView = checkViewingFrustum
+			(_centre + _vertexArray->getCentre(), _size * _vertexArray->getSize(), _rotation);
 			if (m_modelInView || _vertexArray->getCullAnimation())
 			{
 

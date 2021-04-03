@@ -24,6 +24,20 @@ private:
 
 };
 
+//class PartCubeRenderer : public cobebe::Renderer
+//{
+//public:
+//	void loadPartTest(std::shared_ptr<cobebe::SkinModel> _model);
+//	void loadPartTest(std::shared_ptr<cobebe::WavefrontModel> _model);
+//
+//private:
+//	std::shared_ptr<cobebe::Mesh> m_partTest;
+//	int m_partTestType = -1;
+//
+//	void onPreDisplay();
+//	void onDisplay();
+//};
+
 int main()
 {
 	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
@@ -35,6 +49,7 @@ int main()
 		//renderer->setWavefrontModel("speedhighway\\speed.obj");
 		renderer->setGltfMesh("gltf\\speed.gltf");
 		renderer->setShader("deferred_shaders\\renderG.shad");
+		renderer->setCullByPart(true);
 
 		entity->addComponent<cobebe::StaticModelCollider>();
 
@@ -54,6 +69,7 @@ int main()
 		renderer = entity->addComponent<cobebe::Renderer>();
 		renderer->setGltfMesh("gltf\\Character Running.gltf");
 		renderer->setShader("deferred_shaders\\renderGSkin.shad");
+		renderer->setCullByPart(true);
 		//std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
 		//renderer->loadAnimation("animations\\run.anm");
 
@@ -64,10 +80,22 @@ int main()
 		entity->getTransform()->m_scale = glm::vec3(2);
 
 		renderer = entity->addComponent<cobebe::Renderer>();
-		std::shared_ptr<cobebe::SkinModel> cube = 
+		std::shared_ptr<cobebe::SkinModel> skin =
 			App->loadAsset<cobebe::SkinModel>("gltf\\Cube.gltf");
-		renderer->setGltfMesh(cube);
+		renderer->setGltfMesh(skin);
 		renderer->setShader("deferred_shaders\\renderG.shad");
+
+		//// ---------------------------
+
+		//entity = App->addEntity();
+
+		//std::shared_ptr<PartCubeRenderer> pcrenderer = entity->addComponent<PartCubeRenderer>();
+		////renderer->setWavefrontModel("speedhighway\\speed.obj");
+		//pcrenderer->setGltfMesh(skin);
+		//skin =
+		//	App->loadAsset<cobebe::SkinModel>("gltf\\speed.gltf");
+		//pcrenderer->loadPartTest(skin);
+		//pcrenderer->setShader("deferred_shaders\\renderG.shad");
 
 	}
 	App->run();
@@ -123,7 +151,8 @@ void CamController::onInit()
 
 void CamController::onTick()
 {
-	glm::vec2 camMovement = glm::radians(-0.08f * getMouse()->getMovement());
+	system("CLS");
+	glm::vec2 camMovement = glm::radians(-0.16f * getMouse()->getMovement());
 	if (camMovement.x || camMovement.y)
 	{
 		rotateHorizontal(camMovement.x);
@@ -162,3 +191,60 @@ void CamController::onPostDisplay()
 	m_fxaa->getInternal()->setUniform("in_FrameBufSize", glm::vec2((float)getEnvironment()->getWidth(), (float)getEnvironment()->getHeight()));
 	m_fxaa->getInternal()->draw();
 }
+
+//void PartCubeRenderer::loadPartTest(std::shared_ptr<cobebe::SkinModel> _model)
+//{
+//	m_partTest = _model;
+//	m_partTestType = 2;
+//}
+//
+//void PartCubeRenderer::loadPartTest(std::shared_ptr<cobebe::WavefrontModel> _model)
+//{
+//	m_partTest = _model;
+//	m_partTestType = 1;
+//}
+//
+//void PartCubeRenderer::onPreDisplay()
+//{
+//
+//}
+//void PartCubeRenderer::onDisplay()
+//{
+//	if (m_partTestType == 0 || m_partTestType == 1)
+//	{
+//		std::shared_ptr<cobebe::WavefrontModel> model =
+//			std::dynamic_pointer_cast<cobebe::WavefrontModel>(m_partTest);
+//		if (model)
+//		{
+//			std::vector<std::shared_ptr<glwrap::ObjPart>> partList = std::dynamic_pointer_cast<glwrap::VertexArray>(model->getInternal())->getParts();
+//			std::vector<std::shared_ptr<glwrap::ObjPart>>::iterator itr = partList.begin();
+//
+//			for (itr; itr != partList.end(); itr++)
+//			{
+//				m_transform.lock()->m_position = (*itr)->getCentre();
+//				m_transform.lock()->m_scale = (*itr)->getSize() / 2.0f;
+//				m_transform.lock()->setModelMatrix();
+//				Renderer::onDisplay();
+//			}
+//		}
+//	}
+//	else if (m_partTestType == 2)
+//	{
+//		std::shared_ptr<cobebe::SkinModel> model =
+//			std::dynamic_pointer_cast<cobebe::SkinModel>(m_partTest);
+//		if (model)
+//		{
+//			std::vector<std::shared_ptr<glwrap::ModelMesh>> partList = 
+//				std::dynamic_pointer_cast<glwrap::GltfModel>(model->getInternal())->getMeshes();
+//			std::vector<std::shared_ptr<glwrap::ModelMesh>>::iterator itr = partList.begin();
+//
+//			for (itr; itr != partList.end(); itr++)
+//			{
+//				m_transform.lock()->m_position = (*itr)->getCentre();
+//				m_transform.lock()->m_scale = (*itr)->getSize() / 2.0f;
+//				m_transform.lock()->setModelMatrix();
+//				Renderer::onDisplay();
+//			}
+//		}
+//	}
+//}

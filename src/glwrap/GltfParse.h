@@ -17,8 +17,8 @@ namespace gltfparse
 	{
 		std::string m_name;
 		std::vector<int> m_children;
-		int m_mesh;
-		int m_skin;
+		int m_mesh = -1;
+		int m_skin = -1;
 		std::vector<float> m_translation;
 		std::vector<float> m_scale;
 		std::vector<float> m_rotation;
@@ -114,7 +114,7 @@ namespace gltfparse
 		char m_interpolate;
 	};
 
-	struct Animation
+	struct AniParse
 	{
 		std::string m_name;
 		std::vector<Channel> m_channels;

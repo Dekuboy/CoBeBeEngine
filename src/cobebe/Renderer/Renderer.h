@@ -117,8 +117,8 @@ namespace cobebe
 		*/
 		std::shared_ptr<glwrap::Texture> getTextureInternal(std::shared_ptr<Texture> _texture);
 
-		void onInit();
-		void onTick();
+		virtual void onInit();
+		virtual void onTick();
 		virtual void onPreDisplay();
 		virtual void onDisplay();
 	};

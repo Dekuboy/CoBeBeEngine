@@ -12,6 +12,11 @@ namespace cobebe
 		return std::vector < std::shared_ptr<glwrap::TriFace> >();
 	}
 
+	const std::shared_ptr<glwrap::Model3D> Mesh::getInternal()
+	{
+		return m_internal;
+	}
+
 	std::shared_ptr<glwrap::Texture> Mesh::getTexture(std::shared_ptr<Texture> _texture)
 	{
 		return _texture->m_internal;

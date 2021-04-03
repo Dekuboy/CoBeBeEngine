@@ -19,9 +19,14 @@ namespace cobebe
 		* \brief Returns the model matrix for rendering
 		*/
 		glm::mat4 getModel();
+		/**
+		* \brief Sets the Model Matrix for retrieval
+		*/
+		void setModelMatrix();
 
 	private:
 		glm::mat4 m_model; //!< Stores model matrix for rendering
+
 		void onPreDisplay();
 
 	};

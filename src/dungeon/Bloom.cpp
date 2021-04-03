@@ -48,6 +48,9 @@ void Bloom::onInit()
 	int width = envi->getWidth();
 	int height = envi->getHeight();
 
+	m_nullShader->setViewport(glm::vec4(0, 0,
+		width, height));
+
 	std::shared_ptr<glwrap::Context> context = core->getGLContext();
 
 	m_lightKeyRt = context->createRenderTexture(width, height);

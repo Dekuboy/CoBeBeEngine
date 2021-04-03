@@ -15,7 +15,7 @@ namespace cobebe
 		return m_model;
 	}
 
-	void Transform::onPreDisplay()
+	void Transform::setModelMatrix()
 	{
 		glm::mat4 modelRotation = glm::mat4(m_rotation);
 		glm::quat tempQuat = glm::normalize(glm::quat_cast(modelRotation));
@@ -24,5 +24,10 @@ namespace cobebe
 		m_model = glm::translate(glm::mat4(1.0f), m_position);
 		m_model = m_model * glm::mat4(m_rotation);
 		m_model = glm::scale(m_model, m_scale);
+	}
+
+	void Transform::onPreDisplay()
+	{
+		setModelMatrix();
 	}
 }

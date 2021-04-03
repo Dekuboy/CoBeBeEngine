@@ -17,6 +17,8 @@ namespace glwrap
 	{
 		m_name = _name;
 		m_model = _mesh;
+		m_minPoint = glm::vec3(std::numeric_limits<float>::max());
+		m_maxPoint = glm::vec3(std::numeric_limits<float>::min());
 		m_animationUniform = glm::mat4(1);
 	}
 
@@ -129,43 +131,110 @@ namespace glwrap
 
 	void ModelMesh::draw()
 	{
-		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
+		//glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
-		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate();
-		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
+		//m_animationUniform = glm::translate(m_animationUniform, translateVector);
+		//translate();
+		//m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
 		drawArrays();
 	}
 
 	void ModelMesh::cullAndDraw()
 	{
-		glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
+		//glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
 
-		m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		translate();
+		//m_animationUniform = glm::translate(m_animationUniform, translateVector);
+		//translate();
 		glm::mat4 partMatrix = m_animationUniform;
-		m_animationUniform = glm::translate(m_animationUniform, -translateVector);
+		//m_animationUniform = glm::translate(m_animationUniform, -translateVector);
 
-		glm::vec3 partCentre = partMatrix * glm::vec4(0, 0, 0, 1);
+		glm::vec3 partCentre = partMatrix * glm::vec4(m_minPoint + 0.5f * m_size, 1);
 		glm::mat3 partRotation = glm::mat3(m_animationUniform);
 		glm::vec3 partSize = getSize();
+		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
 
 		if (shader->
 			checkViewingFrustum(partCentre, partSize, partRotation))
 		{
 			drawArrays();
 		}
-		else
-		{
-			m_animationUniform = glm::mat4(1);
-		}
 	}
 
 	glm::vec3 ModelMesh::getSize()
 	{
-		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
+		return m_size;
+	}
+
+	glm::vec3 ModelMesh::getCentre()
+	{
+		return m_minPoint + 0.5f * m_size;
+	}
+
+	void ModelMesh::checkMinMax(glm::vec3& _vertexPosition)
+	{
+		if (m_minPoint.x > m_maxPoint.x)
+		{
+			m_minPoint = _vertexPosition;
+			m_maxPoint = _vertexPosition;
+			return;
+		}
+		if (_vertexPosition.x < m_minPoint.x)
+		{
+			m_minPoint.x = _vertexPosition.x;
+		}
+		else if (_vertexPosition.x > m_maxPoint.x)
+		{
+			m_maxPoint.x = _vertexPosition.x;
+		}
+		if (_vertexPosition.y < m_minPoint.y)
+		{
+			m_minPoint.y = _vertexPosition.y;
+		}
+		else if (_vertexPosition.y > m_maxPoint.y)
+		{
+			m_maxPoint.y = _vertexPosition.y;
+		}
+		if (_vertexPosition.z < m_minPoint.z)
+		{
+			m_minPoint.z = _vertexPosition.z;
+		}
+		else if (_vertexPosition.z > m_maxPoint.z)
+		{
+			m_maxPoint.z = _vertexPosition.z;
+		}
+	}
+
+	void ModelMesh::checkMin(glm::vec3& _vertexPosition)
+	{
+		if (_vertexPosition.x < m_minPoint.x)
+		{
+			m_minPoint.x = _vertexPosition.x;
+		}
+		if (_vertexPosition.y < m_minPoint.y)
+		{
+			m_minPoint.y = _vertexPosition.y;
+		}
+		if (_vertexPosition.z < m_minPoint.z)
+		{
+			m_minPoint.z = _vertexPosition.z;
+		}
+	}
+
+	void ModelMesh::checkMax(glm::vec3& _vertexPosition)
+	{
+		if (_vertexPosition.x > m_maxPoint.x)
+		{
+			m_maxPoint.x = _vertexPosition.x;
+		}
+		if (_vertexPosition.y > m_maxPoint.y)
+		{
+			m_maxPoint.y = _vertexPosition.y;
+		}
+		if (_vertexPosition.z > m_maxPoint.z)
+		{
+			m_maxPoint.z = _vertexPosition.z;
+		}
 	}
 
 	void ModelMesh::translate()
@@ -227,11 +296,14 @@ namespace glwrap
 		for (std::list<std::shared_ptr<Material> >::iterator itr = m_materials.begin();
 			itr != m_materials.end(); itr++)
 		{
-			if ((*itr)->m_colourMap.lock())
+			if (*itr)
 			{
-				if (textureCheck[0] != "")
+				if ((*itr)->m_colourMap.lock())
 				{
-					shader->setUniform(textureCheck[0], (*itr)->m_colourMap.lock());
+					if (textureCheck[0] != "")
+					{
+						shader->setUniform(textureCheck[0], (*itr)->m_colourMap.lock());
+					}
 				}
 			}
 

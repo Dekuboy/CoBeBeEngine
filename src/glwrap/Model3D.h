@@ -15,7 +15,11 @@ namespace glwrap
 		/**
 		* \brief Retrieve the size of model based on xyz values
 		*/
-		virtual glm::vec3 getSize() { return m_size; }
+		glm::vec3 getSize() { return m_size; }
+		/**
+		* \brief Retrieve the centre of model
+		*/
+		glm::vec3 getCentre() { return m_minPoint + 0.5f * m_size; }
 		/**
 		* \brief Retrieve all the tri information of the model
 		*/

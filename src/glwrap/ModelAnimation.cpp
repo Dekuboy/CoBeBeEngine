@@ -3,15 +3,30 @@
 
 namespace glwrap
 {
-	ModelTransform::~ModelTransform()
+	ModelTransform::ModelTransform()
 	{
+		for (int i = 0; i < 4; i++)
+		{
+			m_interpolate[i] = 'n';
+		}
 	}
 
-	ModelAnimation::ModelAnimation(gltfparse::Animation& _animationValues)
+	ModelAnimation::ModelAnimation(gltfparse::AniParse& _animationValues)
 	{
+
 	}
 
 	void ModelAnimation::getInterpolatedPosition(ModelTransform& _target, double _time)
+	{
+
+	}
+
+	int ModelAnimation::getMaxFrames()
+	{
+		return m_frames.size();
+	}
+
+	void ModelAnimation::nextFrame(float _deltaTime)
 	{
 
 	}

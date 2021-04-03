@@ -33,7 +33,7 @@ int main()
 
 	entity = App->addEntity();
 	entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, 5.0f);
-	entity->getTransform()->m_scale = glm::vec3(1.7f, 0.7f, 0.7f);
+	entity->getTransform()->m_scale = glm::vec3(0.7f, 0.7f, 0.7f);
 	entity->addComponent<PlayerController>();
 
 	renderer = entity->addComponent<cobebe::Renderer>();

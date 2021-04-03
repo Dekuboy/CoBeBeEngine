@@ -76,7 +76,7 @@ namespace cobebe
 		temp->m_window = SDL_CreateWindow("CoBeBe Window",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			temp->m_environment->m_width, temp->m_environment->m_height,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI
+			SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI /*| SDL_WINDOW_FULLSCREEN*/
 			/*| SDL_WINDOW_BORDERLESS*/);
 
 		if (!SDL_GL_CreateContext(temp->m_window))
@@ -322,7 +322,7 @@ namespace cobebe
 		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
-			(float)width, (float)height, 3.0f, 100.f);
+			(float)width, (float)height, 3.0f, 1000.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;
@@ -336,7 +336,7 @@ namespace cobebe
 		tempCamera->m_gBuffer = m_context->createGBuffer(_renderWidth, _renderHeight);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
-			(float)_renderWidth, (float)_renderHeight, 0.1f, 100.f);
+			(float)_renderWidth, (float)_renderHeight, 0.1f, 1000.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;

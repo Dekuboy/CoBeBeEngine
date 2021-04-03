@@ -24,7 +24,7 @@ namespace glwrap
 		{
 			m_frames.push_back(std::make_shared<ObjFrame>(aniPtr));
 			m_name = "Default";
-			m_frame = 0;
+			m_time = 0;
 			m_enabled = false;
 			m_repeating = true;
 			m_mergeFrame.reset(new ObjFrame(m_self.lock()));
@@ -41,7 +41,7 @@ namespace glwrap
 			m_mergeFrame.reset(new ObjFrame(m_self.lock()));
 
 			m_name = "";
-			m_frame = 0;
+			m_time = 0;
 			m_enabled = false;
 			m_repeating = true;
 
@@ -103,40 +103,11 @@ namespace glwrap
 		}
 	}
 
-	void ObjAnimation::setRepeating(bool _switch)
-	{
-		m_repeating = _switch;
-	}
-
-	void ObjAnimation::setEnabled(bool _switch)
-	{
-		if (m_enabled != _switch)
-		{
-			m_frame = 0;
-			m_enabled = _switch;
-		}
-	}
-
-	bool ObjAnimation::getEnabled()
-	{
-		return m_enabled;
-	}
-
-	std::string ObjAnimation::getName()
-	{
-		return m_name;
-	}
-
-	void ObjAnimation::setName(std::string _name)
-	{
-		m_name = _name;
-	}
-
 	std::shared_ptr<ObjFrame> ObjAnimation::getFrame()
 	{
-		if (m_frame < m_frames.size())
+		if (m_time < m_frames.size())
 		{
-			return m_frames.at(m_frame);
+			return m_frames.at(m_time);
 		}
 		else
 		{
@@ -146,10 +117,10 @@ namespace glwrap
 
 	std::shared_ptr<ObjFrame> ObjAnimation::getMergeFrame()
 	{
-		double nearestFrame = (int)m_frame;
-		double weight = m_frame - nearestFrame;
+		double nearestFrame = (int)m_time;
+		double weight = m_time - nearestFrame;
 
-		if (m_frame + 1 >= m_frames.size())
+		if (m_time + 1 >= m_frames.size())
 		{
 			generateMergeFrame(m_frames.at(m_frames.size() - 1), m_frames.at(0),
 				weight);
@@ -162,17 +133,7 @@ namespace glwrap
 
 		return m_mergeFrame;
 	}
-
-	int ObjAnimation::getCurrentFrame()
-	{
-		return m_frame;
-	}
-
-	double ObjAnimation::getTrueCurrentFrame()
-	{
-		return m_frame;
-	}
-
+	
 	int ObjAnimation::getMaxFrames()
 	{
 		return m_frames.size();
@@ -182,26 +143,17 @@ namespace glwrap
 	{
 		if (m_enabled == true)
 		{
-			m_frame += _deltaTime;
+			m_time += _deltaTime;
 
-			if (m_frame >= m_frames.size())
+			if (m_time >= m_frames.size())
 			{
-				if (m_repeating == true)
-				{
-					m_frame = 0;
-				}
-				else
+				m_time = 0;
+				if (m_repeating == false)
 				{
 					m_enabled = false;
-					m_frame = 0;
 				}
 			}
 		}
-	}
-
-	void ObjAnimation::setCurrentFrame(double _currentFrame)
-	{
-		m_frame = _currentFrame;
 	}
 
 	void ObjAnimation::splitString(std::string input, char splitter, std::vector<std::string>* output)

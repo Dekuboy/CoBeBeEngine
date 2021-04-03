@@ -9,6 +9,7 @@
 namespace glwrap
 {
 	struct TriFace;
+	struct NodeTransform;
 
 	class Context;
 	class GltfModel;
@@ -55,6 +56,10 @@ namespace glwrap
 		* \brief Retrieve the size of ModelJoint based on xyz values
 		*/
 		glm::vec3 getSize();
+		/**
+		* \brief Retrieve the centre of ModelJoint
+		*/
+		glm::vec3 getCentre();
 
 	private:
 		friend class Context;
@@ -75,16 +80,22 @@ namespace glwrap
 		std::weak_ptr<ModelMesh> m_self; //!< Pointer to self to find Translation referring to this part
 		std::weak_ptr<Context> m_context; //!< Pointer to glwrap context
 
-		float m_offsetX; //!< x Offset from obj centre
-		float m_offsetY; //!< y Offset from obj centre
-		float m_offsetZ; //!< z Offset from obj centre
+		glm::vec3 m_minPoint; //!< Minimum xyz values
+		glm::vec3 m_maxPoint; //!< Maximum xyz values
+		glm::vec3 m_size; //!< Size of mesh
 
-		float m_maxX; //!< Max x value in part
-		float m_maxY; //!< Max y value in part
-		float m_maxZ; //!< Max z value in part
-		float m_minX; //!< Min x value in part
-		float m_minY; //!< Min y value in part
-		float m_minZ; //!< Min z value in part
+		/**
+		* \brief Checks if vertex values are the minimum or maximum of the model
+		*/
+		void checkMinMax(glm::vec3& _vertexPosition);
+		/**
+		* \brief Checks if vertex values are the minimum of the model
+		*/
+		void checkMin(glm::vec3& _vertexPosition);
+		/**
+		* \brief Checks if vertex values are the maximum of the model
+		*/
+		void checkMax(glm::vec3& _vertexPosition);
 
 		/**
 		* \brief Translate mesh by base models animation

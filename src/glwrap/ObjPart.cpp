@@ -242,6 +242,11 @@ namespace glwrap
 		return glm::vec3(m_maxX - m_minX, m_maxY - m_minY, m_maxZ - m_minZ);
 	}
 
+	glm::vec3 ObjPart::getCentre()
+	{
+		return glm::vec3(m_offsetX, m_offsetY, m_offsetZ);
+	}
+
 	void ObjPart::translate()
 	{
 		std::vector<std::shared_ptr<ObjAnimation> > animations =

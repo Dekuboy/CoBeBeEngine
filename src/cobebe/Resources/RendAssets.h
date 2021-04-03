@@ -23,6 +23,10 @@ namespace cobebe
 		* \brief Retrieves all VertexArray faces
 		*/
 		std::vector<std::shared_ptr<glwrap::TriFace> > getFaces();
+		/**
+		* \brief Get the internal glwrap ShaderProgram
+		*/
+		const std::shared_ptr<glwrap::Model3D> getInternal();
 
 	protected:
 		friend class Renderer;
