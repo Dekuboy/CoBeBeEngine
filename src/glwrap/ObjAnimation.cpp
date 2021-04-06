@@ -111,7 +111,7 @@ namespace glwrap
 		}
 		else
 		{
-			return m_frames.at(m_frames.size() - 1);
+			return m_frames.back();
 		}
 	}
 

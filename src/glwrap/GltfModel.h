@@ -46,6 +46,7 @@ namespace glwrap
 	{
 		std::string m_name;
 		std::vector<glm::mat4> m_invBindMats;
+		std::vector<int> m_nodeIds;
 	};
 
 	/**
@@ -53,6 +54,7 @@ namespace glwrap
 	*/
 	struct NodeTransform
 	{
+		NodeTransform();
 		~NodeTransform();
 
 		void translateTriPos(std::shared_ptr<TriFace> _face);
@@ -142,7 +144,6 @@ namespace glwrap
 		std::vector<std::shared_ptr<ModelAnimation> > m_animations; //!< List of animations attached to the model
 		std::weak_ptr<GltfModel> m_self; //!< Pointer to self to set in individual joints
 
-		std::vector<bool> m_checkNodes; //!< Checks nodes for repeats (1 node can't have multiple parents)
 		std::vector<gltfparse::Node>* m_parseNodes; //!< Parse nodes required for recursive function
 
 		/**

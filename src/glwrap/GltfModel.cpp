@@ -16,6 +16,14 @@ namespace glwrap
 {
 	using namespace gltfparse;
 
+	NodeTransform::NodeTransform()
+	{
+		m_translate = nullptr;
+		m_scale = nullptr;
+		m_quat = nullptr;
+		m_matrix = nullptr;
+	}
+
 	NodeTransform::~NodeTransform()
 	{
 		if (m_translate)
@@ -1544,19 +1552,18 @@ namespace glwrap
 		for (std::vector<int>::iterator itr = parentNode->m_children.begin();
 			itr != parentNode->m_children.end(); itr++)
 		{
-			if (m_checkNodes.at(*itr))
+			if (m_allNodes.at(*itr))
 			{
 				throw std::exception();
 			}
 			else
 			{
-				m_checkNodes.at(*itr) = true;
+				child = std::make_shared<ModelNode>();
+				m_allNodes.at(*itr) = child;
 			}
-			child = std::make_shared<ModelNode>();
 			child->m_id = *itr;
 			child->m_parent = _parentModelNode;
 			_parentModelNode->m_children.push_back(child);
-			m_allNodes.push_back(child);
 			assembleChildren(child);
 		}
 	}
@@ -1581,32 +1588,24 @@ namespace glwrap
 		std::vector<int>::iterator nodeItr = _scene.m_nodes.begin();
 		std::vector<GLfloat>* floatList;
 
-		m_checkNodes.resize(m_parseNodes->size());
-		for (std::vector<bool>::iterator itr = m_checkNodes.begin();
-			itr != m_checkNodes.end(); itr++)
-		{
-			*itr = false;
-		}
+		m_allNodes.resize(m_parseNodes->size());
 
 		while (nodeItr != _scene.m_nodes.end())
 		{
-			if (m_checkNodes.at(*nodeItr))
+			if (m_allNodes.at(*nodeItr))
 			{
 				throw std::exception();
 			}
 			else
 			{
-				m_checkNodes.at(*nodeItr) = true;
+				currentModelNode = std::make_shared<ModelNode>();
+				m_allNodes.at(*nodeItr) = currentModelNode;
 			}
-			currentModelNode = std::make_shared<ModelNode>();
 			m_sceneNodes.push_back(currentModelNode);
 			currentModelNode->m_id = *nodeItr;
-			m_allNodes.push_back(currentModelNode);
 			assembleChildren(currentModelNode);
 			nodeItr++;
 		}
-
-		m_checkNodes.clear();
 
 		m_minPoint = glm::vec3(0);
 		m_maxPoint = glm::vec3(0);
@@ -1614,85 +1613,90 @@ namespace glwrap
 		for (std::vector<std::shared_ptr<ModelNode>>::iterator itr = m_allNodes.begin();
 			itr != m_allNodes.end(); itr++)
 		{
-			currentModelNode = *itr;
-			currentNode = &m_parseNodes->at((*itr)->m_id);
+			if (*itr)
 			{
-				if (currentNode->m_translation.size() == 3)
+				currentModelNode = *itr;
+				currentNode = &m_parseNodes->at((*itr)->m_id);
 				{
-					vec3Ptr = new glm::vec3();
-					vec3Ptr->x = currentNode->m_translation.at(0);
-					vec3Ptr->y = currentNode->m_translation.at(1);
-					vec3Ptr->z = currentNode->m_translation.at(2);
-					currentModelNode->m_translation.m_translate = vec3Ptr;
-				}
-				if (currentNode->m_scale.size() == 3)
-				{
-					vec3Ptr = new glm::vec3();
-					vec3Ptr->x = currentNode->m_scale.at(0);
-					vec3Ptr->y = currentNode->m_scale.at(1);
-					vec3Ptr->z = currentNode->m_scale.at(2);
-					currentModelNode->m_translation.m_scale = vec3Ptr;
-				}
-				if (currentNode->m_rotation.size() == 4)
-				{
-					quatPtr = new glm::quat();
-					quatPtr->x = currentNode->m_rotation.at(0);
-					quatPtr->y = currentNode->m_rotation.at(1);
-					quatPtr->z = currentNode->m_rotation.at(2);
-					quatPtr->w = -currentNode->m_rotation.at(3);
-					currentModelNode->m_translation.m_quat = quatPtr;
-				}
-				if (currentNode->m_matrix.size() == 16)
-				{
-					mat4Ptr = new glm::mat4();
-					for (int i = 0; i < 4; i++)
+					if (currentNode->m_translation.size() == 3)
 					{
-						for (int j = 0; j < 4; j++)
-						{
-							(*mat4Ptr)[i][j] = currentNode->m_rotation.at(4 * i + j);
-						}
+						vec3Ptr = new glm::vec3();
+						vec3Ptr->x = currentNode->m_translation.at(0);
+						vec3Ptr->y = currentNode->m_translation.at(1);
+						vec3Ptr->z = currentNode->m_translation.at(2);
+						currentModelNode->m_translation.m_translate = vec3Ptr;
 					}
-					currentModelNode->m_translation.m_matrix = mat4Ptr;
-				}
-			}
-
-			id = currentNode->m_skin;
-			if (id > -1)
-			{
-				m_skins.push_back(ModelSkin());
-				currentModelSkin = &m_skins.back();
-				currentSkin = &_skins.at(id);
-
-				floatList = &_data.at(currentSkin->m_invBindMat).m_float;
-
-				currentModelSkin->m_invBindMats.resize(currentSkin->m_joints.size());
-				for (int i = 0; i < currentSkin->m_joints.size(); i++)
-				{
-					mat4Ptr = &currentModelSkin->m_invBindMats.at(i);
-					for (int x = 0; x < 4; x++)
+					if (currentNode->m_scale.size() == 3)
 					{
-						for (int y = 0; y < 4; y++)
+						vec3Ptr = new glm::vec3();
+						vec3Ptr->x = currentNode->m_scale.at(0);
+						vec3Ptr->y = currentNode->m_scale.at(1);
+						vec3Ptr->z = currentNode->m_scale.at(2);
+						currentModelNode->m_translation.m_scale = vec3Ptr;
+					}
+					if (currentNode->m_rotation.size() == 4)
+					{
+						quatPtr = new glm::quat();
+						quatPtr->x = currentNode->m_rotation.at(0);
+						quatPtr->y = currentNode->m_rotation.at(1);
+						quatPtr->z = currentNode->m_rotation.at(2);
+						quatPtr->w = -currentNode->m_rotation.at(3);
+						currentModelNode->m_translation.m_quat = quatPtr;
+					}
+					if (currentNode->m_matrix.size() == 16)
+					{
+						mat4Ptr = new glm::mat4();
+						for (int i = 0; i < 4; i++)
 						{
-							(*mat4Ptr)[x][y] =
-								floatList->at((16 * i) + (4 * x) + y);
+							for (int j = 0; j < 4; j++)
+							{
+								(*mat4Ptr)[i][j] = currentNode->m_rotation.at(4 * i + j);
+							}
 						}
+						currentModelNode->m_translation.m_matrix = mat4Ptr;
 					}
 				}
-			}
 
-			id = currentNode->m_mesh;
-			if (id > -1)
-			{
-				currentMesh = &_meshes.at(id);
-				currentPart = getMesh(currentMesh->m_name);
-				if (!currentPart)
+				id = currentNode->m_skin;
+				if (id > -1)
 				{
-					currentPart = m_context.lock()->createModelMesh(m_self.lock(), currentMesh->m_name);
-					assembleModelMesh(currentPart, currentModelNode,
-						currentMesh, _accessors, _data,
-						_meshes, _materials);
+					m_skins.push_back(ModelSkin());
+					currentModelSkin = &m_skins.back();
+					currentSkin = &_skins.at(id);
+
+					floatList = &_data.at(currentSkin->m_invBindMat).m_float;
+
+					currentModelSkin->m_invBindMats.resize(currentSkin->m_joints.size());
+					currentModelSkin->m_nodeIds.resize(currentSkin->m_joints.size());
+					for (int i = 0; i < currentSkin->m_joints.size(); i++)
+					{
+						currentModelSkin->m_nodeIds.at(i) = currentSkin->m_joints.at(i);
+						mat4Ptr = &currentModelSkin->m_invBindMats.at(i);
+						for (int x = 0; x < 4; x++)
+						{
+							for (int y = 0; y < 4; y++)
+							{
+								(*mat4Ptr)[x][y] =
+									floatList->at((16 * i) + (4 * x) + y);
+							}
+						}
+					}
 				}
-				currentModelNode->m_mesh = currentPart;
+
+				id = currentNode->m_mesh;
+				if (id > -1)
+				{
+					currentMesh = &_meshes.at(id);
+					currentPart = getMesh(currentMesh->m_name);
+					if (!currentPart)
+					{
+						currentPart = m_context.lock()->createModelMesh(m_self.lock(), currentMesh->m_name);
+						assembleModelMesh(currentPart, currentModelNode,
+							currentMesh, _accessors, _data,
+							_meshes, _materials);
+					}
+					currentModelNode->m_mesh = currentPart;
+				}
 			}
 		}
 
@@ -2071,6 +2075,11 @@ namespace glwrap
 
 		{
 			std::shared_ptr<ModelAnimation> currentAnimation;
+			for (int i = 0; i < animations.size(); i++)
+			{
+				currentAnimation = std::make_shared<ModelAnimation>(animations.at(i), data);
+				m_animations.push_back(currentAnimation);
+			}
 		}
 
 		m_size = m_maxPoint - m_minPoint;
@@ -2105,17 +2114,17 @@ namespace glwrap
 
 	int GltfModel::playAnimationOnce(std::string _name)
 	{
-		//bool found = false;
+		bool found = false;
 
-		//for (int index = 0; index < m_animations.size(); index++)
-		//{
-		//	if (m_animations.at(index)->getName() == _name)
-		//	{
-		//		m_animations.at(index)->setRepeating(false);
-		//		m_animations.at(index)->setEnabled(true);
-		//		return index;
-		//	}
-		//}
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setRepeating(false);
+				m_animations.at(index)->setEnabled(true);
+				return index;
+			}
+		}
 
 		//throw std::exception();
 		return -1;
@@ -2123,26 +2132,26 @@ namespace glwrap
 
 	void GltfModel::playAnimationOnce(int _index)
 	{
-		//if (_index < m_animations.size())
-		//{
-		//	m_animations.at(_index)->setRepeating(false);
-		//	m_animations.at(_index)->setEnabled(true);
-		//}
+		if (_index < m_animations.size() && _index > -1)
+		{
+			m_animations.at(_index)->setRepeating(false);
+			m_animations.at(_index)->setEnabled(true);
+		}
 	}
 
 	int GltfModel::enableAnimation(std::string _name)
 	{
-		//bool found = false;
+		bool found = false;
 
-		//for (int index = 0; index < m_animations.size(); index++)
-		//{
-		//	if (m_animations.at(index)->getName() == _name)
-		//	{
-		//		m_animations.at(index)->setRepeating(true);
-		//		m_animations.at(index)->setEnabled(true);
-		//		return index;
-		//	}
-		//}
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setRepeating(true);
+				m_animations.at(index)->setEnabled(true);
+				return index;
+			}
+		}
 
 		//throw std::exception();
 		return -1;
@@ -2150,29 +2159,29 @@ namespace glwrap
 
 	void GltfModel::enableAnimation(int _index)
 	{
-		//if (_index < m_animations.size())
-		//{
-		//	m_animations.at(_index)->setRepeating(true);
-		//	m_animations.at(_index)->setEnabled(true);
-		//}
+		if (_index < m_animations.size())
+		{
+			m_animations.at(_index)->setRepeating(true);
+			m_animations.at(_index)->setEnabled(true);
+		}
 	}
 
 	int GltfModel::enableOnlyAnimation(std::string _name)
 	{
-		//bool found = false;
+		bool found = false;
 
-		//for (int index = 0; index < m_animations.size(); index++)
-		//{
-		//	if (m_animations.at(index)->getName() == _name)
-		//	{
-		//		m_animations.at(index)->setEnabled(true);
-		//		return index;
-		//	}
-		//	else
-		//	{
-		//		m_animations.at(index)->setEnabled(false);
-		//	}
-		//}
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setEnabled(true);
+				return index;
+			}
+			else
+			{
+				m_animations.at(index)->setEnabled(false);
+			}
+		}
 
 		//throw std::exception();
 		return -1;
@@ -2180,31 +2189,25 @@ namespace glwrap
 
 	void GltfModel::enableOnlyAnimation(int _index)
 	{
-		//for (int index = 0; index < m_animations.size(); index++)
-		//{
-		//	if (index == _index)
-		//	{
-		//		m_animations.at(index)->setEnabled(true);
-		//	}
-		//	else
-		//	{
-		//		m_animations.at(index)->setEnabled(false);
-		//	}
-		//}
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			m_animations.at(index)->setEnabled(false);
+		}
+		m_animations.at(_index)->setEnabled(true);
 	}
 
 	int GltfModel::disableAnimation(std::string _name)
 	{
-		//bool found = false;
+		bool found = false;
 
-		//for (int index = 0; index < m_animations.size(); index++)
-		//{
-		//	if (m_animations.at(index)->getName() == _name)
-		//	{
-		//		m_animations.at(index)->setEnabled(false);
-		//		return index;
-		//	}
-		//}
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setEnabled(false);
+				return index;
+			}
+		}
 
 		//throw std::exception();
 		return -1;
@@ -2212,18 +2215,18 @@ namespace glwrap
 
 	void GltfModel::disableAnimation(int _index)
 	{
-		//if (_index < m_animations.size())
-		//{
-		//	m_animations.at(_index)->setEnabled(false);
-		//}
+		if (_index < m_animations.size())
+		{
+			m_animations.at(_index)->setEnabled(false);
+		}
 	}
 
 	void GltfModel::disableAllAnimations()
 	{
-		//for (int index = 0; index < m_animations.size(); index++)
-		//{
-		//	m_animations.at(index)->setEnabled(false);
-		//}
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			m_animations.at(index)->setEnabled(false);
+		}
 	}
 
 	std::vector<std::shared_ptr<ModelMesh> > GltfModel::getMeshes()

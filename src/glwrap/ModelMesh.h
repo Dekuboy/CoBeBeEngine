@@ -73,7 +73,7 @@ namespace glwrap
 		std::vector<std::shared_ptr<TriFace> > m_faces; //!< List of tris in part
 		std::vector<std::vector<std::shared_ptr<VertexBuffer> > > 
 			m_buffers; //!< List of different buffers in mesh, separated by Primitives ([prims][])
-		glm::mat4 m_animationUniform; //!< Transformation matrix based on animated movement
+		glm::mat4* m_animationUniform; //!< Transformation matrix based on animated movement
 
 		std::list<std::shared_ptr<Material> > m_materials; //!< List of Material used in part
 
@@ -97,10 +97,6 @@ namespace glwrap
 		*/
 		void checkMax(glm::vec3& _vertexPosition);
 
-		/**
-		* \brief Translate mesh by base models animation
-		*/
-		void translate();
 		/**
 		* \brief Draws vertex arrays
 		*/

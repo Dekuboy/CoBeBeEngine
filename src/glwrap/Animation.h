@@ -49,7 +49,7 @@ namespace glwrap
 		/**
 		* \brief Set frame to input value
 		*/
-		void setCurrentFrame(double _currentFrame);
+		virtual void setCurrentFrame(double _currentFrame);
 
 	protected:
 		friend class Context;

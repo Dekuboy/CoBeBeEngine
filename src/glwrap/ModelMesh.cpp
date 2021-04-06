@@ -19,7 +19,7 @@ namespace glwrap
 		m_model = _mesh;
 		m_minPoint = glm::vec3(std::numeric_limits<float>::max());
 		m_maxPoint = glm::vec3(std::numeric_limits<float>::min());
-		m_animationUniform = glm::mat4(1);
+		m_animationUniform = nullptr;
 	}
 
 	ModelMesh::~ModelMesh()
@@ -131,31 +131,31 @@ namespace glwrap
 
 	void ModelMesh::draw()
 	{
-		//glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-
-		//m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		//translate();
-		//m_animationUniform = glm::translate(m_animationUniform, -translateVector);
-
 		drawArrays();
 	}
 
 	void ModelMesh::cullAndDraw()
 	{
-		//glm::vec3 translateVector(m_offsetX, m_offsetY, m_offsetZ);
-
-		//m_animationUniform = glm::translate(m_animationUniform, translateVector);
-		//translate();
-		glm::mat4 partMatrix = m_animationUniform;
-		//m_animationUniform = glm::translate(m_animationUniform, -translateVector);
-
-		glm::vec3 partCentre = partMatrix * glm::vec4(m_minPoint + 0.5f * m_size, 1);
-		glm::mat3 partRotation = glm::mat3(m_animationUniform);
+		bool check = false;
+		glm::vec3 partCentre = m_minPoint + 0.5f * m_size;
 		glm::vec3 partSize = getSize();
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->getCurrentShader();
+		if (m_animationUniform)
+		{
+			glm::mat4 partMatrix = *m_animationUniform;
+			partCentre = partMatrix * glm::vec4(partCentre, 1);
+			glm::mat3 partRotation = glm::mat3(*m_animationUniform);
 
-		if (shader->
-			checkViewingFrustum(partCentre, partSize, partRotation))
+			check = shader->
+				checkViewingFrustum(partCentre, partSize, partRotation);
+		}
+		else
+		{
+			check = shader->
+				getViewingFrustum()->checkCube(partCentre, partSize);
+		}
+
+		if (check)
 		{
 			drawArrays();
 		}
@@ -237,53 +237,10 @@ namespace glwrap
 		}
 	}
 
-	void ModelMesh::translate()
-	{
-		//std::vector<std::shared_ptr<ModelAnimation> > animations =
-		//	m_model.lock()->getAnimations();
-		//std::shared_ptr<ModelFrame> frame;
-		//std::shared_ptr<Translation> translation;
-
-		//glm::vec3 translateVector(0);
-
-		//for (std::vector<std::shared_ptr<ObjAnimation> >::iterator itr = animations.begin();
-		//	itr != animations.end(); itr++)
-		//{
-		//	if ((*itr)->getEnabled())
-		//	{
-		//		frame = (*itr)->getMergeFrame();
-		//		translation = frame->getTranslation(m_self.lock());
-
-		//		if (translation != nullptr)
-		//		{
-		//			translateVector = glm::vec3(translation->getX(), translation->getY(),
-		//				translation->getZ());
-		//			m_animationUniform = glm::translate(m_animationUniform, translateVector);
-
-		//			m_animationUniform = glm::rotate(m_animationUniform,
-		//				translation->getZRotation(), glm::vec3(0, 0, 1));
-		//			m_animationUniform = glm::rotate(m_animationUniform,
-		//				translation->getYRotation(), glm::vec3(0, 1, 0));
-		//			m_animationUniform = glm::rotate(m_animationUniform,
-		//				translation->getXRotation(), glm::vec3(1, 0, 0));
-		//		}
-		//	}
-		//}
-	}
-
 	void ModelMesh::drawArrays()
 	{
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
 			getCurrentShader();
-
-		bool check = false;
-
-		if (m_animationUniform != glm::mat4(1))
-		{
-			shader->setUniform("in_Animate", m_animationUniform);
-			check = true;
-		}
-
 
 		std::string textureCheck[5];
 
@@ -310,12 +267,6 @@ namespace glwrap
 			glBindVertexArray(getId(listItr));
 			glDrawArrays(GL_TRIANGLES, 0, getVertexCount(listItr));
 			listItr++;
-		}
-
-		if (check)
-		{
-			m_animationUniform = glm::mat4(1);
-			shader->setUniform("in_Animate", m_animationUniform);
 		}
 	}
 
