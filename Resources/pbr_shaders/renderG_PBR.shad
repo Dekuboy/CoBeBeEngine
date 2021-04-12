@@ -19,7 +19,7 @@ varying mat3 ex_TBN;
 
 void main()
 {
-	mat3 transform = in_Model * in_Animate;
+	mat4 transform = in_Model * in_Animate;
 	gl_Position = in_Projection * in_View * transform * vec4(in_Position, 1.0);
 	ex_Color = in_Color;
 	ex_TexCoord = in_TexCoord;
