@@ -121,24 +121,6 @@ namespace glwrap
 		}
 	}
 
-	void ModelNode::getModelMatRevQuat(glm::mat4& _matrix)
-	{
-		if (m_translation.m_quat)
-		{
-			m_translation.m_quat->w *= -1.0f;
-		}
-		getModelMat(_matrix);
-		if (m_translation.m_quat)
-		{
-			m_translation.m_quat->w *= -1.0f;
-		}
-	}
-
-	void ModelNode::getParentGlobalModelMat(glm::mat4& _matrix)
-	{
-		_matrix = m_parentGlobalMatrix;
-	}
-
 	AnimationTransform::AnimationTransform()
 	{
 		m_translate = glm::vec3(0);
@@ -2190,43 +2172,33 @@ namespace glwrap
 				std::vector<glm::mat4> jointMatrix;
 				jointMatrix.resize(transforms.size());
 				glm::mat4 nodeMatrix;
+				glm::mat4 tempMat; //SafeSpot Here
 				for (int i = 0; i < transforms.size(); i++)
 				{
 					nodeMatrix = glm::mat4(1);
 					transforms.at(i).getModelMatRevQuat(nodeMatrix);
-					if (m_allNodes.at(nodeList->at(i))->m_parent.lock())
-					{
-						id = m_allNodes.at(nodeList->at(i))->m_parent.lock()->m_id;
-						id = m_skins.at(0).checkSkin(id);
-						if (id > -1)
-						{
-							nodeMatrix = jointMatrix.at(id)
-								* nodeMatrix;
-							m_allNodes.at(nodeList->at(i))->m_parentGlobalMatrix = jointMatrix.at(id);
-						}
-						else
-						{
-							nodeMatrix = m_allNodes.at(nodeList->at(i))->m_parentGlobalMatrix
-								* nodeMatrix;
-						}
-					}
-					jointMatrix.at(i) = nodeMatrix;
-					//m_skins.at(0).m_invBindMats.at(i) = glm::inverse(jointMatrix.at(i));
-				}
+					tempMat = m_skins.at(0).m_invBindMats.at(i);
+					tempMat = nodeMatrix * tempMat;
 
-				glm::mat4 tempMat;
-				for (int i = 0; i < transforms.size(); i++)
-				{
-					nodeMatrix = glm::mat4(1);
-					jointMatrix.at(i) = m_skins.at(0).m_invBindMats.at(i);
-					transforms.at(i).getModelMatRevQuat(nodeMatrix);
-					jointMatrix.at(i) = nodeMatrix * jointMatrix.at(i);
-					//m_allNodes.at(nodeList->at(i))->getModelMatRevQuat(nodeMatrix);
-					//jointMatrix.at(i) = nodeMatrix * jointMatrix.at(i);
-					m_allNodes.at(nodeList->at(i))->getParentGlobalModelMat(nodeMatrix);
-					jointMatrix.at(i) = nodeMatrix * jointMatrix.at(i);
-					transforms.at(i).m_translate = jointMatrix.at(i)[3];
-					transforms.at(i).m_quat = glm::quat_cast(jointMatrix.at(i));
+					id = m_allNodes.at(nodeList->at(i))->m_parent.lock()->m_id;
+					id = m_skins.at(0).checkSkin(id);
+					if (id > -1)
+					{
+						jointMatrix.at(i) = jointMatrix.at(id)
+							* nodeMatrix;
+						nodeMatrix = jointMatrix.at(id);
+					}
+					else
+					{
+						jointMatrix.at(i) = m_skins.at(0).rootNodeTransform
+							* nodeMatrix;
+						nodeMatrix = m_skins.at(0).rootNodeTransform;
+					}
+
+					tempMat = nodeMatrix * tempMat;
+					transforms.at(i).m_translate = tempMat[3];
+					transforms.at(i).m_quat = glm::quat_cast(tempMat);
+					//m_skins.at(0).m_invBindMats.at(i) = glm::inverse(jointMatrix.at(i));
 				}
 			}
 

@@ -49,6 +49,8 @@ namespace glwrap
 		std::vector<glm::mat4> m_invBindMats;
 		std::vector<int> m_nodeIds;
 
+		glm::mat4 rootNodeTransform;
+
 		int checkSkin(int _id);
 	};
 
@@ -80,12 +82,9 @@ namespace glwrap
 		std::weak_ptr<ModelNode> m_parent;
 		std::vector<std::shared_ptr<ModelNode>> m_children;
 
-		glm::mat4 m_parentGlobalMatrix;
 		NodeTransform m_translation;
 
 		void getModelMat(glm::mat4& _matrix);
-		void getModelMatRevQuat(glm::mat4& _matrix);
-		void getParentGlobalModelMat(glm::mat4& _matrix);
 	};
 
 	/**
