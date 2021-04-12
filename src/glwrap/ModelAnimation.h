@@ -38,11 +38,11 @@ namespace glwrap
 		/**
 		* \brief Get interpolated frame between two keyframes
 		*/
-		void getInterpolatedPosition(ModelTransform& _target, int _node);
+		bool getInterpolatedPosition(ModelTransform& _target, int _node);
 		/**
 		* \brief Get interpolated frame between two keyframes
 		*/
-		void getInterpolatedPosition(ModelTransform& _target, int _node, double _time);
+		bool getInterpolatedPosition(ModelTransform& _target, int _node, double _time);
 		/**
 		* \brief Get max frames of animation
 		*/

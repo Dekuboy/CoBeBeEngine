@@ -24,6 +24,7 @@ namespace cobebe
 		m_model = glm::translate(glm::mat4(1.0f), m_position);
 		m_model = m_model * glm::mat4(m_rotation);
 		m_model = glm::scale(m_model, m_scale);
+		m_rotation = m_rotation;
 	}
 
 	void Transform::onPreDisplay()

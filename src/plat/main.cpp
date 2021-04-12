@@ -40,6 +40,10 @@ private:
 
 int main()
 {
+	glwrap::NodeTransform nodeT;
+	nodeT.m_translate = new glm::vec3(0);
+	nodeT = glwrap::NodeTransform();
+
 	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 	printf("Initialise\n");
 	{
@@ -69,7 +73,6 @@ int main()
 		renderer = entity->addComponent<cobebe::Renderer>();
 		renderer->setGltfMesh("gltf\\Character Running.gltf");
 		renderer->setShader("deferred_shaders\\renderGSkin.shad");
-		renderer->setCullByPart(true);
 		//std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
 		//renderer->loadAnimation("animations\\run.anm");
 
@@ -82,7 +85,7 @@ int main()
 		renderer = entity->addComponent<cobebe::Renderer>();
 		std::shared_ptr<cobebe::SkinModel> skin =
 			App->loadAsset<cobebe::SkinModel>("gltf\\Cube.gltf");
-		renderer->setGltfMesh(skin);
+		//renderer->setGltfMesh(skin);
 		renderer->setShader("deferred_shaders\\renderG.shad");
 
 		//// ---------------------------

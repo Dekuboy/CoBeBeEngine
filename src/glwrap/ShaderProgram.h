@@ -153,6 +153,10 @@ namespace glwrap
 		/**
 		* \brief Set uniform array of name _uniform to _value in vector
 		*/
+		void setUniform(std::string _uniform, std::vector<glm::vec4> &_vectors);
+		/**
+		* \brief Set uniform array of name _uniform to _value in vector
+		*/
 		void setUniform(std::string _uniform, std::vector<glm::vec3> &_vectors);
 		/**
 		* \brief Set uniform of name _uniform to _value

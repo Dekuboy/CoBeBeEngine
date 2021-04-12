@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <glwrap/Model3D.h>
 
 #include <vector>
@@ -14,7 +15,7 @@ namespace gltfparse
 	struct MatTex;
 	struct PBRMR;
 	struct Mat;
-	struct Sampler;
+	struct TexSampler;
 	struct Prim;
 	struct Mesh;
 	struct Skin;
@@ -47,6 +48,8 @@ namespace glwrap
 		std::string m_name;
 		std::vector<glm::mat4> m_invBindMats;
 		std::vector<int> m_nodeIds;
+
+		int checkSkin(int _id);
 	};
 
 	/**
@@ -57,14 +60,13 @@ namespace glwrap
 		NodeTransform();
 		~NodeTransform();
 
-		void translateTriPos(std::shared_ptr<TriFace> _face);
-		void translateTriNorm(std::shared_ptr<TriFace> _face);
-		void getModelMat(glm::mat4& _matrix);
-
 		glm::vec3* m_translate;
 		glm::vec3* m_scale;
 		glm::quat* m_quat;
 		glm::mat4* m_matrix;
+
+		void translateTriPos(std::shared_ptr<TriFace> _face);
+		void translateTriNorm(std::shared_ptr<TriFace> _face);
 	};
 
 	/**
@@ -78,7 +80,25 @@ namespace glwrap
 		std::weak_ptr<ModelNode> m_parent;
 		std::vector<std::shared_ptr<ModelNode>> m_children;
 
+		glm::mat4 m_parentGlobalMatrix;
 		NodeTransform m_translation;
+
+		void getModelMat(glm::mat4& _matrix);
+		void getModelMatRevQuat(glm::mat4& _matrix);
+		void getParentGlobalModelMat(glm::mat4& _matrix);
+	};
+
+	/**
+	* \brief Used to combine transformations from Animations
+	*/
+	struct AnimationTransform
+	{
+		AnimationTransform();
+		glm::vec3 m_translate;
+		glm::quat m_quat;
+		glm::vec3 m_scale;
+
+		void getModelMatRevQuat(glm::mat4& _matrix);
 	};
 
 	/**
@@ -113,6 +133,11 @@ namespace glwrap
 		int disableAnimation(std::string _name);
 		void disableAnimation(int _index);
 		void disableAllAnimations();
+
+		/**
+		* \brief Update Animation values
+		*/
+		void updateAnimationValues(std::shared_ptr<ShaderProgram> _shader);
 
 		/**
 		* \brief Retrieve all the joints that make up the model
@@ -162,7 +187,7 @@ namespace glwrap
 		/**
 		* \brief Prepare samplers for model to use
 		*/
-		void parseSamplers(std::list<std::string>& _splitLine, std::vector<gltfparse::Sampler>& _samplers);
+		void parseSamplers(std::list<std::string>& _splitLine, std::vector<gltfparse::TexSampler>& _samplers);
 		/**
 		* \brief Prepare skins for model to use
 		*/

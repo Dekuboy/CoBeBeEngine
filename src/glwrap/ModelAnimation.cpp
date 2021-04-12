@@ -101,20 +101,21 @@ namespace glwrap
 							currentTransform->m_quat->z = output->m_float.at(j * 4 + 2);
 							currentTransform->m_quat->w = -output->m_float.at(j * 4 + 3);
 						}
+						*currentTransform->m_quat = glm::normalize(*currentTransform->m_quat);
 					}
-					else if (channel->m_path == 's')
-					{
-						for (int j = 0; j < input->m_float.size(); j++)
-						{
-							currentTransform = &currentFrame->m_transforms.at(j);
-							currentTransform->m_time = input->m_float.at(j);
-							currentTransform->m_interpolate[2] = sampler->m_interpolate;
-							currentTransform->m_scale = new glm::vec3();
-							currentTransform->m_scale->x = output->m_float.at(j * 3);
-							currentTransform->m_scale->y = output->m_float.at(j * 3 + 1);
-							currentTransform->m_scale->z = output->m_float.at(j * 3 + 2);
-						}
-					}
+					//else if (channel->m_path == 's')
+					//{
+					//	for (int j = 0; j < input->m_float.size(); j++)
+					//	{
+					//		currentTransform = &currentFrame->m_transforms.at(j);
+					//		currentTransform->m_time = input->m_float.at(j);
+					//		currentTransform->m_interpolate[2] = sampler->m_interpolate;
+					//		currentTransform->m_scale = new glm::vec3();
+					//		currentTransform->m_scale->x = output->m_float.at(j * 3);
+					//		currentTransform->m_scale->y = output->m_float.at(j * 3 + 1);
+					//		currentTransform->m_scale->z = output->m_float.at(j * 3 + 2);
+					//	}
+					//}
 					if (currentTransform)
 					{
 						if (currentTransform->m_time > m_totalTime)
@@ -130,6 +131,7 @@ namespace glwrap
 						for (int j = 0; j < input->m_float.size(); j++)
 						{
 							currentTransform = &currentFrame->m_transforms.at(j);
+							currentTransform->m_interpolate[0] = sampler->m_interpolate;
 							currentTransform->m_translate = new glm::vec3();
 							currentTransform->m_translate->x = output->m_float.at(j * 3);
 							currentTransform->m_translate->y = output->m_float.at(j * 3 + 1);
@@ -141,31 +143,34 @@ namespace glwrap
 						for (int j = 0; j < input->m_float.size(); j++)
 						{
 							currentTransform = &currentFrame->m_transforms.at(j);
+							currentTransform->m_interpolate[1] = sampler->m_interpolate;
 							currentTransform->m_quat = new glm::quat();
 							currentTransform->m_quat->x = output->m_float.at(j * 4);
 							currentTransform->m_quat->y = output->m_float.at(j * 4 + 1);
 							currentTransform->m_quat->z = output->m_float.at(j * 4 + 2);
 							currentTransform->m_quat->w = -output->m_float.at(j * 4 + 3);
 						}
+						*currentTransform->m_quat = glm::normalize(*currentTransform->m_quat);
 					}
-					else if (channel->m_path == 's')
-					{
-						for (int j = 0; j < input->m_float.size(); j++)
-						{
-							currentTransform = &currentFrame->m_transforms.at(j);
-							currentTransform->m_scale = new glm::vec3();
-							currentTransform->m_scale->x = output->m_float.at(j * 3);
-							currentTransform->m_scale->y = output->m_float.at(j * 3 + 1);
-							currentTransform->m_scale->z = output->m_float.at(j * 3 + 2);
-						}
-					}
+					//else if (channel->m_path == 's')
+					//{
+					//	for (int j = 0; j < input->m_float.size(); j++)
+					//	{
+					//		currentTransform = &currentFrame->m_transforms.at(j);
+					//		currentTransform->m_interpolate[2] = sampler->m_interpolate;
+					//		currentTransform->m_scale = new glm::vec3();
+					//		currentTransform->m_scale->x = output->m_float.at(j * 3);
+					//		currentTransform->m_scale->y = output->m_float.at(j * 3 + 1);
+					//		currentTransform->m_scale->z = output->m_float.at(j * 3 + 2);
+					//	}
+					//}
 				}
 				if (i + 1 < end)
 				{
 					if (_animationValues.m_channels.at(i + 1).m_node == nodeCheck)
 					{
 						i++;
-						&_animationValues.m_channels.at(i);
+						channel = &_animationValues.m_channels.at(i);
 						sampler = &_animationValues.m_samplers.at(channel->m_sampler);
 					}
 					else
@@ -184,34 +189,59 @@ namespace glwrap
 		}
 	}
 
-	void ModelAnimation::getInterpolatedPosition(ModelTransform& _target, int _node)
+	bool ModelAnimation::getInterpolatedPosition(ModelTransform& _target, int _node)
 	{
 		if (m_enabled)
 		{
-			getInterpolatedPosition(_target, _node, m_time);
+			return getInterpolatedPosition(_target, _node, m_time);
 		}
+		return false;
 	}
 
-	void ModelAnimation::getInterpolatedPosition(ModelTransform& _target, int _node, double _time)
+	bool ModelAnimation::getInterpolatedPosition(ModelTransform& _target, int _node, double _time)
 	{
 		int frameCheck = findNodeFrame(_node);
 		if (frameCheck == -1)
 		{
-			return;
+			return false;
 		}
 		if (m_frames.at(frameCheck).m_transforms.size() == 0)
 		{
-			return;
+			return false;
 		}
 		if (_time == 0)
 		{
 			if (m_frames.at(frameCheck).m_transforms.at(0).m_time == 0)
 			{
-				_target = m_frames.at(frameCheck).m_transforms.at(0);
+				ModelTransform* copyFrom = &m_frames.at(frameCheck).m_transforms.at(0);
+				if (copyFrom->m_translate)
+				{
+					if (!_target.m_translate)
+					{
+						_target.m_translate = new glm::vec3();
+					}
+					*_target.m_translate = *copyFrom->m_translate;
+				}
+				if (copyFrom->m_quat)
+				{
+					if (!_target.m_quat)
+					{
+						_target.m_quat = new glm::quat();
+					}
+					*_target.m_quat = *copyFrom->m_quat;
+				}
+				if (copyFrom->m_scale)
+				{
+					if (!_target.m_scale)
+					{
+						_target.m_scale = new glm::vec3();
+					}
+					*_target.m_scale = *copyFrom->m_scale;
+				}
 			}
 			else
 			{
-				return;
+				return false;
 			}
 		}
 		else if (_time > m_totalTime)
@@ -278,7 +308,7 @@ namespace glwrap
 			else
 			{
 				m_enabled = false;
-				return;
+				return false;
 			}
 		}
 		else
@@ -306,6 +336,7 @@ namespace glwrap
 				interpolateTransform(_target, _time, transforms->at(from), transforms->at(to));
 			}
 		}
+		return true;
 	}
 
 	int ModelAnimation::getMaxFrames()
@@ -435,7 +466,7 @@ namespace glwrap
 	{
 		if (_method == 'l')
 		{
-			*_target = glm::lerp(*_from, *_to, _factor);
+			*_target = glm::slerp(*_from, *_to, _factor);
 		}
 		if (_method == 's')
 		{

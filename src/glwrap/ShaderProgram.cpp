@@ -502,6 +502,14 @@ namespace glwrap
 		glUniform2f(uniformId, _value.x, _value.y);
 	}
 
+	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec4>& _vectors)
+	{
+		GLint uniformId = checkUniforms(_uniform);
+
+		m_context.lock()->setCurrentShader(m_self.lock());
+		glUniform4fv(uniformId, _vectors.size(), glm::value_ptr(_vectors.at(0)));
+	}
+
 	void ShaderProgram::setUniform(std::string _uniform, std::vector<glm::vec3>& _vectors)
 	{
 		GLint uniformId = checkUniforms(_uniform);

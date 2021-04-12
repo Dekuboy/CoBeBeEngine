@@ -5,16 +5,25 @@
 #include <glwrap/TriFace.h>
 #include <glwrap/Material.h>
 #include <glwrap/ModelAnimation.h>
+#include <glwrap/ShaderProgram.h>
 #include <glwrap/Context.h>
 #include <glwrap/GltfParse.h>
 
-#include <glm/ext.hpp>
 #include <fstream>
 #include <iostream>
 
 namespace glwrap
 {
 	using namespace gltfparse;
+
+	int ModelSkin::checkSkin(int _id)
+	{
+		for (int i = 0; i < m_nodeIds.size(); i++)
+		{
+			if (m_nodeIds.at(i) == _id) { return i; }
+		}
+		return -1;
+	}
 
 	NodeTransform::NodeTransform()
 	{
@@ -91,26 +100,58 @@ namespace glwrap
 		}
 	}
 
-	void NodeTransform::getModelMat(glm::mat4& _idMatrix)
+	void ModelNode::getModelMat(glm::mat4& _idMatrix)
 	{
-		if (m_matrix)
+		if (m_translation.m_matrix)
 		{
-			_idMatrix = *m_matrix;
+			_idMatrix = *m_translation.m_matrix;
 			return;
 		}
-		if (m_translate)
+		if (m_translation.m_translate)
 		{
-			glm::translate(_idMatrix, *m_translate);
+			_idMatrix = glm::translate(_idMatrix, *m_translation.m_translate);
 		}
-		if (m_quat)
+		if (m_translation.m_quat)
 		{
-			glm::quat quat = glm::quat(-m_quat->w, m_quat->x, m_quat->y, m_quat->z);
-			_idMatrix = _idMatrix * glm::mat4_cast(quat);
+			_idMatrix = _idMatrix * glm::mat4_cast(*m_translation.m_quat);
 		}
-		if (m_scale)
+		if (m_translation.m_scale)
 		{
-			glm::scale(_idMatrix, *m_scale);
+			_idMatrix = glm::scale(_idMatrix, *m_translation.m_scale);
 		}
+	}
+
+	void ModelNode::getModelMatRevQuat(glm::mat4& _matrix)
+	{
+		if (m_translation.m_quat)
+		{
+			m_translation.m_quat->w *= -1.0f;
+		}
+		getModelMat(_matrix);
+		if (m_translation.m_quat)
+		{
+			m_translation.m_quat->w *= -1.0f;
+		}
+	}
+
+	void ModelNode::getParentGlobalModelMat(glm::mat4& _matrix)
+	{
+		_matrix = m_parentGlobalMatrix;
+	}
+
+	AnimationTransform::AnimationTransform()
+	{
+		m_translate = glm::vec3(0);
+		m_scale = glm::vec3(1);
+	}
+
+	void AnimationTransform::getModelMatRevQuat(glm::mat4& _matrix)
+	{
+		_matrix = glm::translate(_matrix, m_translate);
+		glm::quat quat = m_quat;
+		quat.w = -quat.w;
+		_matrix = _matrix * glm::mat4_cast(m_quat);
+		_matrix = glm::scale(_matrix, m_scale);
 	}
 
 	bool GltfModel::checkWhiteSpace(const char& _checkChar)
@@ -289,10 +330,10 @@ namespace glwrap
 		}
 	}
 
-	void GltfModel::parseSamplers(std::list<std::string>& _splitLine, std::vector<gltfparse::Sampler>& _samplers)
+	void GltfModel::parseSamplers(std::list<std::string>& _splitLine, std::vector<gltfparse::TexSampler>& _samplers)
 	{
 		std::string tempStr;
-		Sampler newSampler;
+		TexSampler newSampler;
 		int bracket = 1;
 		std::list<std::string>::iterator itr = _splitLine.begin();
 		itr++;
@@ -310,7 +351,7 @@ namespace glwrap
 				if (bracket == 1)
 				{
 					_samplers.push_back(newSampler);
-					newSampler = Sampler();
+					newSampler = TexSampler();
 				}
 			}
 			else if (tempStr == "magFilter")
@@ -1902,7 +1943,7 @@ namespace glwrap
 		int currentScene;
 		std::vector<Scene> scenes;
 		std::vector<Node> nodes;
-		std::vector<Sampler> samplers;
+		std::vector<TexSampler> samplers;
 		std::vector<Skin> skins;
 		std::vector<Image> images;
 		std::vector<Tex> textures;
@@ -2100,6 +2141,122 @@ namespace glwrap
 			itr != m_parts.end(); itr++)
 		{
 			(*itr)->cullAndDraw();
+		}
+	}
+
+	void GltfModel::updateAnimationValues(std::shared_ptr<ShaderProgram> _shader)
+	{
+		if (m_skins.size() > 0)
+		{
+			std::vector<AnimationTransform> transforms;
+			std::vector<int>* nodeList = &m_skins.at(0).m_nodeIds;
+			{
+				ModelTransform temp;
+				transforms.resize(nodeList->size());
+				for (std::vector<std::shared_ptr<ModelAnimation>>::iterator itr = m_animations.begin();
+					itr != m_animations.end(); itr++)
+				{
+					(*itr)->setEnabled(true);
+					(*itr)->setRepeating(true);
+					(*itr)->nextFrame(0.03f);
+					if ((*itr)->getEnabled())
+					{
+						for (int i = 0; i < nodeList->size(); i++)
+						{
+							if ((*itr)->getInterpolatedPosition(temp, nodeList->at(i)))
+							{
+								if (temp.m_translate)
+								{
+									transforms.at(i).m_translate += *temp.m_translate;
+								}
+								if (temp.m_quat)
+								{
+									transforms.at(i).m_quat *= *temp.m_quat;
+									transforms.at(i).m_quat.w *= -1.0f;
+								}
+								if (temp.m_scale)
+								{
+									transforms.at(i).m_scale *= *temp.m_scale;
+								}
+								temp = ModelTransform();
+							}
+						}
+					}
+				}
+			}
+
+			{
+				int id;
+				std::vector<glm::mat4> jointMatrix;
+				jointMatrix.resize(transforms.size());
+				glm::mat4 nodeMatrix;
+				for (int i = 0; i < transforms.size(); i++)
+				{
+					nodeMatrix = glm::mat4(1);
+					transforms.at(i).getModelMatRevQuat(nodeMatrix);
+					if (m_allNodes.at(nodeList->at(i))->m_parent.lock())
+					{
+						id = m_allNodes.at(nodeList->at(i))->m_parent.lock()->m_id;
+						id = m_skins.at(0).checkSkin(id);
+						if (id > -1)
+						{
+							nodeMatrix = jointMatrix.at(id)
+								* nodeMatrix;
+							m_allNodes.at(nodeList->at(i))->m_parentGlobalMatrix = jointMatrix.at(id);
+						}
+						else
+						{
+							nodeMatrix = m_allNodes.at(nodeList->at(i))->m_parentGlobalMatrix
+								* nodeMatrix;
+						}
+					}
+					jointMatrix.at(i) = nodeMatrix;
+					//m_skins.at(0).m_invBindMats.at(i) = glm::inverse(jointMatrix.at(i));
+				}
+
+				glm::mat4 tempMat;
+				for (int i = 0; i < transforms.size(); i++)
+				{
+					nodeMatrix = glm::mat4(1);
+					jointMatrix.at(i) = m_skins.at(0).m_invBindMats.at(i);
+					transforms.at(i).getModelMatRevQuat(nodeMatrix);
+					jointMatrix.at(i) = nodeMatrix * jointMatrix.at(i);
+					//m_allNodes.at(nodeList->at(i))->getModelMatRevQuat(nodeMatrix);
+					//jointMatrix.at(i) = nodeMatrix * jointMatrix.at(i);
+					m_allNodes.at(nodeList->at(i))->getParentGlobalModelMat(nodeMatrix);
+					jointMatrix.at(i) = nodeMatrix * jointMatrix.at(i);
+					transforms.at(i).m_translate = jointMatrix.at(i)[3];
+					transforms.at(i).m_quat = glm::quat_cast(jointMatrix.at(i));
+				}
+			}
+
+			std::vector<glm::vec4> translations;
+			translations.resize(transforms.size());
+			std::vector<glm::vec4> rotations;
+			rotations.resize(transforms.size());
+			{
+				glm::vec4* t, * r;
+				glm::quat* q;
+				glm::vec3* v;
+				for (int i = 0; i < transforms.size(); i++)
+				{
+					q = &transforms.at(i).m_quat;
+					r = &rotations.at(i);
+					r->x = q->x;
+					r->y = q->y;
+					r->z = q->z;
+					r->w = q->w;
+					v = &transforms.at(i).m_translate;
+					t = &translations.at(i);
+					t->w = -0.5f * (v->x * q->x + v->y * q->y + v->z * q->z);
+					t->x = 0.5f * (v->x * q->w + v->y * q->z - v->z * q->y);
+					t->y = 0.5f * (-v->x * q->z + v->y * q->w + v->z * q->x);
+					t->z = 0.5f * (v->x * q->y - v->y * q->x + v->z * q->w);
+				}
+			}
+
+			_shader->setUniform("in_AniTranslate", translations);
+			_shader->setUniform("in_AniRotate", rotations);
 		}
 	}
 

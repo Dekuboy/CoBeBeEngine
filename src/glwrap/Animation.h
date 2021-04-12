@@ -10,6 +10,7 @@ namespace glwrap
 	class Animation
 	{
 	public:
+		Animation();
 		/**
 		* \brief Check if Animation is enabled
 		*/

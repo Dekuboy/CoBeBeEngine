@@ -187,6 +187,15 @@ namespace cobebe
 				}
 				m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
 			}
+			else if (m_modelType == 2)
+			{
+				std::shared_ptr<glwrap::GltfModel> skinModel =
+					std::dynamic_pointer_cast<glwrap::GltfModel>(m_mesh->m_internal);
+				if (skinModel)
+				{
+					skinModel->updateAnimationValues(m_shader->m_internal);
+				}
+			}
 			std::shared_ptr<Camera> currentCam;
 			glm::mat4 model = m_transform.lock()->getModel();
 			m_shader->m_internal->setUniform("in_Model", model);

@@ -59,7 +59,7 @@ namespace gltfparse
 		glm::vec3 m_emissiveFactor;
 	};
 
-	struct Sampler
+	struct TexSampler
 	{
 		int m_magFilter;
 		int m_minFilter;

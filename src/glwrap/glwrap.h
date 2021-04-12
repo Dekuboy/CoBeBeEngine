@@ -18,6 +18,7 @@ namespace glwrap {};
 #include <glwrap/PBRUniforms.h>
 #include <glwrap/ObjAnimation.h>
 #include <glwrap/ObjFrame.h>
+#include <glwrap/ModelAnimation.h>
 #include <glwrap/ShaderProgram.h>
 #include <glwrap/Texture.h>
 #include <glwrap/RenderTexture.h>

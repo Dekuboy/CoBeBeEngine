@@ -16,6 +16,13 @@ namespace glwrap
 		}
 	}
 
+	Animation::Animation()
+	{
+		m_enabled = false;
+		m_repeating = false;
+		m_time = 0;
+	}
+
 	bool Animation::getEnabled()
 	{
 		return m_enabled;

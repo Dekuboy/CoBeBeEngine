@@ -179,9 +179,13 @@ namespace cobebe
 				m_environment->m_currentTick = lastTime;
 
 				// TEMPORARY MOUSE LOCK SYSTEM
-				if (m_keyboard->isKeyPressed(SDL_SCANCODE_Q) || m_gamepad->isButtonPressed(0, cobebeInput::aButton))
+				if (m_keyboard->isKeyPressed(cobebeInput::qKey) || m_gamepad->isButtonPressed(0, cobebeInput::startButton))
 				{
 					m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
+				}
+				if (m_keyboard->isKeyPressed(cobebeInput::escKey))
+				{
+					m_running = false;
 				}
 			}
 #endif
@@ -194,6 +198,13 @@ namespace cobebe
 		if (!m_inLoop)
 		{
 			m_inLoop = true;
+
+			// Reset inputs for next tick
+			m_keyboard->resetKeys();
+			m_mouse->resetButtons();
+			m_gamepad->resetButtons();
+
+			pollSDLEvent();
 
 			// Tick each Entity, if an error occurs destroy the Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -275,13 +286,6 @@ namespace cobebe
 
 			// Draw to window
 			SDL_GL_SwapWindow(m_window);
-
-			// Reset inputs for next tick
-			m_keyboard->resetKeys();
-			m_mouse->resetButtons();
-			m_gamepad->resetButtons();
-
-			pollSDLEvent();
 
 			m_inLoop = false;
 		}
