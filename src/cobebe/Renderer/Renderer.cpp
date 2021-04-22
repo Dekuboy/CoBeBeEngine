@@ -6,6 +6,7 @@
 #include <cobebe/Resources/RendAssets.h>
 #include <cobebe/Core/Camera.h>
 #include <cobebe/Renderer/ObjAnimationController.h>
+#include <cobebe/Renderer/GltfAnimationController.h>
 
 namespace cobebe
 {
@@ -81,7 +82,7 @@ namespace cobebe
 		return m_mesh;
 	}
 
-	std::shared_ptr<ObjAnimationController> Renderer::addAnimationController()
+	std::shared_ptr<ObjAnimationController> Renderer::addObjAnimationController()
 	{
 		if (m_mesh)
 		{
@@ -90,20 +91,46 @@ namespace cobebe
 				std::shared_ptr<glwrap::VertexArray> va = std::dynamic_pointer_cast<glwrap::VertexArray>(m_mesh->m_internal);
 				if (va)
 				{
-					m_animationController = getEntity()->addComponent<ObjAnimationController>(va);
-					return m_animationController;
+					std::shared_ptr<ObjAnimationController> ani =
+						getEntity()->addComponent<ObjAnimationController>(va);
+					m_animationController = ani;
+					return ani;
 				}
 			}
 		}
 		return nullptr;
 	}
 
-	void Renderer::loadAnimation(std::string _path)
+	void Renderer::loadObjAnimation(std::string _path)
 	{
 		if (m_animationController)
 		{
-			m_animationController->loadAnimation(_path);
+			std::shared_ptr<ObjAnimationController> ani =
+				std::dynamic_pointer_cast<ObjAnimationController>(m_animationController);
+			if (ani)
+			{
+				ani->loadAnimation(_path);
+			}
 		}
+	}
+
+	std::shared_ptr<GltfAnimationController> Renderer::addGltfAnimationController()
+	{
+		if (m_mesh)
+		{
+			if (m_mesh->m_internal && m_modelType == 2)
+			{
+				std::shared_ptr<glwrap::GltfModel> va = std::dynamic_pointer_cast<glwrap::GltfModel>(m_mesh->m_internal);
+				if (va)
+				{
+					std::shared_ptr<GltfAnimationController> ani =
+						getEntity()->addComponent<GltfAnimationController>(va);
+					m_animationController = ani;
+					return ani;
+				}
+			}
+		}
+		return nullptr;
 	}
 
 	std::shared_ptr<glwrap::Texture> Renderer::getTextureInternal(std::shared_ptr<Texture> _texture)
@@ -168,6 +195,7 @@ namespace cobebe
 	{
 		if (m_shader)
 		{
+			std::shared_ptr<glwrap::ShaderProgram> shader = m_shader->m_internal;
 			if (!m_mesh)
 			{
 				return;
@@ -179,13 +207,17 @@ namespace cobebe
 					return;
 				}
 			}
+			if (m_animationController)
+			{
+				m_animationController->setToDraw();
+			}
 			if (m_modelType == 0)
 			{
 				if (!m_texture)
 				{
 					return;
 				}
-				m_shader->m_internal->setUniform("in_Texture", m_texture->m_internal);
+				shader->setUniform("in_Texture", m_texture->m_internal);
 			}
 			else if (m_modelType == 2)
 			{
@@ -193,18 +225,19 @@ namespace cobebe
 					std::dynamic_pointer_cast<glwrap::GltfModel>(m_mesh->m_internal);
 				if (skinModel)
 				{
-					skinModel->updateAnimationValues(m_shader->m_internal);
+					std::vector<glm::vec4> translations, rotations;
+					skinModel->updateAnimationValues(translations, rotations);
+
+					if (translations.size() > 0)
+					{
+						shader->setUniform("in_AniTranslate", translations);
+						shader->setUniform("in_AniRotate", rotations);
+					}
 				}
 			}
 			std::shared_ptr<Camera> currentCam;
 			glm::mat4 model = m_transform.lock()->getModel();
-			m_shader->m_internal->setUniform("in_Model", model);
-			//m_shader->m_internal->setUniform("in_Animate", glm::mat4(1));
-
-			if (m_animationController)
-			{
-				m_animationController->setToDraw();
-			}
+			shader->setUniform("in_Model", model);
 
 			if (m_camera)
 			{
@@ -218,13 +251,17 @@ namespace cobebe
 			}
 			if (m_cullByPart)
 			{
-				currentCam->cullAndDraw(m_shader->m_internal,
+				currentCam->cullAndDraw(shader,
 					m_transform.lock(), m_mesh->m_internal);
 			}
 			else
 			{
-				currentCam->draw(m_shader->m_internal,
+				currentCam->draw(shader,
 					m_transform.lock(), m_mesh->m_internal);
+			}
+			if (m_animationController)
+			{
+				m_animationController->resetModel();
 			}
 		}
 	}

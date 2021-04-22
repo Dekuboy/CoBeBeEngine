@@ -101,6 +101,7 @@ namespace glwrap
 				}
 			}
 		}
+		m_totalTime = m_frames.size();
 	}
 
 	std::shared_ptr<ObjFrame> ObjAnimation::getFrame()
@@ -141,19 +142,7 @@ namespace glwrap
 
 	void ObjAnimation::nextFrame(float _deltaTime)
 	{
-		if (m_enabled == true)
-		{
-			m_time += _deltaTime;
-
-			if (m_time >= m_frames.size())
-			{
-				m_time = 0;
-				if (m_repeating == false)
-				{
-					m_enabled = false;
-				}
-			}
-		}
+		setCurrentFrame(m_time + _deltaTime);
 	}
 
 	void ObjAnimation::splitString(std::string input, char splitter, std::vector<std::string>* output)

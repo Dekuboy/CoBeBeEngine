@@ -198,9 +198,14 @@ namespace glwrap
 
 		if (m_model.lock()->getCullAnimation())
 		{
-			if (shader->checkModelInView() && m_animationUniform == glm::mat4(1))
+			bool inView = shader->checkModelInView(), 
+				isIdentity = m_animationUniform == glm::mat4(1);
+			if (isIdentity)
 			{
-				drawArrays();
+				if (inView)
+				{
+					drawArrays();
+				}
 			}
 			else
 			{
@@ -264,7 +269,7 @@ namespace glwrap
 				frame = (*itr)->getMergeFrame();
 				translation = frame->getTranslation(m_self.lock());
 
-				if (translation != nullptr)
+				if (translation)
 				{
 					translateVector = glm::vec3(translation->getX(), translation->getY(),
 						translation->getZ());

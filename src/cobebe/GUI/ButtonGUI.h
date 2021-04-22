@@ -66,7 +66,8 @@ namespace cobebe
 		bool m_isWorldGUI; //!< Checks if GUI is in screen or world space
 
 		/**
-		* \brief Checks for ray collision
+		* \brief Checks if Button is highlighted via raycast
+		* -
 		*/
 		virtual float checkHighlight();
 
@@ -75,9 +76,9 @@ namespace cobebe
 		*/
 		virtual void activate();
 
-		virtual void onInit();
-		virtual void onTick();
-		virtual void onGUI();
+		void onInit();
+		void onTick();
+		void onGUI();
 
 	};
 }

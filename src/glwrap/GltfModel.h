@@ -129,6 +129,8 @@ namespace glwrap
 		void enableAnimation(int _index);
 		int enableOnlyAnimation(std::string _name);
 		void enableOnlyAnimation(int _index);
+		int setAnimationTime(std::string _name, double _time);
+		void setAnimationTime(int _index, double _time);
 		int disableAnimation(std::string _name);
 		void disableAnimation(int _index);
 		void disableAllAnimations();
@@ -136,7 +138,8 @@ namespace glwrap
 		/**
 		* \brief Update Animation values
 		*/
-		void updateAnimationValues(std::shared_ptr<ShaderProgram> _shader);
+		void updateAnimationValues(std::vector<glm::vec4>& _translations, 
+			std::vector<glm::vec4>& _rotations);
 
 		/**
 		* \brief Retrieve all the joints that make up the model

@@ -2126,23 +2126,24 @@ namespace glwrap
 		}
 	}
 
-	void GltfModel::updateAnimationValues(std::shared_ptr<ShaderProgram> _shader)
+	void GltfModel::updateAnimationValues(std::vector<glm::vec4>& _translations, 
+		std::vector<glm::vec4>& _rotations)
 	{
 		if (m_skins.size() > 0)
 		{
 			std::vector<AnimationTransform> transforms;
 			std::vector<int>* nodeList = &m_skins.at(0).m_nodeIds;
+			bool isAnimated = false;
 			{
 				ModelTransform temp;
+				glm::quat tempQuat;
 				transforms.resize(nodeList->size());
 				for (std::vector<std::shared_ptr<ModelAnimation>>::iterator itr = m_animations.begin();
 					itr != m_animations.end(); itr++)
 				{
-					(*itr)->setEnabled(true);
-					(*itr)->setRepeating(true);
-					(*itr)->nextFrame(0.03f);
 					if ((*itr)->getEnabled())
 					{
+						isAnimated = true;
 						for (int i = 0; i < nodeList->size(); i++)
 						{
 							if ((*itr)->getInterpolatedPosition(temp, nodeList->at(i)))
@@ -2153,8 +2154,9 @@ namespace glwrap
 								}
 								if (temp.m_quat)
 								{
-									transforms.at(i).m_quat *= *temp.m_quat;
-									transforms.at(i).m_quat.w *= -1.0f;
+									tempQuat = *temp.m_quat;
+									tempQuat.w *= -1.0f;
+									transforms.at(i).m_quat *= tempQuat;
 								}
 								if (temp.m_scale)
 								{
@@ -2167,12 +2169,13 @@ namespace glwrap
 				}
 			}
 
+			if (isAnimated)
 			{
 				int id;
 				std::vector<glm::mat4> jointMatrix;
 				jointMatrix.resize(transforms.size());
 				glm::mat4 nodeMatrix;
-				glm::mat4 tempMat; //SafeSpot Here
+				glm::mat4 tempMat;
 				for (int i = 0; i < transforms.size(); i++)
 				{
 					nodeMatrix = glm::mat4(1);
@@ -2198,14 +2201,11 @@ namespace glwrap
 					tempMat = nodeMatrix * tempMat;
 					transforms.at(i).m_translate = tempMat[3];
 					transforms.at(i).m_quat = glm::quat_cast(tempMat);
-					//m_skins.at(0).m_invBindMats.at(i) = glm::inverse(jointMatrix.at(i));
 				}
 			}
 
-			std::vector<glm::vec4> translations;
-			translations.resize(transforms.size());
-			std::vector<glm::vec4> rotations;
-			rotations.resize(transforms.size());
+			_translations.resize(transforms.size());
+			_rotations.resize(transforms.size());
 			{
 				glm::vec4* t, * r;
 				glm::quat* q;
@@ -2213,22 +2213,19 @@ namespace glwrap
 				for (int i = 0; i < transforms.size(); i++)
 				{
 					q = &transforms.at(i).m_quat;
-					r = &rotations.at(i);
+					r = &_rotations.at(i);
 					r->x = q->x;
 					r->y = q->y;
 					r->z = q->z;
 					r->w = q->w;
 					v = &transforms.at(i).m_translate;
-					t = &translations.at(i);
+					t = &_translations.at(i);
 					t->w = -0.5f * (v->x * q->x + v->y * q->y + v->z * q->z);
 					t->x = 0.5f * (v->x * q->w + v->y * q->z - v->z * q->y);
 					t->y = 0.5f * (-v->x * q->z + v->y * q->w + v->z * q->x);
 					t->z = 0.5f * (v->x * q->y - v->y * q->x + v->z * q->w);
 				}
 			}
-
-			_shader->setUniform("in_AniTranslate", translations);
-			_shader->setUniform("in_AniRotate", rotations);
 		}
 	}
 
@@ -2297,14 +2294,14 @@ namespace glwrap
 
 	int GltfModel::enableOnlyAnimation(std::string _name)
 	{
-		bool found = false;
+		int id = -1;
 
 		for (int index = 0; index < m_animations.size(); index++)
 		{
 			if (m_animations.at(index)->getName() == _name)
 			{
 				m_animations.at(index)->setEnabled(true);
-				return index;
+				id = index;
 			}
 			else
 			{
@@ -2312,8 +2309,7 @@ namespace glwrap
 			}
 		}
 
-		//throw std::exception();
-		return -1;
+		return id;
 	}
 
 	void GltfModel::enableOnlyAnimation(int _index)
@@ -2323,6 +2319,30 @@ namespace glwrap
 			m_animations.at(index)->setEnabled(false);
 		}
 		m_animations.at(_index)->setEnabled(true);
+	}
+
+	int GltfModel::setAnimationTime(std::string _name, double _time)
+	{
+		bool found = false;
+
+		for (int index = 0; index < m_animations.size(); index++)
+		{
+			if (m_animations.at(index)->getName() == _name)
+			{
+				m_animations.at(index)->setCurrentFrame(_time);
+				return index;
+			}
+		}
+
+		return -1;
+	}
+
+	void GltfModel::setAnimationTime(int _index, double _time)
+	{
+		if (_index < m_animations.size())
+		{
+			m_animations.at(_index)->setCurrentFrame(_time);
+		}
 	}
 
 	int GltfModel::disableAnimation(std::string _name)

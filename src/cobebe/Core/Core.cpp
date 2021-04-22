@@ -182,6 +182,7 @@ namespace cobebe
 				if (m_keyboard->isKeyPressed(cobebeInput::qKey) || m_gamepad->isButtonPressed(0, cobebeInput::startButton))
 				{
 					m_mouse->m_warpMouse = !m_mouse->m_warpMouse;
+					SDL_ShowCursor(!m_mouse->m_warpMouse);
 				}
 				if (m_keyboard->isKeyPressed(cobebeInput::escKey))
 				{
@@ -326,7 +327,7 @@ namespace cobebe
 		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
-			(float)width, (float)height, 3.0f, 1000.f);
+			(float)width, (float)height, 1.0f, 1000.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;
@@ -340,7 +341,7 @@ namespace cobebe
 		tempCamera->m_gBuffer = m_context->createGBuffer(_renderWidth, _renderHeight);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
-			(float)_renderWidth, (float)_renderHeight, 0.1f, 1000.f);
+			(float)_renderWidth, (float)_renderHeight, 1.0f, 1000.f);
 
 		m_cameras.push_back(tempCamera);
 		return tempCamera;
@@ -407,7 +408,7 @@ namespace cobebe
 			}
 			else if (event.type == SDL_MOUSEBUTTONUP)
 			{
-				m_mouse->pressButton(cobebeInput::MouseButton(event.button.button));
+				m_mouse->releaseButton(cobebeInput::MouseButton(event.button.button));
 			}
 			else if (event.type == SDL_CONTROLLERBUTTONDOWN)
 			{

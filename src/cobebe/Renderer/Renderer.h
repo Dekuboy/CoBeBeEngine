@@ -27,7 +27,9 @@ namespace cobebe
 	class Texture;
 	class Shader;
 	class Lighting;
+	class AnimationController;
 	class ObjAnimationController;
+	class GltfAnimationController;
 
 	/**
 	* \brief Displays an Entity to the screen via loaded assets
@@ -91,13 +93,18 @@ namespace cobebe
 		std::shared_ptr<Mesh> getMesh();
 
 		/**
-		*
+		* \brief Adds ObjAnimationController if applicable
 		*/
-		std::shared_ptr<ObjAnimationController> addAnimationController();
+		std::shared_ptr<ObjAnimationController> addObjAnimationController();
 		/**
 		*
 		*/
-		void loadAnimation(std::string _path);
+		void loadObjAnimation(std::string _path);
+
+		/**
+		* \brief Adds GltfAnimationController if applicable
+		*/
+		std::shared_ptr<GltfAnimationController> addGltfAnimationController();
 
 	protected:
 		std::shared_ptr<Camera> m_camera; //!< Stores Camera to draw to when set
@@ -108,7 +115,7 @@ namespace cobebe
 		std::shared_ptr<Mesh> m_mesh; //!< Loaded Mesh/Model to draw
 		std::shared_ptr<Texture> m_texture; //!< Loaded Texture to apply
 		std::shared_ptr<Shader> m_shader; //!< Loaded Shader to draw with
-		std::shared_ptr<ObjAnimationController> m_animationController; //!< Stores animation info
+		std::shared_ptr<AnimationController> m_animationController; //!< Stores animation info
 
 		bool m_cullByPart; //!< Culls a models individual parts -useful for large or animated objects
 

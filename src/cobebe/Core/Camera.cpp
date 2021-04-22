@@ -8,6 +8,7 @@ namespace cobebe
 {
 	Camera::Camera()
 	{
+		m_kill = false;
 		m_position = glm::vec3(0.0f);
 		m_rotation = glm::mat3(1.0f);
 		m_isOn = false;
@@ -136,5 +137,10 @@ namespace cobebe
 	void Camera::setGbUniform(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal)
 	{
 		_shaderInternal->setUniform(m_gBuffer);
+	}
+
+	void Camera::kill()
+	{
+		m_kill = true;
 	}
 }

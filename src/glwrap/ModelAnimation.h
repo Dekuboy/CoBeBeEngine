@@ -51,15 +51,10 @@ namespace glwrap
 		* \brief Move frame of animation forward by _deltaTime
 		*/
 		void nextFrame(float _deltaTime);
-		/**
-		* \brief Set frame to input value
-		*/
-		void setCurrentFrame(double _currentFrame);
 
 	private:
 		friend class Context;
 
-		float m_totalTime;
 		std::vector<ModelMovement> m_frames; //!< Information on the frames of animation
 		ModelMovement m_mergeFrame; //!< Interpolated frame at current animation time
 

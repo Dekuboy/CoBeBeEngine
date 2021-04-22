@@ -10,7 +10,6 @@
 #include <cobebe/Core/Mouse.h>
 #include <glm/ext.hpp>
 
-float rayTriIntersect(float _origin[3], float _direction[3], float _triCoords[3][3]);
 bool aabb(float _positionA[3], float _sizeA[3], float _positionB[3], float _sizeB[3]);
 
 namespace cobebe
@@ -141,11 +140,11 @@ namespace cobebe
 			//positions.push_back(glm::vec3(-1.0f, 1.0f, 0));
 
 			boxA[0] = mousePos.x / m_environment.lock()->getWidth();
-			boxA[1] = mousePos.y / m_environment.lock()->getHeight();
+			boxA[1] = 1 - mousePos.y / m_environment.lock()->getHeight();
 			boxA[2] = 0;
 
-			boxASize[0] = 1;
-			boxASize[1] = 1;
+			boxASize[0] = 0.001f;
+			boxASize[1] = 0.001;
 			boxASize[2] = 1;
 		}
 
@@ -164,10 +163,10 @@ namespace cobebe
 			if (button->m_isWorldGUI)
 			{
 				/**
-				* INSERT
 				* Call to ButtonGUI function which tests for ray intersection
 				* Virtual function allows for different shaped buttons e.g. circles, modelled buttons
 				*/
+				distance = button->checkHighlight();
 			}
 			else
 			{
@@ -182,7 +181,14 @@ namespace cobebe
 				boxBSize[1] = boxScale.y;
 				boxBSize[2] = 1;
 
-				distance = aabb(boxA, boxASize, boxB, boxBSize);
+				if (aabb(boxA, boxASize, boxB, boxBSize) > 0)
+				{
+					distance = (boxPos.z + 1.0f) / 2.0f;
+				}
+				else
+				{
+					distance = -1;
+				}
 			}
 
 			if ((distance < shortestDistance || shortestDistance < 0.0f) && distance > 0.0f)
@@ -210,8 +216,11 @@ namespace cobebe
 		}
 		else
 		{
-			m_currentButton.lock()->getComponent<ButtonGUI>()->m_isHighlighted = false;
-			m_currentButton.lock() = NULL;
+			if (m_currentButton.lock())
+			{
+				m_currentButton.lock()->getComponent<ButtonGUI>()->m_isHighlighted = false;
+				m_currentButton.reset();
+			}
 		}
 
 		// Press and release button if necessary
@@ -220,9 +229,10 @@ namespace cobebe
 		{
 			if (m_clickedButton.lock())
 			{
-				m_currentButton.lock()->getComponent<ButtonGUI>()->m_isClicked = false;
+				m_clickedButton.lock()->getComponent<ButtonGUI>()->m_isClicked = false;
 			}
-			m_currentButton.lock()->getComponent<ButtonGUI>()->m_isClicked = true;
+			m_clickedButton = m_currentButton.lock();
+			m_clickedButton.lock()->getComponent<ButtonGUI>()->m_isClicked = true;
 		}
 
 		if (mouse->isButtonReleased(cobebeInput::leftClick) && m_clickedButton.lock())
@@ -233,7 +243,7 @@ namespace cobebe
 			{
 				button->activate();
 			}
-			m_clickedButton.lock() = NULL;
+			m_clickedButton.reset();
 		}
 	}
 

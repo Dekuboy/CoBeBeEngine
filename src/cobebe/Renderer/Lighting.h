@@ -8,7 +8,7 @@ namespace cobebe
 	class Shader;
 	class Camera;
 	class Core;
-	class ObjAnimationController;
+	class AnimationController;
 
 	/**
 	* \brief Stores render variables to draw to depth maps
@@ -16,7 +16,7 @@ namespace cobebe
 	struct ShadowModel
 	{
 		std::weak_ptr<glwrap::Model3D> m_mesh; //!< Stores mesh to render
-		std::weak_ptr<ObjAnimationController> m_animation; //!< Stores animation to apply
+		std::weak_ptr<AnimationController> m_animation; //!< Stores animation to apply
 		glm::mat4 m_model; //!< Stores joined model matrix
 	};
 
@@ -127,12 +127,12 @@ namespace cobebe
 		* \brief Sets variables to draw to depth map
 		*/
 		void draw(std::shared_ptr<glwrap::Model3D> _meshInternal,
-			std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat);
+			std::shared_ptr<AnimationController> _animation, glm::mat4 _modelMat);
 		/**
 		* \brief Sets variables to draw to depth map
 		*/
 		void cullAndDraw(std::shared_ptr<glwrap::Model3D> _meshInternal,
-			std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat);
+			std::shared_ptr<AnimationController> _animation, glm::mat4 _modelMat);
 
 	private:
 		friend class Core;

@@ -1,19 +1,17 @@
 #include <cobebe/Renderer/AnimationController.h>
 #include <glwrap/glwrap.h>
-#include <list>
 
 namespace cobebe
 {
-	class ObjPartAnimation;
 	class Renderer;
 
-	class ObjAnimationController : public AnimationController
+	class GltfAnimationController : public AnimationController
 	{
 	public:
-		ObjAnimationController(std::shared_ptr<glwrap::VertexArray> _model);
-		~ObjAnimationController();
+		GltfAnimationController(std::shared_ptr<glwrap::GltfModel> _model);
+		~GltfAnimationController();
 
-		void loadAnimation(std::string _path);
+		//void loadAnimation(std::string _path);
 
 		void setAnimationTime(int _id, float _time);
 
@@ -25,10 +23,8 @@ namespace cobebe
 	private:
 		friend class Renderer;
 
-		std::list<std::shared_ptr<ObjPartAnimation> > m_animations;
-		std::shared_ptr<glwrap::VertexArray> m_model;
+		std::shared_ptr<glwrap::GltfModel> m_model;
 
 		AnimationValues* checkId(int _id);
-
 	};
 }

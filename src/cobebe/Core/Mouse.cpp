@@ -25,16 +25,46 @@ namespace cobebe
 
 	bool Mouse::isButton(cobebeInput::MouseButton _button)
 	{
+		int size = m_buttons.size();
+		int value;
+		for (int i = 0; i < size; i++)
+		{
+			value = m_buttonsPressed.at(i);
+			if (value == _button)
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 
 	bool Mouse::isButtonPressed(cobebeInput::MouseButton _button)
 	{
+		int size = m_buttonsPressed.size();
+		int value;
+		for (int i = 0; i < size; i++)
+		{
+			value = m_buttonsPressed.at(i);
+			if (value == _button)
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 
 	bool Mouse::isButtonReleased(cobebeInput::MouseButton _button)
 	{
+		int size = m_buttonsReleased.size();
+		int value;
+		for (int i = 0; i < size; i++)
+		{
+			value = m_buttonsReleased.at(i);
+			if (value == _button)
+			{
+				return true;
+			}
+		}
 		return false;
 	}
 

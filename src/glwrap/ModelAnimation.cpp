@@ -369,16 +369,6 @@ namespace glwrap
 		}
 	}
 
-	void ModelAnimation::setCurrentFrame(double _currentFrame)
-	{
-		m_time = _currentFrame;
-		int diff = m_time / m_totalTime;
-		if (diff)
-		{
-			m_time -= (float)diff * m_totalTime;
-		}
-	}
-
 	int ModelAnimation::findNodeFrame(int _node)
 	{
 		for (int i = 0; i < m_frames.size(); i++)

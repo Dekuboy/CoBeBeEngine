@@ -85,8 +85,14 @@ namespace cobebe
 		*/
 		void setGbUniform(std::shared_ptr<glwrap::ShaderProgram> _shaderInternal);
 
+		/**
+		* \brief Kills the Camera
+		*/
+		void kill();
+
 	private:
 		friend class Core;
+		bool m_kill; //!< Marks Camera for destruction
 
 		bool m_isOn; //!< Checks if the Camera is on
 		bool m_isDrawReady; //!< Checks if the variables for drawing have been set each frame

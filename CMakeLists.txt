@@ -135,8 +135,12 @@ add_library(cobebe
 	src/cobebe/Renderer/Lighting.cpp
 	src/cobebe/Renderer/PointLight.h
 	src/cobebe/Renderer/PointLight.cpp
+	src/cobebe/Renderer/AnimationController.h
+	src/cobebe/Renderer/AnimationController.cpp
 	src/cobebe/Renderer/ObjAnimationController.h
 	src/cobebe/Renderer/ObjAnimationController.cpp
+	src/cobebe/Renderer/GltfAnimationController.h
+	src/cobebe/Renderer/GltfAnimationController.cpp
 
 	src/cobebe/GUI/Canvas.h
 	src/cobebe/GUI/Canvas.cpp

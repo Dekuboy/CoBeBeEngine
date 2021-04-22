@@ -534,14 +534,14 @@ namespace glwrap
 
 	int VertexArray::enableOnlyAnimation(std::string _name)
 	{
-		bool found = false;
+		int id = -1;
 
 		for (int index = 0; index < m_animations.size(); index++)
 		{
 			if (m_animations.at(index)->getName() == _name)
 			{
 				m_animations.at(index)->setEnabled(true);
-				return index;
+				id = index;
 			}
 			else
 			{
@@ -549,7 +549,7 @@ namespace glwrap
 			}
 		}
 
-		throw std::exception();
+		return id;
 	}
 
 	void VertexArray::enableOnlyAnimation(int _index)

@@ -61,5 +61,21 @@ namespace glwrap
 	void Animation::setCurrentFrame(double _currentFrame)
 	{
 		m_time = _currentFrame;
+		if (m_time >= m_totalTime)
+		{
+			if (m_repeating == false)
+			{
+				m_time = 0;
+				m_enabled = false;
+			}
+			else
+			{
+				int diff = m_time / m_totalTime;
+				if (diff)
+				{
+					m_time -= (float)diff * m_totalTime;
+				}
+			}
+		}
 	}
 }

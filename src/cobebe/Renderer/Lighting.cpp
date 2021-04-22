@@ -169,7 +169,7 @@ namespace cobebe
 	}
 
 	void Lighting::draw(std::shared_ptr<glwrap::Model3D> _meshInternal,
-		std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat)
+		std::shared_ptr<AnimationController> _animation, glm::mat4 _modelMat)
 	{
 		ShadowModel tempModel;
 		tempModel.m_mesh = _meshInternal;
@@ -178,7 +178,7 @@ namespace cobebe
 		m_shadowModels.push_back(tempModel);
 	}
 
-	void Lighting::cullAndDraw(std::shared_ptr<glwrap::Model3D> _meshInternal, std::shared_ptr<ObjAnimationController> _animation, glm::mat4 _modelMat)
+	void Lighting::cullAndDraw(std::shared_ptr<glwrap::Model3D> _meshInternal, std::shared_ptr<AnimationController> _animation, glm::mat4 _modelMat)
 	{
 
 	}

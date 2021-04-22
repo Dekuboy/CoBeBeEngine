@@ -8,10 +8,6 @@
 
 #include <cobebe/Core/Transform.h>
 
-#include <cobebe/Collider/Collider.h>
-#include <cobebe/Collider/BoxCollider.h>
-#include <cobebe/Collider/StaticModelCollider.h>
-
 #include <cobebe/Core/Environment.h>
 
 #include <cobebe/Core/Keyboard.h>
@@ -19,6 +15,10 @@
 #include <cobebe/Core/Gamepad.h>
 
 #include <cobebe/Core/Camera.h>
+
+#include <cobebe/Collider/Collider.h>
+#include <cobebe/Collider/BoxCollider.h>
+#include <cobebe/Collider/StaticModelCollider.h>
 
 #include <cobebe/Resources/Asset.h>
 #include <cobebe/Resources/Resources.h>
@@ -30,10 +30,13 @@
 #include <cobebe/Renderer/PBRenderer.h>
 #include <cobebe/Renderer/Lighting.h>
 #include <cobebe/Renderer/PointLight.h>
+#include <cobebe/Renderer/AnimationController.h>
 #include <cobebe/Renderer/ObjAnimationController.h>
+#include <cobebe/Renderer/GltfAnimationController.h>
 
 #include <cobebe/GUI/Canvas.h>
 #include <cobebe/GUI/ImageGUI.h>
+#include <cobebe/GUI/ButtonGUI.h>
 
 #include <cobebe/Speaker/Speaker.h>
 

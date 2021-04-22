@@ -73,20 +73,24 @@ int main()
 		renderer = entity->addComponent<cobebe::Renderer>();
 		renderer->setGltfMesh("gltf\\Character Running.gltf");
 		renderer->setShader("deferred_shaders\\renderGSkin.shad");
-		//std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
+		std::shared_ptr<cobebe::AnimationController> anm = renderer->addGltfAnimationController();
+		//renderer->setMesh("objs\\curuthers.obj");
+		//renderer->setTexture("images\\curuthers_diffuse.png");
+		//renderer->setShader("deferred_shaders\\renderGAni.shad");
+		//std::shared_ptr<cobebe::AnimationController> anm = renderer->addObjAnimationController();
 		//renderer->loadAnimation("animations\\run.anm");
 
-		//anm->playAnimation(0, 1);
+		anm->playAnimation(0, true);
 
 		entity = App->addEntity();
-		entity->getTransform()->m_position = glm::vec3(0.0f, 1.7f, -10.0f);
-		entity->getTransform()->m_scale = glm::vec3(2);
+		entity->getTransform()->m_position = glm::vec3(0.15f, 0.90f, 0.1f);
+		entity->getTransform()->m_scale = glm::vec3(0.1f, 0.05f, 1.0f);
 
-		renderer = entity->addComponent<cobebe::Renderer>();
-		std::shared_ptr<cobebe::SkinModel> skin =
-			App->loadAsset<cobebe::SkinModel>("gltf\\Cube.gltf");
-		//renderer->setGltfMesh(skin);
-		renderer->setShader("deferred_shaders\\renderG.shad");
+		std::shared_ptr<cobebe::ButtonGUI> gui = entity->addComponent<cobebe::ButtonGUI>();
+		gui->setTextureStatic("images\\darkgrey.png");
+		gui->setTextureHighlighted("images\\white.png");
+		gui->SetTexturePressed("images\\grey.png");
+		gui->setInCanvas(true);
 
 		//// ---------------------------
 
@@ -154,6 +158,7 @@ void CamController::onInit()
 
 void CamController::onTick()
 {
+	getCore()->getCanvas()->queryButton();
 	system("CLS");
 	glm::vec2 camMovement = glm::radians(-0.16f * getMouse()->getMovement());
 	if (camMovement.x || camMovement.y)
@@ -183,6 +188,15 @@ void CamController::onTick()
 	{
 		glm::vec3 x = m_camera.lock()->m_rotation[0];
 		m_camera.lock()->m_position += x;
+	}
+
+	if (getKeyboard()->isKey(cobebeInput::eKey))
+	{
+		getEntity()->getComponent<cobebe::AnimationController>()->setIncrementDeltaTime(true);
+	}
+	else
+	{
+		getEntity()->getComponent<cobebe::AnimationController>()->setIncrementDeltaTime(false);
 	}
 
 	//getEntity()->getComponent<cobebe::ObjAnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());

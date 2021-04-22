@@ -50,12 +50,13 @@ namespace glwrap
 		/**
 		* \brief Set frame to input value
 		*/
-		virtual void setCurrentFrame(double _currentFrame);
+		void setCurrentFrame(double _currentFrame);
 
 	protected:
 		friend class Context;
 
 		std::string m_name; //!< Name of animation
+		float m_totalTime; //!< Total length of Animation
 		double m_time; //!< Current frame of animation
 		bool m_enabled; //!< Is animation set to play when the model is drawn
 		bool m_repeating; //!< Does the animation repeat once it has finished
