@@ -1,10 +1,6 @@
 #include <memory>
 #include <list>
-#if defined(__EMSCRIPTEN__)
-#include <SDL.h>
-#else
 #include <SDL2/SDL.h>
-#endif
 #include <cobebe/NonCopyable.h>
 #include <cobebe/Core/Entity.h>
 #include <cobebe/Resources/Resources.h>

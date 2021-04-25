@@ -199,8 +199,10 @@ namespace cobebe
 	{
 		if (_camera != m_camSet)
 		{
-			m_internal->setUniform("in_View", glm::inverse(_camera->getView()));
-			m_internal->setUniform("in_Projection", _camera->getProjection());
+			glm::mat4 matrix = glm::inverse(_camera->getView());
+			m_internal->setUniform("in_View", matrix);
+			matrix = _camera->getProjection();
+			m_internal->setUniform("in_Projection", matrix);
 			m_camSet = _camera;
 		}
 	}

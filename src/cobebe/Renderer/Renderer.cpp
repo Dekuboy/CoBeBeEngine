@@ -143,6 +143,7 @@ namespace cobebe
 		m_transform = getTransform();
 		m_lighting = getLighting();
 		m_cullByPart = false;
+		m_modelType = cobebeModel::null;
 	}
 
 	void Renderer::onTick()

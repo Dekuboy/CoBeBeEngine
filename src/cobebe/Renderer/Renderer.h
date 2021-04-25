@@ -10,6 +10,7 @@ namespace cobebeModel
 {
 	enum ModelType
 	{
+		null = -1,
 		singleTexObj,
 		objMtl,
 		skin

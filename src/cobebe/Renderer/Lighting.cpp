@@ -258,12 +258,14 @@ namespace cobebe
 
 	void Lighting::drawLighting()
 	{
+		// Matrix for pass by reference
+		glm::mat4 matRef(1);
 		// Draws to global directional light depth map
 		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
 			it != m_shadowModels.end(); it++)
 		{
 			m_depthShader->m_internal->setUniform("in_Model", (*it).m_model);
-			m_depthShader->m_internal->setUniform("in_Animate", glm::mat4(1));
+			m_depthShader->m_internal->setUniform("in_Animate", matRef);
 			if ((*it).m_animation.lock())
 			{
 				(*it).m_animation.lock()->setToDraw();
@@ -292,7 +294,7 @@ namespace cobebe
 				it != m_shadowModels.end(); it++)
 			{
 				m_cubeShader->m_internal->setUniform("in_Model", (*it).m_model);
-				m_cubeShader->m_internal->setUniform("in_Animate", glm::mat4(1));
+				m_cubeShader->m_internal->setUniform("in_Animate", matRef);
 				if ((*it).m_animation.lock())
 				{
 					(*it).m_animation.lock()->setToDraw();
