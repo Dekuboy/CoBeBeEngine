@@ -233,8 +233,13 @@ namespace cobebe
 
 		// Set depth map ready for rendering
 		m_depthMap = std::make_shared<glwrap::DepthBuffer>(m_depthMapSize, m_depthMapSize);
+#if defined(__EMSCRIPTEN__)
+		m_depthShader = m_core.lock()->loadAsset<Shader>("emscripten_shaders\\shadowAni.shad");
+		m_cubeShader = m_core.lock()->loadAsset<Shader>("emscripten_shaders\\shadowAniCube.shad");
+#else
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAni.shad");
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAniCube.shad");
+#endif
 
 		// Set light space matrix
 		glm::mat4 lightProjection = glm::ortho(-m_globalLightScale, m_globalLightScale,

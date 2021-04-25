@@ -173,12 +173,12 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 		src/dungeon/main.cpp
 	)
 
+	set_target_properties(testCobebeEmscriptenExecutable1 PROPERTIES LINK_FLAGS  
+	"--preload-file Resources -s USE_SDL=2 -s MAX_WEBGL_VERSION=2 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
+
 	target_link_libraries(testCobebeEmscriptenExecutable1
 		cobebe
 	)
-
-	set_target_properties(testCobebeEmscriptenExecutable1 PROPERTIES LINK_FLAGS  
-	"-o testCobebeEmscriptenExecutable1.js --preload-file Resources -s USE_SDL=2 -s MAX_WEBGL_VERSION=2 -s ERROR_ON_UNDEFINED_SYMBOLS=0 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
 else()
 	add_executable(dungeon
 		src/dungeon/PlayerController.h

@@ -1,8 +1,7 @@
 #include <GL/glew.h>
 #include <glm/glm.hpp>
+#include <glwrap/TextureUniforms.h>
 #include <fstream>
-#include <string>
-#include <vector>
 #include <memory>
 
 namespace glwrap
@@ -16,7 +15,6 @@ namespace glwrap
 	class DepthBuffer;
 	class DepthCube;
 	class ViewingFrustum;
-	class TextureUniforms;
 
 	/**
 	* \brief Type of buffer if sample is a GBuffer

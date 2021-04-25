@@ -76,7 +76,7 @@ namespace cobebe
 		temp->m_window = SDL_CreateWindow("CoBeBe Window",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 			temp->m_environment->m_width, temp->m_environment->m_height,
-			SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI /*| SDL_WINDOW_FULLSCREEN*/
+			SDL_WINDOW_OPENGL /*| SDL_WINDOW_ALLOW_HIGHDPI | SDL_WINDOW_FULLSCREEN*/
 			/*| SDL_WINDOW_BORDERLESS*/);
 
 		if (!SDL_GL_CreateContext(temp->m_window))
@@ -127,8 +127,13 @@ namespace cobebe
 		temp->m_resources->m_context = temp->m_context;
 		temp->m_resources->m_self = temp->m_resources;
 
+#if defined(__EMSCRIPTEN__)
+		temp->m_nullShader = temp->loadAsset<Shader>("emscripten_shaders\\nullpass.shad");
+		temp->m_lightPassShader = temp->loadAsset<Shader>("emscripten_shaders\\lightingG.shad");
+#else
 		temp->m_nullShader = temp->loadAsset<Shader>("shaders\\nullpass.shad");
 		temp->m_lightPassShader = temp->loadAsset<Shader>("deferred_shaders\\lightingG.shad");
+#endif
 
 		temp->m_lighting = std::make_shared<Lighting>();
 		temp->m_lighting->m_core = temp;

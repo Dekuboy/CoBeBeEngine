@@ -69,9 +69,10 @@ namespace glwrap
 		}
 		if (m_quat)
 		{
-			_face->pa = _face->pa * *m_quat;
-			_face->pb = _face->pb * *m_quat;
-			_face->pc = _face->pc * *m_quat;
+			glm::mat3 rotate = glm::mat3_cast(*m_quat);
+			_face->pa = _face->pa * rotate;
+			_face->pb = _face->pb * rotate;
+			_face->pc = _face->pc * rotate;
 		}
 		if (m_translate)
 		{
@@ -93,9 +94,10 @@ namespace glwrap
 		}
 		if (m_quat)
 		{
-			_face->na = glm::normalize(_face->na * *m_quat);
-			_face->nb = glm::normalize(_face->nb * *m_quat);
-			_face->nc = glm::normalize(_face->nc * *m_quat);
+			glm::mat3 rotate = glm::mat3_cast(*m_quat);
+			_face->na = glm::normalize(_face->na * rotate);
+			_face->nb = glm::normalize(_face->nb * rotate);
+			_face->nc = glm::normalize(_face->nc * rotate);
 			return;
 		}
 	}

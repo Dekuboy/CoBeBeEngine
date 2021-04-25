@@ -14,7 +14,7 @@ int main()
 	std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\graveyard.obj");
 	renderer->setTexture("images\\graveyard.png");
-	renderer->setShader("deferred_shaders\\renderGAni.shad");
+	renderer->setShader("emscripten_shaders\\renderG.shad");
 
 	entity->addComponent<Bloom>();
 
@@ -39,9 +39,9 @@ int main()
 	renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\curuthers.obj");
 	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("deferred_shaders\\renderGAni.shad");
-	std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addAnimationController();
-	renderer->loadAnimation("animations\\run.anm");
+	renderer->setShader("emscripten_shaders\\renderGAni.shad");
+	std::shared_ptr<cobebe::ObjAnimationController> anm = renderer->addObjAnimationController();
+	renderer->loadObjAnimation("animations\\run.anm");
 
 	anm->playAnimation(0, 1);
 
@@ -55,8 +55,8 @@ int main()
 	renderer = entity->addComponent<cobebe::Renderer>();
 	renderer->setMesh("objs\\curuthers.obj");
 	renderer->setTexture("images\\curuthers_diffuse.png");
-	renderer->setShader("deferred_shaders\\renderGAni.shad");
-	anm = renderer->addAnimationController();
+	renderer->setShader("emscripten_shaders\\renderGAni.shad");
+	anm = renderer->addObjAnimationController();
 	tmp = entity->addComponent<cobebe::BoxCollider>(1);
 	tmp->setSize(glm::vec3(0.7f));
 
