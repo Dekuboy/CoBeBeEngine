@@ -36,7 +36,7 @@ std::string FileManager::returnPath(std::string _path)
 		path.at(id) = '\\';
 		id = path.find_first_of('/');
 	}
-#else if defined(__EMSCRIPTEN__)
+#elif defined(__EMSCRIPTEN__)
 	path = "";
 	int itr = 0;
 	while (itr < _path.length())

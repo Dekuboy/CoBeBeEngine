@@ -330,7 +330,11 @@ namespace cobebe
 		m_currentWidth = m_environment.lock()->getWidth();
 		m_currentHeight = m_environment.lock()->getHeight();
 
+#if defined(__EMSCRIPTEN__)
+		m_staticShader = m_core.lock()->loadAsset<Shader>("emscripten_shaders\\static.shad");
+#else
 		m_staticShader = m_core.lock()->loadAsset<Shader>("shaders\\static.shad");
+#endif
 
 		setProjection();
 	}

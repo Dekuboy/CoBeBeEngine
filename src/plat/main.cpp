@@ -159,7 +159,6 @@ void CamController::onInit()
 void CamController::onTick()
 {
 	getCore()->getCanvas()->queryButton();
-	system("CLS");
 	glm::vec2 camMovement = glm::radians(-0.16f * getMouse()->getMovement());
 	if (camMovement.x || camMovement.y)
 	{

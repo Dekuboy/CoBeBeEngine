@@ -54,142 +54,7 @@ namespace glwrap
 		m_drawingSize = glm::vec3(0);
 		m_drawingRotation = glm::mat4(1);
 		m_uniforms = std::make_shared<TextureUniforms>();
-
-		std::string vertShader;
-		std::string fragShader;
-		std::string geomShader;
-
-		std::string src = FileManager::loadWin(_path);
-
-		bool geometry = (src.compare(0, 8, "#version") == 0);
-		if (geometry)
-		{
-#if defined(__EMSCRIPTEN__)
-			vertShader = "#define VERTEX\n" + src.substr(12, std::string::npos);
-
-			fragShader = "#define FRAGMENT\n" + src.substr(12, std::string::npos);
-
-			geomShader = "#define GEOMETRY\n" + src.substr(12, std::string::npos);
-#else
-			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
-
-			fragShader = src.substr(0, 12) + "\n#define FRAGMENT\n" + src.substr(12, std::string::npos);
-
-			geomShader = src.substr(0, 12) + "\n#define GEOMETRY\n" + src.substr(12, std::string::npos);
-#endif
-		}
-		else
-		{
-#if defined (__EMSCRIPTEN__)
-			vertShader = "#version 330 es\n#define VERTEX\n" + src;
-
-			fragShader = "#version 330 es\n#define FRAGMENT\n" + src;
-#else
-			vertShader = "#version 140\n#define VERTEX\n" + src;
-
-			fragShader = "#version 140\n#define FRAGMENT\n" + src;
-#endif
-		}
-
-		const char* vertex = vertShader.c_str();
-		const char* fragment = fragShader.c_str();
-
-		GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShaderId, 1, &vertex, NULL);
-		glCompileShader(vertexShaderId);
-		GLint success = 0;
-		glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			printShaderInfoLog(vertexShaderId);
-			printProgramInfoLog(vertexShaderId);
-			throw std::exception();
-		}
-
-		GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShaderId, 1, &fragment, NULL);
-		glCompileShader(fragmentShaderId);
-		success = 0;
-		glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			printShaderInfoLog(fragmentShaderId);
-			printProgramInfoLog(fragmentShaderId);
-			throw std::exception();
-		}
-
-		GLuint geometryShaderId;
-		if (geometry)
-		{
-			const char* geom = geomShader.c_str();
-			geometryShaderId = glCreateShader(GL_GEOMETRY_SHADER);
-			glShaderSource(geometryShaderId, 1, &geom, NULL);
-			glCompileShader(geometryShaderId);
-			success = 0;
-			glGetShaderiv(geometryShaderId, GL_COMPILE_STATUS, &success);
-			if (!success)
-			{
-				throw std::exception();
-			}
-		}
-
-		m_id = glCreateProgram();
-		glAttachShader(m_id, vertexShaderId);
-		glAttachShader(m_id, fragmentShaderId);
-		if (geometry)
-		{
-			glAttachShader(m_id, geometryShaderId);
-		}
-
-		// Ensure the VAO "Position" attribute stream gets set as the first position
-		// during the link.
-		glBindAttribLocation(m_id, 0, "in_Position");
-		glBindAttribLocation(m_id, 1, "in_Color");
-		glBindAttribLocation(m_id, 2, "in_TexCoord");
-		glBindAttribLocation(m_id, 3, "in_Normal");
-		glBindAttribLocation(m_id, 4, "in_JointIDs");
-		glBindAttribLocation(m_id, 5, "in_Weights");
-		glBindAttribLocation(m_id, 6, "in_Tangent");
-		glBindAttribLocation(m_id, 7, "in_Bitangent");
-
-		// Perform the link and check for failure
-		glLinkProgram(m_id);
-		glGetProgramiv(m_id, GL_LINK_STATUS, &success);
-
-		if (!success)
-		{
-			throw std::exception();
-		}
-
-		glDetachShader(m_id, vertexShaderId);
-		glDeleteShader(vertexShaderId);
-		glDetachShader(m_id, fragmentShaderId);
-		glDeleteShader(fragmentShaderId);
-		if (geometry)
-		{
-			glDetachShader(m_id, geometryShaderId);
-			glDeleteShader(geometryShaderId);
-		}
-
-		std::shared_ptr<VertexBuffer> positions = std::make_shared<VertexBuffer>();
-		positions->add(glm::vec2(-1.0f, 1.0f));
-		positions->add(glm::vec2(-1.0f, -1.0f));
-		positions->add(glm::vec2(1.0f, -1.0f));
-		positions->add(glm::vec2(1.0f, -1.0f));
-		positions->add(glm::vec2(1.0f, 1.0f));
-		positions->add(glm::vec2(-1.0f, 1.0f));
-
-		std::shared_ptr<VertexBuffer> texCoords = std::make_shared<VertexBuffer>();
-		texCoords->add(glm::vec2(0.0f, 0.0f));
-		texCoords->add(glm::vec2(0.0f, -1.0f));
-		texCoords->add(glm::vec2(1.0f, -1.0f));
-		texCoords->add(glm::vec2(1.0f, -1.0f));
-		texCoords->add(glm::vec2(1.0f, 0.0f));
-		texCoords->add(glm::vec2(0.0f, 0.0f));
-
-		m_simpleShape = m_context.lock()->createMesh();
-		m_simpleShape->setBuffer("in_Position", positions);
-		m_simpleShape->setBuffer("in_TexCoord", texCoords);
+		parse(_path);
 	}
 
 	void ShaderProgram::parse(std::string _path)
@@ -200,35 +65,37 @@ namespace glwrap
 
 		std::string src = FileManager::loadWin(_path);
 
+#if defined (__EMSCRIPTEN__)
+		bool version = (src.compare(0, 8, "#version") == 0);
+		if (version)
+		{
+			vertShader = src.substr(0, 15) + "\n#define VERTEX\n" + src.substr(15, std::string::npos);
+
+			fragShader = src.substr(0, 15) + "\n#define FRAGMENT\n" + src.substr(15, std::string::npos);
+		}
+		else
+		{
+			vertShader = "\n#define VERTEX\n" + src;
+
+			fragShader = "\n#define FRAGMENT\n" + src;
+		}
+#else
 		bool geometry = (src.compare(0, 8, "#version") == 0);
 		if (geometry)
 		{
-#if defined(__EMSCRIPTEN__)
-			vertShader = "#define VERTEX\n" + src.substr(15, std::string::npos);
-
-			fragShader = "\n#define FRAGMENT\n" + src.substr(15, std::string::npos);
-
-			geomShader = "\n#define GEOMETRY\n" + src.substr(15, std::string::npos);
-#else
 			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
 
 			fragShader = src.substr(0, 12) + "\n#define FRAGMENT\n" + src.substr(12, std::string::npos);
 
 			geomShader = src.substr(0, 12) + "\n#define GEOMETRY\n" + src.substr(12, std::string::npos);
-#endif
 		}
 		else
 		{
-#if defined (__EMSCRIPTEN__)
-			vertShader = "#define VERTEX\n" + src;
-
-			fragShader = "#define FRAGMENT\n" + src;
-#else
 			vertShader = "#version 140\n#define VERTEX\n" + src;
 
 			fragShader = "#version 140\n#define FRAGMENT\n" + src;
-#endif
 		}
+#endif
 
 		const char* vertex = vertShader.c_str();
 		const char* fragment = fragShader.c_str();
@@ -257,6 +124,7 @@ namespace glwrap
 			throw std::exception();
 		}
 
+#if !defined(__EMSCRIPTEN__)
 		GLuint geometryShaderId;
 		if (geometry)
 		{
@@ -271,14 +139,17 @@ namespace glwrap
 				throw std::exception();
 			}
 		}
+#endif
 
 		m_id = glCreateProgram();
 		glAttachShader(m_id, vertexShaderId);
 		glAttachShader(m_id, fragmentShaderId);
+#if !defined(__EMSCRIPTEN__)
 		if (geometry)
 		{
 			glAttachShader(m_id, geometryShaderId);
 		}
+#endif
 
 		// Ensure the VAO "Position" attribute stream gets set as the first position
 		// during the link.
@@ -304,11 +175,13 @@ namespace glwrap
 		glDeleteShader(vertexShaderId);
 		glDetachShader(m_id, fragmentShaderId);
 		glDeleteShader(fragmentShaderId);
+#if !defined(__EMSCRIPTEN__)
 		if (geometry)
 		{
 			glDetachShader(m_id, geometryShaderId);
 			glDeleteShader(geometryShaderId);
 		}
+#endif
 
 		std::shared_ptr<VertexBuffer> positions = std::make_shared<VertexBuffer>();
 		positions->add(glm::vec2(-1.0f, 1.0f));

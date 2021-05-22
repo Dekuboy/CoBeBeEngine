@@ -7,6 +7,7 @@
 #include <cobebe/Core/Camera.h>
 #include <cobebe/Renderer/ObjAnimationController.h>
 #include <cobebe/Renderer/GltfAnimationController.h>
+#include <cobebe/Core/Environment.h>
 
 namespace cobebe
 {
@@ -257,6 +258,8 @@ namespace cobebe
 			}
 			else
 			{
+				shader->setViewport(glm::vec4(0, 0,
+					getEnvironment()->getWidth(), getEnvironment()->getHeight()));
 				currentCam->draw(shader,
 					m_transform.lock(), m_mesh->m_internal);
 			}

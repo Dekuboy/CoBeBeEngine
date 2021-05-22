@@ -44,7 +44,7 @@ namespace glwrap
 			m_time = 0;
 			m_enabled = false;
 			m_repeating = true;
-
+			
 			if (file.is_open() == false)
 			{
 				throw std::exception();
@@ -61,35 +61,36 @@ namespace glwrap
 					{
 						m_name = parameters.at(1);
 					}
-
-					if (parameters.at(0) == "f")
+					else if (parameters.at(0) == "f")
 					{
 						m_frames.push_back(std::make_shared<ObjFrame>(aniPtr));
 					}
-
-					if (parameters.at(0) == "t")
+					else if (parameters.at(0) == "t")
 					{
 						found = false;
 						//float scale = ;
+						v.x = (atof(parameters.at(2).c_str()) / 100.0f);
+						v.y = (atof(parameters.at(3).c_str()) / 100.0f);
+						v.z = (atof(parameters.at(4).c_str()) / 100.0f);
+
+						rotation.x = glm::radians(atof(parameters.at(5).c_str()));
+						rotation.y = glm::radians(atof(parameters.at(6).c_str()));
+						rotation.z = glm::radians(atof(parameters.at(7).c_str()));
 
 						for (int partIndex = 0; partIndex < parts.size(); partIndex++)
 						{
 							cp = parts.at(partIndex);
-							v.x = cp->getSize().x * (atof(parameters.at(2).c_str()) / 100.0f);
-							v.y = cp->getSize().y * (atof(parameters.at(3).c_str()) / 100.0f);
-							v.z = cp->getSize().z * (atof(parameters.at(4).c_str()) / 100.0f);
-
-							rotation.x = glm::radians(atof(parameters.at(5).c_str()));
-							rotation.y = glm::radians(atof(parameters.at(6).c_str()));
-							rotation.z = glm::radians(atof(parameters.at(7).c_str()));
-
 							if (parts.at(partIndex)->getName() == parameters.at(1))
 							{
-								m_frames.at(m_frames.size() - 1)->m_translations.push_back(
+								v.x *= cp->getSize().x;
+								v.y *= cp->getSize().y;
+								v.z *= cp->getSize().z;
+								m_frames.back()->m_translations.push_back(
 									std::make_shared<ObjTranslation>(parts.at(partIndex),
 										v,
 										rotation));
 								found = true;
+								break;
 							}
 						}
 

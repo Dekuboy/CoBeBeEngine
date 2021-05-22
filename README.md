@@ -4,9 +4,15 @@ Game Engine Project
 
 ----------------------------------------
 
+lib folder uses:
+glm
+SDL2
+
+----------------------------------------
+
 BUILD WITH EMSCRIPTEN BY:
 
-INSTALL MINGW FIRST
+IF ON WINDOWS OS: INSTALL MINGW FIRST
 
 emsdk install mingw-4.6.2-32bit
 emsdk activate mingw-4.6.2-32bit
@@ -24,7 +30,7 @@ python -m http.server
 
 EXIT PYTHON SERVER BY:
 
-CTRL + C
+Ctrl + C
 
 ----------------------------------------
 

@@ -16,19 +16,22 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_id, 0);
-
+#if defined(WIN32)
+#else
 		GLuint rbo = 0;
 		glGenRenderbuffers(1, &rbo);
 		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_size.x, m_size.y);
 		glBindRenderbuffer(GL_RENDERBUFFER, 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
+#endif
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
 	RenderTexture::RenderTexture(int _width, int _height, int _multisamples) : Texture(_width, _height, false)
 	{
+#if defined(__EMSCRIPTEN__)
+#else
 		m_multisamples = _multisamples;
 		glGenTextures(1, &m_id);
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_id);
@@ -50,6 +53,7 @@ namespace glwrap
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+#endif
 	}
 
 	RenderTexture::RenderTexture(int _width, int _height, bool _base) : Texture(_width, _height, false)

@@ -12,20 +12,6 @@
 #include <glm/ext.hpp>
 #include <iostream>
 
-#if defined(__EMSCRIPTEN__)
-#include <emscripten.h>
-#include <emscripten/html5.h>
-
-std::shared_ptr<cobebe::Core> COBEBE_EM_PTR;
-
-EM_BOOL one_iter(double time, void* userData)
-{
-	COBEBE_EM_PTR->iterateCoreLoop();
-
-	return EM_TRUE;
-}
-#endif
-
 namespace cobebe
 {
 	Core::Core()
@@ -72,6 +58,11 @@ namespace cobebe
 		{
 			throw Exception("SDL");
 		}
+
+#if defined(__EMSCRIPTEN__)
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+#endif
 
 		temp->m_window = SDL_CreateWindow("CoBeBe Window",
 			SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -134,7 +125,6 @@ namespace cobebe
 		temp->m_nullShader = temp->loadAsset<Shader>("shaders\\nullpass.shad");
 		temp->m_lightPassShader = temp->loadAsset<Shader>("deferred_shaders\\lightingG.shad");
 #endif
-
 		temp->m_lighting = std::make_shared<Lighting>();
 		temp->m_lighting->m_core = temp;
 		temp->m_lighting->onInit();
@@ -155,19 +145,24 @@ namespace cobebe
 		if (!m_running)
 		{
 			m_running = true;
-			SDL_ShowCursor(false);
 
 #if defined(__EMSCRIPTEN__)
-			COBEBE_EM_PTR = m_self.lock();
+			m_mouse->m_warpMouse = false;
+			iterateCoreLoop();
+			m_environment->m_currentTick = SDL_GetTicks();
 
-			printf("loopstart\n");
-			emscripten_request_animation_frame_loop(one_iter, 0);
+			if (m_keyboard->isKeyPressed(cobebeInput::qKey) == true)
+			{
+				SDL_SetWindowSize(m_window, m_environment->m_width, m_environment->m_height);
+				printf("Still Running\n");
+			}
+
+			m_running = false;
 #else
 			Uint32 currentTime, waitTime, lastTime = SDL_GetTicks();
 
 			while (m_running)
 			{
-
 				// Perform Iteration
 				iterateCoreLoop();
 
@@ -241,8 +236,7 @@ namespace cobebe
 
 			// Update variables ready for drawing to screen
 			SDL_GetWindowSize(m_window, &(m_environment->m_width), &(m_environment->m_height));
-			glDisable(GL_CULL_FACE);
-			glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
 			m_currentCamera.lock()->m_gBuffer->clear();
@@ -261,7 +255,6 @@ namespace cobebe
 			}
 			glCullFace(GL_BACK);
 			m_lighting->drawLighting();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			// Display each Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -270,8 +263,6 @@ namespace cobebe
 			}
 
 			glDisable(GL_DEPTH_TEST);
-			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT);
 
 			// Draw current Camera to screen
 			drawToScreen();
@@ -289,7 +280,6 @@ namespace cobebe
 			{
 				(*it)->gui();
 			}
-
 			// Draw to window
 			SDL_GL_SwapWindow(m_window);
 
@@ -516,7 +506,7 @@ namespace cobebe
 		*/
 
 		std::shared_ptr<glwrap::RenderTexture> texture = m_currentCamera.lock()->m_texture;
-
+		
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, texture->getFbId());
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, texture->getSize().x, texture->getSize().y, 0, 0, m_environment->m_width, m_environment->m_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);

@@ -2,9 +2,23 @@
 #include "PlayerController.h"
 #include "Bloom.h"
 
+std::shared_ptr<cobebe::Core> App;
+
+#if defined(__EMSCRIPTEN__)
+#include <emscripten.h>
+#include <emscripten/html5.h>
+
+EM_BOOL one_iter(double time, void* userData)
+{
+	App->run();
+
+	return EM_TRUE;
+}
+#endif
+
 int main()
 {
-	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
+	App = cobebe::Core::initialise();
 	printf("Initialise\n");
 
 	App->getLighting()->addPointLight(glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
@@ -16,7 +30,7 @@ int main()
 	renderer->setTexture("images\\graveyard.png");
 	renderer->setShader("emscripten_shaders\\renderG.shad");
 
-	entity->addComponent<Bloom>();
+	//entity->addComponent<Bloom>();
 
 	//entity->addComponent<cobebe::Speaker>("oggs\\dixie_horn.ogg");
 
@@ -48,7 +62,6 @@ int main()
 	std::shared_ptr<cobebe::BoxCollider> tmp = entity->addComponent<cobebe::BoxCollider>(0);
 	tmp->setSize(glm::vec3(0.7f));
 
-
 	entity = App->addEntity();
 	entity->getTransform()->m_position = glm::vec3(-4.0f, 1.7f, 5.0f);
 
@@ -66,62 +79,69 @@ int main()
 
 	std::shared_ptr<cobebe::ImageGUI> gui = entity->addComponent<cobebe::ImageGUI>();
 	gui->setTexture("images\\health_bar.png");
-
+	SDL_ShowCursor(false);
+#if defined(__EMSCRIPTEN__)
+	//App->run();
+	emscripten_request_animation_frame_loop(one_iter, 0);
+#else
 	App->run();
+#endif
 	
 	return 0;
 }
 
-/* Emscripten Testing
+ //Emscripten Testing
+/*
+int main()
+ {
+	 if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
+	 {
+		 throw std::exception();
+	 }
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) < 0)
-	{
-		throw std::exception();
-	}
+	 SDL_Window* window = SDL_CreateWindow("CoBeBe Window",
+		 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+		 1080, 720,
+		 SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
 
-	SDL_Window* window = SDL_CreateWindow("CoBeBe Window",
-		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-		1080, 720,
-		SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-
-	if (!SDL_GL_CreateContext(window))
-	{
-		throw std::exception();
-	}
+	 if (!SDL_GL_CreateContext(window))
+	 {
+		 throw std::exception();
+	 }
 
 
-	// Initialize OpenAL audio system
+	 // Initialize OpenAL audio system
 
 
-	// Open up the OpenAL device
-	ALCdevice* device = alcOpenDevice(NULL);
+	 // Open up the OpenAL device
+	 ALCdevice* device = alcOpenDevice(NULL);
 
-	if (device == NULL)
-	{
-		throw std::exception();
-	}
+	 if (device == NULL)
+	 {
+		 throw std::exception();
+	 }
 
-	// Create audio context
-	ALCcontext* alContext = alcCreateContext(device, NULL);
+	 // Create audio context
+	 ALCcontext* alContext = alcCreateContext(device, NULL);
 
-	if (alContext == NULL)
-	{
-		alcCloseDevice(device);
-		throw std::exception();
-	}
+	 if (alContext == NULL)
+	 {
+		 alcCloseDevice(device);
+		 throw std::exception();
+	 }
 
-	// Set as current context
-	if (!alcMakeContextCurrent(alContext))
-	{
-		alcDestroyContext(alContext);
-		alcCloseDevice(device);
-		throw std::exception();
-	}
-
-	std::shared_ptr<glwrap::Context> context = glwrap::Context::initialise();
-
-	std::shared_ptr<glwrap::GBuffer> gbuff = context->createGBuffer(1080, 720);
-
-	std::shared_ptr<glwrap::ShaderProgram> nullShader = context->createShader("emscripten_shaders\\lightingG.shad");
-
+	 // Set as current context
+	 if (!alcMakeContextCurrent(alContext))
+	 {
+		 alcDestroyContext(alContext);
+		 alcCloseDevice(device);
+		 throw std::exception();
+	 }
+	 printf("FUN\n");
+	 std::shared_ptr<glwrap::Context> context = glwrap::Context::initialise();
+	 
+	 std::shared_ptr<glwrap::GBuffer> gbuff = context->createGBuffer(1080, 720);
+	 
+	 std::shared_ptr<glwrap::ShaderProgram> nullShader = context->createShader("emscripten_shaders\\lightingG.shad");
+ }
 */

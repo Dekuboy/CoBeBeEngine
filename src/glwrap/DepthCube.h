@@ -12,6 +12,13 @@ namespace glwrap
 	public:
 		DepthCube(int width, int height);
 
+#if defined(__EMSCRIPTEN__)
+		/**
+		* \brief Bind face to Frame Buffer to draw
+		*/
+		void bindFrameBuffer(int _face);
+#endif
+
 		/**
 		* \brief Clear the DepthCube of previously generated values
 		*/

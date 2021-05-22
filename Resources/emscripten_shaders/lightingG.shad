@@ -30,9 +30,6 @@ uniform highp vec3 in_GlobalLightCol;
 uniform highp int in_PointTotal;
 uniform highp vec3 in_LightPos[10];
 uniform highp vec3 in_LightCol[10];
-uniform highp float in_FarPlane[10];
-// array of offset direction for sampling 3D
-uniform highp vec3 in_GridSamplingDisk[20];
 
 uniform highp vec3 in_ViewPos;
 uniform highp mat4 in_GlobalLightSpace;
@@ -42,27 +39,6 @@ varying highp vec2 ex_TexCoord;
 highp vec4 lightSpaceFragPos;
 highp vec3 fragPos;
 highp float gSpec;
-
-// array of random offset direction for sampling 2D
-/*highp vec2 poissonDisk[16] = vec2[16]
-( 
-   vec2( -0.94201624, -0.39906216 ), 
-   vec2( 0.94558609, -0.76890725 ), 
-   vec2( -0.094184101, -0.92938870 ), 
-   vec2( 0.34495938, 0.29387760 ), 
-   vec2( -0.91588581, 0.45771432 ), 
-   vec2( -0.81544232, -0.87912464 ), 
-   vec2( -0.38277543, 0.27676845 ), 
-   vec2( 0.97484398, 0.75648379 ), 
-   vec2( 0.44323325, -0.97511554 ), 
-   vec2( 0.53742981, -0.47373420 ), 
-   vec2( -0.26496911, -0.41893023 ), 
-   vec2( 0.79197514, 0.19090188 ), 
-   vec2( -0.24188840, 0.99706507 ), 
-   vec2( -0.81409955, 0.91437590 ), 
-   vec2( 0.19984126, 0.78641367 ), 
-   vec2( 0.14383161, -0.14100790 ) 
-);*/
 
 // Array functions
 highp float depthMap(int _id, vec3 _texCoord)
@@ -112,44 +88,52 @@ highp vec3 lightCol(int _id)
 	return vec3(0);
 }
 
-highp float farPlane(int _id)
+// array of random offset direction for sampling 2D
+highp vec2 diskSample(int _id)
 {
-	if(_id == 0) return in_FarPlane[0];
-	else if(_id == 1) return in_FarPlane[1];
-	else if(_id == 2) return in_FarPlane[2];
-	else if(_id == 3) return in_FarPlane[3];
-	else if(_id == 4) return in_FarPlane[4];
-	else if(_id == 5) return in_FarPlane[5];
-	else if(_id == 6) return in_FarPlane[6];
-	else if(_id == 7) return in_FarPlane[7];
-	else if(_id == 8) return in_FarPlane[8];
-	else if(_id == 9) return in_FarPlane[9];
+	if(_id == 0) return		 vec2( -0.94201624, -0.39906216 );
+	else if(_id == 1) return vec2( 0.94558609, -0.76890725 );
+	else if(_id == 2) return vec2( -0.094184101, -0.92938870 );
+	else if(_id == 3) return vec2( 0.34495938, 0.29387760 );
+	else if(_id == 4) return vec2( -0.91588581, 0.45771432 );
+	else if(_id == 5) return vec2( -0.81544232, -0.87912464 );
+	else if(_id == 6) return vec2( -0.38277543, 0.27676845 );
+	else if(_id == 7) return vec2( 0.97484398, 0.75648379 );
+	else if(_id == 8) return vec2( 0.44323325, -0.97511554 );
+	else if(_id == 9) return vec2( 0.53742981, -0.47373420 );
+	else if(_id == 10) return vec2( -0.26496911, -0.41893023 );
+	else if(_id == 11) return vec2( 0.79197514, 0.19090188 );
+	else if(_id == 12) return vec2( -0.24188840, 0.99706507 );
+	else if(_id == 13) return vec2( -0.81409955, 0.91437590 );
+	else if(_id == 14) return vec2( 0.19984126, 0.78641367 );
+	else if(_id == 15) return vec2( 0.14383161, -0.14100790 );
 
-	return 0.0;
+	return vec2(0);
 }
 
-highp vec3 diskSample(int _id)
+// array of offset direction for sampling 3D
+highp vec3 gridSample(int _id)
 {
-	if(_id == 0) return in_GridSamplingDisk[0];
-	else if(_id == 1) return in_GridSamplingDisk[1];
-	else if(_id == 2) return in_GridSamplingDisk[2];
-	else if(_id == 3) return in_GridSamplingDisk[3];
-	else if(_id == 4) return in_GridSamplingDisk[4];
-	else if(_id == 5) return in_GridSamplingDisk[5];
-	else if(_id == 6) return in_GridSamplingDisk[6];
-	else if(_id == 7) return in_GridSamplingDisk[7];
-	else if(_id == 8) return in_GridSamplingDisk[8];
-	else if(_id == 9) return in_GridSamplingDisk[9];
-	else if(_id == 0) return in_GridSamplingDisk[10];
-	else if(_id == 1) return in_GridSamplingDisk[11];
-	else if(_id == 2) return in_GridSamplingDisk[12];
-	else if(_id == 3) return in_GridSamplingDisk[13];
-	else if(_id == 4) return in_GridSamplingDisk[14];
-	else if(_id == 5) return in_GridSamplingDisk[15];
-	else if(_id == 6) return in_GridSamplingDisk[16];
-	else if(_id == 7) return in_GridSamplingDisk[17];
-	else if(_id == 8) return in_GridSamplingDisk[18];
-	else if(_id == 9) return in_GridSamplingDisk[19];
+	if(_id == 0) return		  vec3(1, 1,  1);
+	else if(_id == 1) return  vec3( 1, -1,  1);
+	else if(_id == 2) return  vec3(-1, -1,  1);
+	else if(_id == 3) return  vec3(-1, 1,  1); 
+	else if(_id == 4) return  vec3(1, 1, -1);
+	else if(_id == 5) return  vec3( 1, -1, -1);
+	else if(_id == 6) return  vec3(-1, -1, -1);
+	else if(_id == 7) return  vec3(-1, 1, -1);
+	else if(_id == 8) return  vec3(1, 1,  0);
+	else if(_id == 9) return  vec3( 1, -1,  0);
+	else if(_id == 10) return vec3(-1, -1,  0);
+	else if(_id == 11) return vec3(-1, 1,  0);
+	else if(_id == 12) return vec3(1, 0,  1);
+	else if(_id == 13) return vec3(-1,  0,  1);
+	else if(_id == 14) return vec3( 1,  0, -1);
+	else if(_id == 15) return vec3(-1, 0, -1);
+	else if(_id == 16) return vec3(0, 1,  1);
+	else if(_id == 17) return vec3( 0, -1,  1);
+	else if(_id == 18) return vec3( 0, -1, -1);
+	else if(_id == 19) return vec3( 0, 1, -1);
 
 	return vec3(0);
 }
@@ -184,7 +168,7 @@ highp float pcfGlobalShadow(vec3 _projCoords, float _bias)
 	for (int i=0;i<4;i++)
 	{
 		highp int index = int(16.0*random(gl_FragCoord.xyy, i))%16;
-		highp float spsDepth = texture(in_DepthBuff, _projCoords.xy + poissonDisk[index] / 700).r;
+		highp float spsDepth = texture(in_DepthBuff, _projCoords.xy + diskSample(index) / 700).r;
 		shadow += objectDepth - _bias > spsDepth ? 0.2 : 0.0;
 	}
 	return shadow;
@@ -226,16 +210,14 @@ highp float pcfPointShadow(float _viewDistance, vec3 _fragToLight, int _id)
 {
 	highp float shadow = 0.0;
 	highp float bias = 0.15;
-	highp float maxDistance = farPlane(_id);
 
 	highp float currentDepth = length(_fragToLight);
 
-	highp float diskRadius = (1.0 + (_viewDistance / maxDistance)) / 25.0;
+	highp float diskRadius = (1.0 + (_viewDistance / 5.0)) / 25.0;
 	highp float closestDepth;
 	for(int i = 0; i < 20; ++i)
 	{
-		closestDepth = depthMap(_id, _fragToLight + diskSample(i) * diskRadius);
-		closestDepth *= maxDistance;   // undo mapping [0;1]
+		closestDepth = depthMap(_id, _fragToLight + gridSample(i) * diskRadius);
 		if(currentDepth - bias > closestDepth) shadow += 1.0;
 	}
 	shadow /= 20.0;

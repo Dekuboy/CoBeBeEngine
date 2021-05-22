@@ -190,11 +190,11 @@ namespace cobebe
 			return asset;
 		}
 
+		SDL_Window* m_window; //!< Engine window
 	private:
 
 		std::weak_ptr<Core> m_self; //!< Pointer to self to be placed in added entities
 
-		SDL_Window* m_window; //!< Engine window
 		std::shared_ptr<Shader> m_nullShader; //!< Draws RenderTexture
 		std::shared_ptr<Shader> m_lightPassShader; //!< Draws deferred lighting
 

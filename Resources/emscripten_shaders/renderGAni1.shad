@@ -5,14 +5,16 @@ attribute vec4 in_Color;
 attribute vec2 in_TexCoord;
 
 uniform highp mat4 in_Projection;
+uniform highp mat4 in_View;
 uniform highp mat4 in_Model;
+uniform highp mat4 in_Animate;
 
 varying highp vec2 ex_TexCoord;
 
 void main()
 {
-	gl_Position = in_Projection * in_Model * vec4(in_Position, 1.0);
-	ex_TexCoord = vec2(in_TexCoord.x, -in_TexCoord.y);
+	gl_Position = in_Projection * in_View * in_Model * in_Animate * vec4(in_Position, 1.0);
+	ex_TexCoord = vec2(in_TexCoord.x, in_TexCoord.y);
 }
 
 #endif
