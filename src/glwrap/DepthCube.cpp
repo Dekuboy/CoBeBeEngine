@@ -9,7 +9,7 @@ namespace glwrap
 		glGenTextures(1, &m_id);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 		for (int i = 0; i < 6; ++i)
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT,
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_DEPTH_COMPONENT24,
 				width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

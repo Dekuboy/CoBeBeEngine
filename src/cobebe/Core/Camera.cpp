@@ -118,9 +118,11 @@ namespace cobebe
 				m_lighting->setDepthCubes(_shader);
 				m_lighting->setPointPositions(_shader);
 				m_lighting->setPointColours(_shader);
+#if defined(__EMSCRIPTEN__)
+#else
 				m_lighting->setFarPlanes(_shader);
+#endif
 			}
-
 			temp->setUniform(m_gBuffer);
 
 			temp->setUniform("in_ViewPos", m_position);

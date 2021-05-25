@@ -21,7 +21,7 @@ int main()
 	App = cobebe::Core::initialise();
 	printf("Initialise\n");
 
-	App->getLighting()->addPointLight(glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
+	//App->getLighting()->addPointLight(glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
 
 	std::shared_ptr<cobebe::Entity> entity = App->addEntity();
 

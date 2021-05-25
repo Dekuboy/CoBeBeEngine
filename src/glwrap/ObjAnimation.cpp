@@ -154,7 +154,7 @@ namespace glwrap
 
 		for (int charIndex = 0; charIndex < input.length(); charIndex++)
 		{
-			if (input[charIndex] != splitter)
+			if (input[charIndex] != splitter && input[charIndex] != 13)
 			{
 				current += input[charIndex];
 			}

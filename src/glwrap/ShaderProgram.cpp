@@ -80,14 +80,17 @@ namespace glwrap
 			fragShader = "\n#define FRAGMENT\n" + src;
 		}
 #else
-		bool geometry = (src.compare(0, 8, "#version") == 0);
-		if (geometry)
+		bool version = (src.compare(0, 8, "#version") == 0);
+		bool geometry = (src.find("GEOMETRY") != -1);
+		if (version)
 		{
-			vertShader = /*src.substr(0, 12) + */"\n#define VERTEX\n" + src.substr(12, std::string::npos);
+			int def = src.find("#if");
+			vertShader = src.substr(0, def) + "\n#define VERTEX\n" + src.substr(def, std::string::npos);
 
-			fragShader = src.substr(0, 12) + "\n#define FRAGMENT\n" + src.substr(12, std::string::npos);
+			fragShader = src.substr(0, def) + "\n#define FRAGMENT\n" + src.substr(def, std::string::npos);
 
-			geomShader = src.substr(0, 12) + "\n#define GEOMETRY\n" + src.substr(12, std::string::npos);
+			if (geometry)
+			geomShader = src.substr(0, def) + "\n#define GEOMETRY\n" + src.substr(def, std::string::npos);
 		}
 		else
 		{

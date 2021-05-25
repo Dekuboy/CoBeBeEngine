@@ -20,5 +20,9 @@ namespace glwrap
 	private:
 		friend class Context;
 
+#if defined(__EMSCRIPTEN__)
+		GLuint m_unusedTex; // Unused Tex to assign in WebGL
+#endif
+
 	};
 }

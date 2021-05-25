@@ -174,7 +174,7 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	)
 
 	set_target_properties(testCobebeEmscriptenExecutable1 PROPERTIES LINK_FLAGS  
-	"--preload-file Resources -s USE_SDL=2 -s USE_WEBGL2=1 -s FULL_ES3=1 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
+	"--preload-file Resources -s USE_SDL=2 -s USE_WEBGL2=1 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
 
 	target_link_libraries(testCobebeEmscriptenExecutable1
 		cobebe

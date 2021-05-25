@@ -56,6 +56,7 @@ std::string FileManager::returnPath(std::string _path)
 	}
 	
 #endif
+	//printf("%s\n", _path.c_str());
 	return m_folderPath + path;
 }
 
@@ -84,6 +85,7 @@ std::string FileManager::loadWin(std::string _path)
 		itr++;
 	}
 #endif
+	//printf("%s\n", _path.c_str());
 	std::ifstream file(m_folderPath + path);
 	if (!file.is_open())
 	{
