@@ -1,0 +1,29 @@
+#ifdef VERTEX
+
+attribute vec3 in_Position;
+attribute vec4 in_Color;
+attribute vec2 in_TexCoord;
+
+varying highp vec2 ex_TexCoord;
+
+void main()
+{
+	gl_Position = vec4(in_Position, 1.0);
+	ex_TexCoord = in_TexCoord;
+}
+
+#endif
+
+#ifdef FRAGMENT
+
+uniform sampler2D in_DepthMap;
+
+varying highp vec2 ex_TexCoord;
+
+void main()
+{
+	highp float depthValue = texture2D(in_DepthMap, vec2(ex_TexCoord.x, -ex_TexCoord.y)).r;
+	gl_FragColor = vec4(vec3(depthValue), 1.0);
+}
+
+#endif

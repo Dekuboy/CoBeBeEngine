@@ -195,6 +195,10 @@ namespace cobebe
 
 	void Core::iterateCoreLoop()
 	{
+		std::shared_ptr<Shader> check = loadAsset<Shader>("emscripten_shaders\\shadowCheck.shad");
+		check->getInternal()->setUniform("in_DepthMap", m_lighting->m_depthMap);
+		check->getInternal()->setViewport(glm::vec4(0, 0, m_environment->m_width, m_environment->m_height));
+
 		// Stop loop from being called within itself
 		if (!m_inLoop)
 		{
@@ -239,7 +243,7 @@ namespace cobebe
 			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
-			m_currentCamera.lock()->m_gBuffer->clear();
+			//m_currentCamera.lock()->m_gBuffer->clear();
 			m_currentCamera.lock()->setViewingFrustum();
 
 			// Clear Shadows
@@ -265,7 +269,8 @@ namespace cobebe
 			glDisable(GL_DEPTH_TEST);
 
 			// Draw current Camera to screen
-			drawToScreen();
+			//drawToScreen();
+			check->getInternal()->draw();
 
 			// PostDisplay each Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -319,7 +324,7 @@ namespace cobebe
 		int width = m_environment->m_width;
 		int height = m_environment->m_height;
 		tempCamera->m_texture = m_context->createRenderTexture(width, height);
-		tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
+		//tempCamera->m_gBuffer = m_context->createGBuffer(width, height);
 		tempCamera->m_lighting = m_lighting;
 		tempCamera->setPerspective(45.0f,
 			(float)width, (float)height, 1.0f, 1000.f);

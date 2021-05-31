@@ -73,7 +73,7 @@ namespace cobebe
 			if (inView)
 			{
 				//_shaderInternal->draw(m_texture, _meshInternal);
-				_shaderInternal->draw(m_gBuffer, _meshInternal);
+				//_shaderInternal->draw(m_gBuffer, _meshInternal);
 			}
 		}
 	}
