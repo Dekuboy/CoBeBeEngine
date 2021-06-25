@@ -10,7 +10,7 @@ namespace cobebe
 	void Collider::setMask(int _mask)
 	{
 		bool found = false;
-		for (std::list<int>::iterator itr = m_maskList.begin(); itr != m_maskList.end(); ++itr)
+		for (std::vector<int>::iterator itr = m_maskList.begin(); itr != m_maskList.end(); ++itr)
 		{
 			if (*itr == _mask)
 			{
@@ -23,7 +23,7 @@ namespace cobebe
 		}
 	}
 
-	std::list<int>& Collider::getMasks()
+	std::vector<int>& Collider::getMasks()
 	{
 		return m_maskList;
 	}
@@ -40,12 +40,12 @@ namespace cobebe
 
 	bool Collider::checkMask(std::shared_ptr<Collider> _collider)
 	{
-		std::list<int> maskList = _collider->getMasks();
+		std::vector<int> maskList = _collider->getMasks();
 
-		for (std::list<int>::iterator thisList = m_maskList.begin();
+		for (std::vector<int>::iterator thisList = m_maskList.begin();
 			thisList != m_maskList.end(); ++thisList)
 		{
-			for (std::list<int>::iterator colList = maskList.begin();
+			for (std::vector<int>::iterator colList = maskList.begin();
 				colList != maskList.end(); ++colList)
 			{
 				if ((*thisList) == (*colList))

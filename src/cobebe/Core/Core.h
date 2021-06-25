@@ -13,6 +13,7 @@ namespace cobebe
 	class Environment;
 	class Transform;
 	class Camera;
+	class CollisionManager;
 	class Lighting;
 	class Canvas;
 	class Keyboard;
@@ -201,13 +202,16 @@ namespace cobebe
 		ALCdevice* m_device; //!< Engine sound device
 		ALCcontext* m_alContext; //!< Engine sound context
 
-		std::shared_ptr<glwrap::Context> m_context; //!< Safely instantiates OpenGL objects
 		std::list<std::shared_ptr<Entity> > m_entities; //!< List of entities in game loop
+
 		std::list<std::shared_ptr<Camera> > m_cameras; //!< List of cameras in game loop
 		std::weak_ptr<Camera> m_currentCamera; //!< Holds Camera currently drawing to the screen
+
+		std::vector<std::string> m_maskNames; //!< Masks to limit certain interactions
+		std::shared_ptr<CollisionManager> m_collisionManager; //!< Manager handles all Collider Components
+		std::shared_ptr<glwrap::Context> m_context; //!< Safely instantiates OpenGL objects
 		std::shared_ptr<Lighting> m_lighting; //!< Holds all variables regarding Lighting
 		std::shared_ptr<Canvas> m_canvas; //!< Draws GUI to screen
-		std::vector<std::string> m_maskNames; //!< Masks to limit certain interactions
 
 		std::shared_ptr<Keyboard> m_keyboard; //!< Holds keyboard inputs
 		std::shared_ptr<Mouse> m_mouse; //!< Holds mouse inputs

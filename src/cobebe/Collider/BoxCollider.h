@@ -50,7 +50,7 @@ namespace cobebe
 		*/
 		bool isColliding(glm::vec3 _position, glm::vec3 _size);
 		/**
-		* \brief Finds position where collision no onger occurs
+		* \brief Finds position where collision no longer occurs
 		*/
 		glm::vec3 getCollisionResponse(glm::vec3 _position, glm::vec3 _size);
 

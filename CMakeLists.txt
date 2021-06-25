@@ -98,6 +98,8 @@ add_library(cobebe
 	src/cobebe/Collider/tribox.cpp
 	src/cobebe/Collider/raytri.cpp
 	src/cobebe/Collider/aabb.cpp
+	src/cobebe/Collider/CollisionManager.h
+	src/cobebe/Collider/CollisionManager.cpp
 	src/cobebe/Collider/Collider.h
 	src/cobebe/Collider/Collider.cpp
 	src/cobebe/Collider/BoxCollider.h
