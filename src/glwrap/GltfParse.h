@@ -34,7 +34,7 @@ namespace gltfparse
 
 	struct MatTex
 	{
-		int m_index;
+		int m_index = -1;
 		char m_texCoord;
 		float m_scale;
 	};

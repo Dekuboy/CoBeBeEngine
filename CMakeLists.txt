@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 2.6)
+if(MSVC)
+	set(CMAKE_GENERATOR_PLATFORM Win32)
+endif()
 project(COBEBE)
 
 include_directories(
 	src
+	include
 )
 
 add_library(glwrap
@@ -72,6 +76,7 @@ add_library(glwrap
 )
 
 if(MSVC)
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
 	target_link_libraries(glwrap glew32 SDL2 opengl32 OpenAL32)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	target_link_libraries(glwrap SDL2)

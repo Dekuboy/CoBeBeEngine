@@ -1,6 +1,4 @@
 #include <cobebe/Cobebe.h>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/ext.hpp>
 
 class CamController : public cobebe::Component
 {
@@ -40,10 +38,6 @@ private:
 
 int main()
 {
-	glwrap::NodeTransform nodeT;
-	nodeT.m_translate = new glm::vec3(0);
-	nodeT = glwrap::NodeTransform();
-
 	std::shared_ptr<cobebe::Core> App = cobebe::Core::initialise();
 	printf("Initialise\n");
 	{
