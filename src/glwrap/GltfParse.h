@@ -7,58 +7,79 @@
 
 namespace gltfparse
 {
+	/**
+	* \brief Contains scene values (the nodes)
+	*/
 	struct Scene
 	{
-		std::string m_name;
-		std::vector<int> m_nodes;
+		std::string m_name; //!< Scene name
+		std::vector<int> m_nodes; //!< Nodes in scene
 	};
 
+	/**
+	* \brief Contains information on models in scene
+	*/
 	struct Node
 	{
-		std::string m_name;
-		std::vector<int> m_children;
-		int m_mesh = -1;
-		int m_skin = -1;
-		std::vector<float> m_translation;
-		std::vector<float> m_scale;
-		std::vector<float> m_rotation;
-		std::vector<float> m_matrix;
+		std::string m_name; //!< Node name
+		std::vector<int> m_children; //!< Child node IDs
+		int m_mesh = -1; //!< Attached mesh ID if applicable
+		int m_skin = -1; //!< Attached skin ID if applicable
+		std::vector<float> m_translation; //!< Position values
+		std::vector<float> m_scale; //!< Size values
+		std::vector<float> m_rotation; //!< Rotation values
+		std::vector<float> m_matrix; //!< Full transformation matrix
 	};
 
+	/**
+	* \brief Contains external image values
+	*/
 	struct Image
 	{
-		std::string m_uri;
-		int m_bufferView;
-		std::string m_mimeType;
+		std::string m_uri; //!< Contains local path to image
+		int m_bufferView = -1; //!< BView ID
+		std::string m_mimeType; //!< mimeType
 	};
 
+	/**
+	* \brief Contains Texture values used in Material
+	*/
 	struct MatTex
 	{
-		int m_index = -1;
-		char m_texCoord;
-		float m_scale;
+		int m_index = -1; //!< Texture ID
+		int m_texCoord; //!< Attribute location
+		float m_scale; //!< Multiplier for tex values
 	};
 
+	/**
+	* \brief Physically-Based-Rendering Metallic Roughness values
+	*/
 	struct PBRMR
 	{
-		MatTex m_baseColour;
-		glm::vec4 m_colourFactor;
-		MatTex m_metallicRoughness;
-		float m_metallicFactor;
-		float m_roughnessFactor;
+		MatTex m_baseColour; //!< Base Metal Texture values
+		glm::vec4 m_colourFactor; //!< Colour multiplier
+		MatTex m_metallicRoughness; //!< MR Texture values
+		float m_metallicFactor; //!< Metal value multiplier
+		float m_roughnessFactor; //!< Roughness value multiplier
 	};
 
+	/**
+	* \brief Contains information on material used
+	*/
 	struct Mat
 	{
-		std::string m_name;
-		bool m_doubleSided;
-		PBRMR m_pbrMetallicRoughness;
-		MatTex m_normalTexture;
-		MatTex m_occlusionTexture;
-		MatTex m_emissiveTexture;
-		glm::vec3 m_emissiveFactor;
+		std::string m_name; //!< Material name
+		bool m_doubleSided; //!< Is the Texture culled from behind
+		PBRMR m_pbrMetallicRoughness; //!< PBR values
+		MatTex m_normalTexture; //!< Normal Texture values
+		MatTex m_occlusionTexture; //!< Occlusion Texture values
+		MatTex m_emissiveTexture; //!< Emission Texture values
+		glm::vec3 m_emissiveFactor; //!< Emission multiplier
 	};
 
+	/**
+	* \brief Texture Sampler values
+	*/
 	struct TexSampler
 	{
 		int m_magFilter;
@@ -67,6 +88,9 @@ namespace gltfparse
 		int m_wrapT;
 	};
 
+	/**
+	* \brief Model Primitive values
+	*/
 	struct Prim
 	{
 		int m_positionId = -1;
@@ -81,12 +105,18 @@ namespace gltfparse
 		int m_mode = -1;
 	};
 
+	/**
+	* \brief Model Mesh values
+	*/
 	struct Mesh
 	{
 		std::string m_name;
 		std::list<Prim> m_prims;
 	};
 
+	/**
+	* \brief Animation Skin values
+	*/
 	struct Skin
 	{
 		std::string m_name;
@@ -94,44 +124,62 @@ namespace gltfparse
 		std::vector<int> m_joints;
 	};
 
+	/**
+	* \brief Texture values
+	*/
 	struct Tex
 	{
-		int m_source;
-		int m_sampler;
+		int m_source; //!< Image source ID
+		int m_sampler; //!< Texsampler ID
 	};
 
+	/**
+	* \brief Connect AniSampler transformation to Node
+	*/
 	struct Channel
 	{
-		int m_sampler;
-		int m_node;
-		char m_path;
+		int m_sampler; //!< AniSampler ID
+		int m_node; //!< Target Node ID
+		char m_path; //!< Animated property (translation, rotation, scale, weights)
 	};
 
+	/**
+	* \brief Contains keyframe graph information
+	*/
 	struct AniSampler
 	{
-		int m_input;
-		int m_output;
-		char m_interpolate;
+		int m_input; //!< Keyframe input values ID (time)
+		int m_output; //!< Keyframe output values
+		char m_interpolate; //!< Method of Interpolation (Linear, Step, CubicSpline)
 	};
 
+	/**
+	* \brief Contains relevant information to parse animation values
+	*/
 	struct AniParse
 	{
-		std::string m_name;
-		std::vector<Channel> m_channels;
-		std::vector<AniSampler> m_samplers;
+		std::string m_name; //!< Animation name
+		std::vector<Channel> m_channels; //!< Channels connecting samplers to nodes
+		std::vector<AniSampler> m_samplers; //!< Samplers containing keyframe information
 	};
 
+	/**
+	* \brief Guide to retrieving info in Buffers
+	*/
 	struct Accessor
 	{
-		int m_bufferView;
-		int m_byteOffset = 0;
-		int m_compType;
-		int m_count;
-		std::vector<float> m_max;
-		std::vector<float> m_min;
-		int m_type;
+		int m_bufferView; //!< BView ID
+		int m_byteOffset = 0; //!< Starting position of data in bytes
+		int m_compType; //!< Data component type (int, float etc.)
+		int m_count; //!< Element total
+		std::vector<float> m_max; //!< The max value in data set
+		std::vector<float> m_min; //!< The min value in data set
+		int m_type; //!< Number of components (scalar, vec4, mat4 etc.)
 	};
 
+	/**
+	* \brief Stores data from buffer for use in Model/Animation
+	*/
 	struct AccessData
 	{
 		std::vector<GLbyte> m_byte;
@@ -141,18 +189,24 @@ namespace gltfparse
 		std::vector<GLfloat> m_float;
 	};
 
+	/**
+	* \brief Contains information on reading a buffer (or a subset of it)
+	*/
 	struct BufferView
 	{
-		int m_buffer;
-		int m_byteLength;
-		int m_target;
-		int m_byteOffset = 0;
-		int m_byteStride = 0;
+		int m_buffer; //!< Buffer ID
+		int m_byteLength; //!< Total byte length
+		int m_target; //!< GPU buffer target
+		int m_byteOffset = 0; //!< Starting position of data in bytes
+		int m_byteStride = 0; //!< Gap in bytes between relevant values
 	};
 
+	/**
+	* \brief Binary file containing Model/Animation values
+	*/
 	struct Buffer
 	{
-		int m_byteLength;
-		std::string m_uri;
+		int m_byteLength; //!< total byte length
+		std::string m_uri; //!< Contains local path to data
 	};
 }

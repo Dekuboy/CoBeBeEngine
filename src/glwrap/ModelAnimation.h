@@ -11,6 +11,9 @@ namespace glwrap
 {
 	class Context;
 
+	/**
+	* \brief Contains information on Node transformations during frame of animation
+	*/
 	struct ModelTransform
 	{
 		ModelTransform();
@@ -24,6 +27,9 @@ namespace glwrap
 		glm::vec4* m_weights;
 	};
 
+	/**
+	* \brief Contains full list of frame data for a Node during animation
+	*/
 	struct ModelMovement
 	{
 		int m_node;

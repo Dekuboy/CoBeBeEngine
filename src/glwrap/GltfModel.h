@@ -123,16 +123,50 @@ namespace glwrap
 		* \brief Attach Animation to object from file path
 		*/
 		//std::shared_ptr<ModelAnimation> addAnimation(std::string _path);
+
+		/**
+		* \brief Play animation by name once, return index for easy access
+		*/
 		int playAnimationOnce(std::string _name);
+		/**
+		* \brief Play animation by index once
+		*/
 		void playAnimationOnce(int _index);
+		/**
+		* \brief Activate animation on loop by name, return index for easy access
+		*/
 		int enableAnimation(std::string _name);
+		/**
+		* \brief Activate animation on loop by index
+		*/
 		void enableAnimation(int _index);
+		/**
+		* \brief Activate animation on loop by name and disable all others, return index for easy access
+		*/
 		int enableOnlyAnimation(std::string _name);
+		/**
+		* \brief Activate animation on loop by index and disable all others
+		*/
 		void enableOnlyAnimation(int _index);
+		/**
+		* \brief Set animation of name to input time, return index for easy access
+		*/
 		int setAnimationTime(std::string _name, double _time);
+		/**
+		* \brief Set animation at index to input time
+		*/
 		void setAnimationTime(int _index, double _time);
+		/**
+		* \brief Disable animation of name, return index for easy access
+		*/
 		int disableAnimation(std::string _name);
+		/**
+		* \brief Disable animation at index
+		*/
 		void disableAnimation(int _index);
+		/**
+		* \brief Deactivate all animations
+		*/
 		void disableAllAnimations();
 
 		/**

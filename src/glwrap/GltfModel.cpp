@@ -149,16 +149,20 @@ namespace glwrap
 
 	void GltfModel::parseScenes(std::list<std::string>& _splitLine, std::vector<gltfparse::Scene>& _scenes)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Scene newScene;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -171,49 +175,64 @@ namespace glwrap
 					_scenes.push_back(newScene);
 				}
 			}
+			// Record name
 			else if (tempStr == "name")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newScene.m_name = tempStr;
 			}
+			// Record base scene nodes
 			else if (tempStr == "nodes")
 			{
+				// Skip section name
 				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
+					// Check for close brackets
 					if (tempStr == "]")
 					{
 						bracket--;
 					}
+					// Add child node Id
 					else
 					{
 						newScene.m_nodes.push_back(atoi(tempStr.c_str()));
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseNodes(std::list<std::string>& _splitLine, std::vector<gltfparse::Node>& _nodes)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Node newNode;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -227,104 +246,137 @@ namespace glwrap
 					newNode = Node();
 				}
 			}
+			// Record name
 			else if (tempStr == "name")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newNode.m_name = tempStr;
 			}
+			// Record child nodes
 			else if (tempStr == "children")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
+					// Check for close brackets
 					if (tempStr == "]")
 					{
 						bracket--;
 					}
+					// Add child node Id
 					else
 					{
 						newNode.m_children.push_back(atoi(tempStr.c_str()));
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Record mesh Id
 			else if (tempStr == "mesh")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newNode.m_mesh = atoi(tempStr.c_str());
 			}
+			// Record skin Id
 			else if (tempStr == "skin")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newNode.m_skin = atoi(tempStr.c_str());
 			}
+			// Record translation values
 			else if (tempStr == "translation")
 			{
+				// Skip name and open brackets
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
+				// Record 3 float values for translation
 				for (int i = 0; i < 3; i++)
 				{
 					tempStr = *itr;
 					newNode.m_translation.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
 				}
+				// End on close bracket to be deleted
 			}
+			//Record scale values
 			else if (tempStr == "scale")
 			{
+				// Skip name and open brackets
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
+				// Record 3 float values for scale
 				for (int i = 0; i < 3; i++)
 				{
 					tempStr = *itr;
 					newNode.m_scale.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
 				}
+				// End on close bracket to be deleted
 			}
+			// Record rotation values
 			else if (tempStr == "rotation")
 			{
+				// Skip name and open brackets
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
+				// Record 4 float values
 				for (int i = 0; i < 4; i++)
 				{
 					tempStr = *itr;
 					newNode.m_rotation.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
 				}
+				// End on close bracket to be deleted
 			}
+			// record matrix values
 			else if (tempStr == "matrix")
 			{
+			// Skip name and open brackets
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
+				// Record 16 float values
 				for (int i = 0; i < 16; i++)
 				{
 					tempStr = *itr;
 					newNode.m_matrix.push_back(atof(tempStr.c_str()));
 					itr = _splitLine.erase(itr);
 				}
+				// End on close bracket to be deleted
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseSamplers(std::list<std::string>& _splitLine, std::vector<gltfparse::TexSampler>& _samplers)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		TexSampler newSampler;
 		int bracket = 1;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -338,46 +390,55 @@ namespace glwrap
 					newSampler = TexSampler();
 				}
 			}
+			// Record magFilter type
 			else if (tempStr == "magFilter")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newSampler.m_magFilter = atoi(tempStr.c_str());
 			}
+			// Record minFilter type
 			else if (tempStr == "minFilter")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newSampler.m_minFilter = atoi(tempStr.c_str());
 			}
+			// Record wrapS type
 			else if (tempStr == "wrapS")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newSampler.m_wrapS = atoi(tempStr.c_str());
 			}
+			// Record wrapT type
 			else if (tempStr == "wrapT")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newSampler.m_wrapT = atoi(tempStr.c_str());
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseSkins(std::list<std::string>& _splitLine, std::vector<gltfparse::Skin>& _skins)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Skin newSkin;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -391,55 +452,71 @@ namespace glwrap
 					newSkin = Skin();
 				}
 			}
+			// Record name
 			else if (tempStr == "name")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newSkin.m_name = tempStr;
 			}
+			// Record node Ids pertaining to joints
 			else if (tempStr == "joints")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
+					// Check for close brackets
 					if (tempStr == "]")
 					{
 						bracket--;
 					}
+					// Add joint node Id
 					else
 					{
 						newSkin.m_joints.push_back(atoi(tempStr.c_str()));
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Record invBindMat accessor Id
 			else if (tempStr == "inverseBindMatrices")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newSkin.m_invBindMat = atoi(tempStr.c_str());
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseImages(std::list<std::string>& _splitLine, std::vector<gltfparse::Image>& _images)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Image newImage;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -453,40 +530,48 @@ namespace glwrap
 					newImage = Image();
 				}
 			}
+			// Record file path
 			else if (tempStr == "uri")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newImage.m_uri = tempStr;
 			}
+			// Record bufferView Id
 			else if (tempStr == "bufferView")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newImage.m_bufferView = atoi(tempStr.c_str());
 			}
+			// Record mimeType
 			else if (tempStr == "mimeType")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newImage.m_mimeType = tempStr;
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseTextures(std::list<std::string>& _splitLine, std::vector<gltfparse::Tex>& _textures)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Tex newTex;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -500,78 +585,88 @@ namespace glwrap
 					newTex = Tex();
 				}
 			}
+			// Record texture sampler Id
 			else if (tempStr == "sampler")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newTex.m_sampler = atoi(tempStr.c_str());
 			}
+			// Record image Id
 			else if (tempStr == "source")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newTex.m_source = atoi(tempStr.c_str());
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseMatTex(std::list<std::string>& _splitLine, std::list<std::string>::iterator& _itr, gltfparse::MatTex& _tex)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		MatTex newMatTex;
 		int bracket = 1;
-		_itr++;
-		_itr = _splitLine.erase(_itr);
+		_itr++;							// Skip the first line (parse section name)
+		_itr = _splitLine.erase(_itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && _itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *_itr;
+			// Count open and close brackets
 			if (tempStr == "}" || tempStr == "]")
 			{
 				bracket--;
 			}
+			// Record texture Id
 			else if (tempStr == "index")
 			{
 				_itr = _splitLine.erase(_itr);
 				tempStr = *_itr;
 				_tex.m_index = atoi(tempStr.c_str());
 			}
+			// Record texCoord accessor Id
 			else if (tempStr == "texCoord")
 			{
 				_itr = _splitLine.erase(_itr);
 				tempStr = *_itr;
-				_tex.m_texCoord = tempStr.c_str()[0];
+				_tex.m_texCoord = atoi(tempStr.c_str());
 			}
-			else if (tempStr == "scale")
+			// Record tex value multiplier
+			else if (tempStr == "scale" || tempStr == "strength")
 			{
 				_itr = _splitLine.erase(_itr);
 				tempStr = *_itr;
 				_tex.m_scale = atof(tempStr.c_str());
 			}
-			else if (tempStr == "strength")
-			{
-				_itr = _splitLine.erase(_itr);
-				tempStr = *_itr;
-				_tex.m_scale = atof(tempStr.c_str());
-			}
+			// Erase current line after processing
 			_itr = _splitLine.erase(_itr);
 		}
+		// Return to section name
 		_itr--;
 	}
 
 	void GltfModel::parseMaterials(std::list<std::string>& _splitLine, std::vector<Mat>& _materials)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Mat newMaterial;
 		MatTex newMatTex;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -585,22 +680,28 @@ namespace glwrap
 					newMaterial = Mat();
 				}
 			}
+			// Record name
 			else if (tempStr == "name")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newMaterial.m_name = tempStr;
 			}
+			// record pbr values
 			else if (tempStr == "pbrMetallicRoughness")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
-
+					// Count open and close brackets
 					if (tempStr == "{" || tempStr == "[")
 					{
 						bracket++;
@@ -609,16 +710,20 @@ namespace glwrap
 					{
 						bracket--;
 					}
+					// Parse and record material texture
 					else if (tempStr == "baseColorTexture")
 					{
 						parseMatTex(_splitLine, itr, newMatTex);
 						newMaterial.m_pbrMetallicRoughness.m_baseColour = newMatTex;
 						newMatTex = MatTex();
 					}
+					// Record colour multiplier
 					else if (tempStr == "baseColorFactor")
 					{
+						// Skip name and open brackets
 						itr = _splitLine.erase(itr);
 						itr = _splitLine.erase(itr);
+						// Record 4 float values
 						tempStr = *itr;
 						newMaterial.m_pbrMetallicRoughness.m_colourFactor.x
 							= atof(tempStr.c_str());
@@ -635,52 +740,63 @@ namespace glwrap
 						newMaterial.m_pbrMetallicRoughness.m_colourFactor.w
 							= atof(tempStr.c_str());
 						itr = _splitLine.erase(itr);
+						// End on close bracket to be deleted
 					}
+					// Parse and record material texture
 					else if (tempStr == "metallicRoughnessTexture")
 					{
 						parseMatTex(_splitLine, itr, newMatTex);
 						newMaterial.m_pbrMetallicRoughness.m_metallicRoughness = newMatTex;
 						newMatTex = MatTex();
 					}
+					// Record metal value multiplier
 					else if (tempStr == "metallicFactor")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newMaterial.m_pbrMetallicRoughness.m_metallicFactor = atof(tempStr.c_str());
 					}
+					// Record roughness value multiplier
 					else if (tempStr == "roughnessFactor")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newMaterial.m_pbrMetallicRoughness.m_roughnessFactor = atof(tempStr.c_str());
-
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Parse and record material texture
 			else if (tempStr == "normalTexture")
 			{
 				parseMatTex(_splitLine, itr, newMatTex);
 				newMaterial.m_normalTexture = newMatTex;
 				newMatTex = MatTex();
 			}
+			// Parse and record material texture
 			else if (tempStr == "occlusionTexture")
 			{
 				parseMatTex(_splitLine, itr, newMatTex);
 				newMaterial.m_occlusionTexture = newMatTex;
 				newMatTex = MatTex();
 			}
+			// Parse and record material texture
 			else if (tempStr == "emissiveTexture")
 			{
 				parseMatTex(_splitLine, itr, newMatTex);
 				newMaterial.m_emissiveTexture = newMatTex;
 				newMatTex = MatTex();
 			}
+			// Record emission multiplier
 			else if (tempStr == "emissiveFactor")
 			{
+				// Skip name and open brackets
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
+				// Record 3 float values
 				tempStr = *itr;
 				newMaterial.m_emissiveFactor.x
 					= atof(tempStr.c_str());
@@ -693,24 +809,30 @@ namespace glwrap
 				newMaterial.m_emissiveFactor.z
 					= atof(tempStr.c_str());
 				itr = _splitLine.erase(itr);
+				// End on close bracket to be deleted
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseMeshes(std::list<std::string>& _splitLine, std::vector<gltfparse::Mesh>& _meshes)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Mesh newMesh;
 		Prim newPrims;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -724,22 +846,28 @@ namespace glwrap
 					newMesh = gltfparse::Mesh();
 				}
 			}
+			// Record name
 			else if (tempStr == "name")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newMesh.m_name = tempStr;
 			}
+			// Record tri information
 			else if (tempStr == "primitives")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
-
+					// Count open and close brackets
 					if (tempStr == "{" || tempStr == "[")
 					{
 						bracket++;
@@ -753,81 +881,90 @@ namespace glwrap
 							newPrims = Prim();
 						}
 					}
-					else if (tempStr == "attributes")
-					{
-						itr = _splitLine.erase(itr);
-						bracket++;
-					}
+					// Record position attribute accessor Id
 					else if (tempStr == "POSITION")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_positionId = atoi(tempStr.c_str());
 					}
+					// Record normal attribute accessor Id
 					else if (tempStr == "NORMAL")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_normalId = atoi(tempStr.c_str());
 					}
+					// Record colour attribute accessor Id
 					else if (tempStr == "COLOR_0")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_colorId = atoi(tempStr.c_str());
 					}
+					// Record texcoord attribute accessor Id
 					else if (tempStr == "TEXCOORD_0")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_texCoordId = atoi(tempStr.c_str());
 					}
+					// Record joints attribute accessor Id
 					else if (tempStr == "JOINTS_0")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_jointsId = atoi(tempStr.c_str());
 					}
+					// Record weight attribute accessor Id
 					else if (tempStr == "WEIGHTS_0")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_weightsId = atoi(tempStr.c_str());
 					}
+					// Record tangent attribute accessor Id
 					else if (tempStr == "TANGENT")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_tangentId = atoi(tempStr.c_str());
 					}
+					// Record tri index accessor Id
 					else if (tempStr == "indices")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_indices = atoi(tempStr.c_str());
 					}
+					// Record material Id
 					else if (tempStr == "material")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_material = atoi(tempStr.c_str());
 					}
+					// Record primitive type to render
 					else if (tempStr == "mode")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newPrims.m_mode = atoi(tempStr.c_str());
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseAnimations(std::list<std::string>& _splitLine, std::vector<gltfparse::AniParse>& _animations)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		AniParse newAnimation;
 		Channel newChannel;
@@ -835,11 +972,14 @@ namespace glwrap
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -853,22 +993,28 @@ namespace glwrap
 					newAnimation = gltfparse::AniParse();
 				}
 			}
+			// Record name
 			else if (tempStr == "name")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newAnimation.m_name = tempStr;
 			}
+			// Record channels
 			else if (tempStr == "channels")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
-
+					// Count open and close brackets
 					if (tempStr == "{" || tempStr == "[")
 					{
 						bracket++;
@@ -882,27 +1028,26 @@ namespace glwrap
 							newChannel = Channel();
 						}
 					}
+					// Record sampler Id
 					else if (tempStr == "sampler")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newChannel.m_sampler = atoi(tempStr.c_str());
 					}
-					else if (tempStr == "target")
-					{
-						itr = _splitLine.erase(itr);
-						bracket++;
-					}
+					// Record node Id
 					else if (tempStr == "node")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newChannel.m_node = atoi(tempStr.c_str());
 					}
+					// Record transformation path
 					else if (tempStr == "path")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
+						// Record transformation type
 						if (tempStr == "translation")
 						{
 							newChannel.m_path = 't';
@@ -920,20 +1065,27 @@ namespace glwrap
 							newChannel.m_path = 'w';
 						}
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Record keyframe values
 			else if (tempStr == "samplers")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
-
+					// Count open and close brackets
 					if (tempStr == "{" || tempStr == "[")
 					{
 						bracket++;
@@ -947,18 +1099,21 @@ namespace glwrap
 							newSampler = AniSampler();
 						}
 					}
+					// Record time value accessor Id
 					else if (tempStr == "input")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newSampler.m_input = atoi(tempStr.c_str());
 					}
+					// Record output value accessor Id
 					else if (tempStr == "output")
 					{
 						itr = _splitLine.erase(itr);
 						tempStr = *itr;
 						newSampler.m_output = atoi(tempStr.c_str());
 					}
+					// Record method of iterpolation
 					else if (tempStr == "interpolation")
 					{
 						itr = _splitLine.erase(itr);
@@ -976,26 +1131,33 @@ namespace glwrap
 							newSampler.m_interpolate = 'c';
 						}
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseAccessors(std::list<std::string>& _splitLine, std::vector<gltfparse::Accessor>& _accessors)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		Accessor newAccessor;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -1009,72 +1171,95 @@ namespace glwrap
 					newAccessor = Accessor();
 				}
 			}
+			// Record bufferView Id
 			else if (tempStr == "bufferView")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newAccessor.m_bufferView = atoi(tempStr.c_str());
 			}
+			// Record byte offset value
 			else if (tempStr == "byteOffset")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newAccessor.m_byteOffset = atoi(tempStr.c_str());
 			}
+			// Record component data type
 			else if (tempStr == "componentType")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newAccessor.m_compType = atoi(tempStr.c_str());
 			}
+			// Record access data count
 			else if (tempStr == "count")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newAccessor.m_count = atoi(tempStr.c_str());
 			}
+			// Record max value in dataset
 			else if (tempStr == "max")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
+					// Check for close brackets
 					if (tempStr == "]")
 					{
 						bracket--;
 					}
+					// Push float value to vector
 					else
 					{
 						newAccessor.m_max.push_back(atof(tempStr.c_str()));
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Record min value in dataset
 			else if (tempStr == "min")
 			{
+				// Skip section name
+				itr++;
+				// Use stack to check how many brackets are open
 				stack = bracket;
 				bracket++;
-				itr++;
 				itr = _splitLine.erase(itr);
+				// When brackets return to initial stack size, end
 				while (bracket > stack && itr != _splitLine.end())
 				{
+					// Update to next line
 					tempStr = *itr;
+					// Check for close brackets
 					if (tempStr == "]")
 					{
 						bracket--;
 					}
+					// Push float value to vector
 					else
 					{
 						newAccessor.m_min.push_back(atof(tempStr.c_str()));
 					}
+					// Erase current line after processing
 					itr = _splitLine.erase(itr);
 				}
+				// Return to section name
 				itr--;
 			}
+			// Record data type
 			else if (tempStr == "type")
 			{
 				itr = _splitLine.erase(itr);
@@ -1104,22 +1289,27 @@ namespace glwrap
 					newAccessor.m_type = 1;
 				}
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseBufferViews(std::list<std::string>& _splitLine, std::vector<gltfparse::BufferView>& _bufferViews)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		BufferView newView;
 		int bracket = 1;
 		int stack;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -1133,51 +1323,61 @@ namespace glwrap
 					newView = BufferView();
 				}
 			}
+			// Record buffer Id
 			else if (tempStr == "buffer")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newView.m_buffer = atoi(tempStr.c_str());
 			}
+			// Record byte length
 			else if (tempStr == "byteLength")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newView.m_byteLength = atoi(tempStr.c_str());
 			}
+			// Record buffer target
 			else if (tempStr == "target")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newView.m_target = atoi(tempStr.c_str());
 			}
+			// Record byteStride value
 			else if (tempStr == "byteStride")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newView.m_byteStride = atoi(tempStr.c_str());
 			}
+			// Record byteOffset value
 			else if (tempStr == "byteOffset")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newView.m_byteOffset = atoi(tempStr.c_str());
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
 
 	void GltfModel::parseBuffers(std::list<std::string>& _splitLine, std::vector<gltfparse::Buffer>& _buffers)
 	{
+		// Prepare variables for parsing section
 		std::string tempStr;
 		gltfparse::Buffer newBuffer;
 		int bracket = 1;
 		std::list<std::string>::iterator itr = _splitLine.begin();
-		itr++;
-		itr = _splitLine.erase(itr);
+		itr++;							// Skip the first line (parse section name)
+		itr = _splitLine.erase(itr);	// Erase the bracket
+		// Use brackets to check when parse ends
 		while (bracket > 0 && itr != _splitLine.end())
 		{
+			// Update to next line
 			tempStr = *itr;
+			// Count open and close brackets
 			if (tempStr == "{" || tempStr == "[")
 			{
 				bracket++;
@@ -1191,18 +1391,21 @@ namespace glwrap
 					newBuffer = gltfparse::Buffer();
 				}
 			}
+			// Record byteLength
 			else if (tempStr == "byteLength")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newBuffer.m_byteLength = atoi(tempStr.c_str());
 			}
+			// Record file path
 			else if (tempStr == "uri")
 			{
 				itr = _splitLine.erase(itr);
 				tempStr = *itr;
 				newBuffer.m_uri = tempStr;
 			}
+			// Erase current line after processing
 			itr = _splitLine.erase(itr);
 		}
 	}
@@ -1211,8 +1414,6 @@ namespace glwrap
 		std::vector<gltfparse::Mat>& _materials, std::vector<gltfparse::Tex>& _textures,
 		std::vector<gltfparse::Image>& _images)
 	{
-		int id;
-
 		std::shared_ptr<Material> currentMaterial;
 
 		_glMatList.resize(_materials.size());
@@ -1229,6 +1430,7 @@ namespace glwrap
 			currentMaterial->m_name = matItr->m_name;
 			pbr = &matItr->m_pbrMetallicRoughness;
 
+			// Check for base colour texture values
 			matTex = &pbr->m_baseColour;
 			if (matTex->m_index > -1)
 			{
@@ -1238,6 +1440,7 @@ namespace glwrap
 			}
 			currentMaterial->m_colourFactor = pbr->m_colourFactor;
 
+			// Check for metal/rough values
 			matTex = &pbr->m_metallicRoughness;
 			if (matTex->m_index > -1)
 			{
@@ -1247,6 +1450,7 @@ namespace glwrap
 			}
 			currentMaterial->m_metalRoughFactor = glm::vec2(pbr->m_metallicFactor, pbr->m_roughnessFactor);
 
+			// Check for normalmap values
 			matTex = &matItr->m_normalTexture;
 			if (matTex->m_index > -1)
 			{
@@ -1256,6 +1460,7 @@ namespace glwrap
 			}
 			currentMaterial->m_normalFactor = matTex->m_scale;
 
+			// Check for occlusionmap values
 			matTex = &matItr->m_occlusionTexture;
 			if (matTex->m_index > -1)
 			{
@@ -1265,6 +1470,7 @@ namespace glwrap
 			}
 			currentMaterial->m_occlusionFactor = matTex->m_scale;
 
+			// Check for emissionmap values
 			matTex = &matItr->m_emissiveTexture;
 			if (matTex->m_index > -1)
 			{
@@ -1274,6 +1480,7 @@ namespace glwrap
 			}
 			currentMaterial->m_emissiveFactor = matItr->m_emissiveFactor;
 
+			// Add to list
 			*glMatItr = currentMaterial;
 			matItr++;
 			glMatItr++;
@@ -1285,6 +1492,8 @@ namespace glwrap
 		std::vector<gltfparse::AccessData>& _data, std::vector<gltfparse::Mesh>& _meshes,
 		std::vector<std::shared_ptr<Material>>& _materials)
 	{
+		// Prepare buffers to write to
+
 		std::shared_ptr<VertexBuffer> positionBuffer;
 		std::shared_ptr<VertexBuffer> colourbuffer;
 		std::shared_ptr<VertexBuffer> texCoordBuffer;
@@ -1294,46 +1503,74 @@ namespace glwrap
 		std::shared_ptr<VertexBuffer> tangentBuffer;
 		std::shared_ptr<VertexBuffer> bitangentBuffer;
 
+		// Prepare vectors to store values to
+
 		glm::vec3 vertexPosition, normal;
 		glm::vec2 deltaUV1;
 		glm::vec4 colour;
 		glm::ivec4 joints;
 		float factor;
 
+		// Data and material information
+
 		Accessor* accPointer;
 		std::shared_ptr<Material> currentMaterial;
 		int matCount = 0;
+		
+		// Check for model rotation in node space for max/min, 
+
 		bool checkRotation, checkMat;
+
+		// Data type lists
+
 		std::vector<GLushort>* indicesData;
 		std::vector<GLbyte>* byteList;
 		std::vector<GLubyte>* ubyteList;
 		std::vector<GLshort>* shortList;
 		std::vector<GLushort>* ushortList;
 		std::vector<GLfloat>* floatList;
+
+		// Model triangle values
+
 		std::shared_ptr<TriFace> f;
 		std::vector<std::shared_ptr<TriFace>> partFaces;
+
+		// Go through list of primitive groups in current mesh
 		for (std::list<Prim>::iterator primItr = _currentMesh->m_prims.begin();
 			primItr != _currentMesh->m_prims.end(); primItr++)
 		{
+			// Generate vertex array for values
 			_part->generateArrays();
+			// Retrieve index data for triangles
 			indicesData = &_data.at(primItr->m_indices).m_ushort;
 
+			// Prepare position buffer
 			positionBuffer = std::make_shared<VertexBuffer>();
 			{
+				// Get the position value
 				accPointer = &_accessors.at(primItr->m_positionId);
+				// Check for min and max values
 				if ((accPointer->m_max.size() == 3) &&
 					(accPointer->m_min.size() == 3))
 				{
+					// Prepare new triangle value set
 					f = std::make_shared<TriFace>();
+
+					// Check all axes after rotation to see if max and min values are consistent in node space
 					f->na = glm::vec3(1, 0, 0);
 					f->nb = glm::vec3(0, 1, 0);
 					f->nc = glm::vec3(0, 0, 1);
 					_modelNode->m_translation.translateTriNorm(f);
+					
+					// If 2 values are axes aligned then all are, the max and min values are therefore valid
+					// Otherwise every value has to be rotated and checked for appopriate transformed max and min values
 					if (abs(f->na.x) == 1 || abs(f->na.y) == 1 || abs(f->na.z) == 1)
 					{
 						if (abs(f->nb.x) == 1 || abs(f->nb.y) == 1 || abs(f->nb.z) == 1)
 						{
+							// No need to check rotated values for max and min
 							checkRotation = false;
+							// Set max and min values to triangle to be transformed to node space
 							vertexPosition.x = accPointer->m_max.at(0);
 							vertexPosition.y = accPointer->m_max.at(1);
 							vertexPosition.z = accPointer->m_max.at(2);
@@ -1345,6 +1582,7 @@ namespace glwrap
 							f->pc = glm::vec3(1);
 							_modelNode->m_translation.translateTriPos(f);
 
+							// If rotated, check that max and min values are not reversed
 							if (f->pa.x < f->pb.x)
 							{
 								factor = f->pa.x;
@@ -1364,8 +1602,10 @@ namespace glwrap
 								f->pb.z = factor;
 							}
 
+							// Apply max and min to model part
 							_part->checkMax(f->pa);
 							_part->checkMin(f->pb);
+							// Check to apply max and min to model whole
 							checkMax(f->pa);
 							checkMin(f->pb);
 						}
@@ -1379,7 +1619,9 @@ namespace glwrap
 						checkRotation = true;
 					}
 				}
+				// Retrieve data where position values are located
 				floatList = &_data.at(primItr->m_positionId).m_float;
+				// Set values to tri faces
 				for (int i = 0; i < indicesData->size(); )
 				{
 					f = std::make_shared<TriFace>();
@@ -1414,11 +1656,14 @@ namespace glwrap
 					m_faces.push_back(f);
 					_part->addFace(f);
 				}
+				// Set OpenGL buffer
 				_part->setBuffer("in_Position", positionBuffer, matCount);
 			}
 
+			// Retrieve faces created from position bufer section
 			partFaces = _part->getFaces();
 
+			// Prepare normal buffer if applicable
 			if (primItr->m_normalId > -1)
 			{
 				normalBuffer = std::make_shared<VertexBuffer>();
@@ -1482,29 +1727,12 @@ namespace glwrap
 					ubyteList = &_data.at(primItr->m_jointsId).m_ubyte;
 					for (int i = 0; i < indicesData->size(); )
 					{
-						//f = partFaces.at(i / 12);
 						joints.x = ubyteList->at(indicesData->at(i) * 4);
 						joints.y = ubyteList->at(indicesData->at(i) * 4 + 1);
 						joints.z = ubyteList->at(indicesData->at(i) * 4 + 2);
 						joints.w = ubyteList->at(indicesData->at(i) * 4 + 3);
 						jointsBuffer->add(joints);
 						i++;
-						//f-> = colour;
-						//joints.x = floatList->at(indicesData->at(i) * 4);
-						//joints.y = floatList->at(indicesData->at(i) * 4 + 1);
-						//joints.z = floatList->at(indicesData->at(i) * 4 + 2);
-						//joints.w = floatList->at(indicesData->at(i) * 4 + 3);
-						//i++;
-						//f-> = joints;
-						//colour.x = floatList->at(indicesData->at(i) * 4);
-						//colour.y = floatList->at(indicesData->at(i) * 4 + 1);
-						//colour.z = floatList->at(indicesData->at(i) * 4 + 2);
-						//colour.w = floatList->at(indicesData->at(i) * 4 + 3);
-						//i++;
-						//f-> = colour;
-						//jointsBuffer->add();
-						//jointsBuffer->add();
-						//jointsBuffer->add();
 					}
 				}
 				else if (accPointer->m_compType == 5123)
@@ -1512,7 +1740,6 @@ namespace glwrap
 					ushortList = &_data.at(primItr->m_jointsId).m_ushort;
 					for (int i = 0; i < indicesData->size(); )
 					{
-						//f = partFaces.at(i / 12);
 						joints.x = ushortList->at(indicesData->at(i) * 4);
 						joints.y = ushortList->at(indicesData->at(i) * 4 + 1);
 						joints.z = ushortList->at(indicesData->at(i) * 4 + 2);
@@ -1530,7 +1757,6 @@ namespace glwrap
 				floatList = &_data.at(primItr->m_weightsId).m_float;
 				for (int i = 0; i < indicesData->size(); )
 				{
-					//f = partFaces.at(i / 12);
 					colour.x = floatList->at(indicesData->at(i) * 4);
 					colour.y = floatList->at(indicesData->at(i) * 4 + 1);
 					colour.z = floatList->at(indicesData->at(i) * 4 + 2);
