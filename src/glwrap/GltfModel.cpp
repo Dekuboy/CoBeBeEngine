@@ -192,7 +192,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -263,7 +263,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -345,7 +345,7 @@ namespace glwrap
 			// record matrix values
 			else if (tempStr == "matrix")
 			{
-			// Skip name and open brackets
+				// Skip name and open brackets
 				itr = _splitLine.erase(itr);
 				itr = _splitLine.erase(itr);
 				// Record 16 float values
@@ -469,7 +469,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -697,7 +697,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -863,7 +863,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -1010,7 +1010,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -1081,7 +1081,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -1209,7 +1209,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -1239,7 +1239,7 @@ namespace glwrap
 				bracket++;
 				itr = _splitLine.erase(itr);
 				// When brackets return to initial stack size, end
-				while (bracket > stack && itr != _splitLine.end())
+				while (bracket > stack&& itr != _splitLine.end())
 				{
 					// Update to next line
 					tempStr = *itr;
@@ -1516,7 +1516,7 @@ namespace glwrap
 		Accessor* accPointer;
 		std::shared_ptr<Material> currentMaterial;
 		int matCount = 0;
-		
+
 		// Check for model rotation in node space for max/min, 
 
 		bool checkRotation, checkMat;
@@ -1561,7 +1561,7 @@ namespace glwrap
 					f->nb = glm::vec3(0, 1, 0);
 					f->nc = glm::vec3(0, 0, 1);
 					_modelNode->m_translation.translateTriNorm(f);
-					
+
 					// If 2 values are axes aligned then all are, the max and min values are therefore valid
 					// Otherwise every value has to be rotated and checked for appopriate transformed max and min values
 					if (abs(f->na.x) == 1 || abs(f->na.y) == 1 || abs(f->na.z) == 1)
@@ -1621,7 +1621,7 @@ namespace glwrap
 				}
 				// Retrieve data where position values are located
 				floatList = &_data.at(primItr->m_positionId).m_float;
-				// Set values to tri faces
+				// Set values to tri faces and buffer
 				for (int i = 0; i < indicesData->size(); )
 				{
 					f = std::make_shared<TriFace>();
@@ -1666,8 +1666,11 @@ namespace glwrap
 			// Prepare normal buffer if applicable
 			if (primItr->m_normalId > -1)
 			{
+				// Prepare normal buffer
 				normalBuffer = std::make_shared<VertexBuffer>();
+				// Retrieve data where normal values are located
 				floatList = &_data.at(primItr->m_normalId).m_float;
+				// Set values to tri faces and buffer
 				for (int i = 0; i < indicesData->size(); )
 				{
 					f = partFaces.at(i / 3);
@@ -1691,12 +1694,17 @@ namespace glwrap
 					normalBuffer->add(f->nb);
 					normalBuffer->add(f->nc);
 				}
+				// Set OpenGL buffer
 				_part->setBuffer("in_Normal", normalBuffer, matCount);
 			}
+			// Prepare texture coordinate buffer if applicable
 			if (primItr->m_texCoordId > -1)
 			{
+				// Prepare texture coordinate buffer
 				texCoordBuffer = std::make_shared<VertexBuffer>();
+				// Retrieve data where texture coordinate values are located
 				floatList = &_data.at(primItr->m_texCoordId).m_float;
+				// Set values to tri faces and buffer
 				for (int i = 0; i < indicesData->size(); )
 				{
 					f = partFaces.at(i / 6);
@@ -1716,12 +1724,17 @@ namespace glwrap
 					texCoordBuffer->add(f->tcb);
 					texCoordBuffer->add(f->tcc);
 				}
+				// Set OpenGL buffer
 				_part->setBuffer("in_TexCoord", texCoordBuffer, matCount);
 			}
+			// Prepare joints buffer if applicable
 			if (primItr->m_jointsId > -1)
 			{
+				// Prepare joints buffer
 				jointsBuffer = std::make_shared<VertexBuffer>();
+				// Retrieve data where joints values are located
 				accPointer = &_accessors.at(primItr->m_jointsId);
+				// Set values to buffer 
 				if (accPointer->m_compType == 5121)
 				{
 					ubyteList = &_data.at(primItr->m_jointsId).m_ubyte;
@@ -1748,13 +1761,17 @@ namespace glwrap
 						i++;
 					}
 				}
-
+				// Set OpenGL buffer
 				_part->setBuffer("in_JointIDs", jointsBuffer, matCount);
 			}
+			// Prepare weights buffer if applicable
 			if (primItr->m_weightsId > -1)
 			{
+				// Prepare weights buffer
 				weightsBuffer = std::make_shared<VertexBuffer>();
+				// Retrieve data where weights data is located
 				floatList = &_data.at(primItr->m_weightsId).m_float;
+				// Set values to buffer
 				for (int i = 0; i < indicesData->size(); )
 				{
 					colour.x = floatList->at(indicesData->at(i) * 4);
@@ -1764,11 +1781,14 @@ namespace glwrap
 					weightsBuffer->add(colour);
 					i++;
 				}
+				// Set OpenGL buffer
 				_part->setBuffer("in_Weights", weightsBuffer, matCount);
 			}
 
+			// Prepare Material if aplicable
 			if (primItr->m_material > -1)
 			{
+				// Check if material is in the full model list
 				checkMat = false;
 				currentMaterial = _materials.at(primItr->m_material);
 				for (std::list<std::shared_ptr<Material>>::iterator itr = m_materialList.begin();
@@ -1777,45 +1797,63 @@ namespace glwrap
 					if (*itr == currentMaterial)
 					{
 						checkMat = true;
+						break;
 					}
 				}
+				// If not found, add to full list
 				if (!checkMat)
 				{
 					m_materialList.push_back(currentMaterial);
 				}
+				// Add to part list to iterate through when drawing arrays
 				_part->m_materials.push_back(currentMaterial);
 			}
 			else
 			{
+				// Add nullptr for consistency when drawing arrays
 				_part->m_materials.push_back(nullptr);
 			}
+			// matCount is a form of array count
 			matCount++;
 		}
+		// Set total part size when values are resolved
 		_part->m_size = _part->m_maxPoint - _part->m_minPoint;
+		// Push to model once complete
 		m_parts.push_back(_part);
 	}
 
-	void GltfModel::assembleChildren(std::shared_ptr<ModelNode> _parentModelNode)
+	void GltfModel::assembleChildren(int _parentModelNode)
 	{
-		Node* parentNode = &m_parseNodes->at(_parentModelNode->m_id);
-		_parentModelNode->m_name = parentNode->m_name;
+		// List of node Ids in hierarchy
+		std::vector<int> idList;
+		idList.push_back(_parentModelNode);
+
+		std::shared_ptr<ModelNode> currentParent;
 		std::shared_ptr<ModelNode> child;
-		for (std::vector<int>::iterator itr = parentNode->m_children.begin();
-			itr != parentNode->m_children.end(); itr++)
+
+		// Iterate through nodes to check for child nodes
+		for (int idItr = 0; idItr < idList.size(); idItr++)
 		{
-			if (m_allNodes.at(*itr))
+			currentParent = m_allNodes.at(idList.at(idItr));
+			Node* parentNode = &m_parseNodes->at(idList.at(idItr));
+			currentParent->m_name = parentNode->m_name;
+
+			// Prepare child node and set values 
+			for (std::vector<int>::iterator itr = parentNode->m_children.begin();
+				itr != parentNode->m_children.end(); itr++)
 			{
-				throw std::exception();
-			}
-			else
-			{
+				// Child node should not appear twice
+				if (m_allNodes.at(*itr))
+				{
+					throw std::exception();
+				}
+
 				child = std::make_shared<ModelNode>();
 				m_allNodes.at(*itr) = child;
+				child->m_id = *itr;
+				idList.push_back(*itr);
+				child->m_parent = currentParent;
 			}
-			child->m_id = *itr;
-			child->m_parent = _parentModelNode;
-			_parentModelNode->m_children.push_back(child);
-			assembleChildren(child);
 		}
 	}
 
@@ -1833,42 +1871,50 @@ namespace glwrap
 		ModelSkin* currentModelSkin;
 		Skin* currentSkin;
 		Mesh* currentMesh;
+
+		// Data types
+
 		glm::vec3* vec3Ptr;
 		glm::quat* quatPtr;
 		glm::mat4* mat4Ptr;
-		std::vector<int>::iterator nodeItr = _scene.m_nodes.begin();
-		std::vector<GLfloat>* floatList;
+		std::vector<GLfloat>* floatList = nullptr;
 
+		std::vector<int>::iterator nodeItr = _scene.m_nodes.begin();
+
+		// Resize nodes vector to prepare for assembly
 		m_allNodes.resize(m_parseNodes->size());
 
+		// Prepare nodes to initialised
 		while (nodeItr != _scene.m_nodes.end())
 		{
+			// Node should not appear twice
 			if (m_allNodes.at(*nodeItr))
 			{
 				throw std::exception();
 			}
-			else
-			{
-				currentModelNode = std::make_shared<ModelNode>();
-				m_allNodes.at(*nodeItr) = currentModelNode;
-			}
+
+			currentModelNode = std::make_shared<ModelNode>();
+			m_allNodes.at(*nodeItr) = currentModelNode;
 			m_sceneNodes.push_back(currentModelNode);
 			currentModelNode->m_id = *nodeItr;
-			assembleChildren(currentModelNode);
+
+			// Assemble children of top level node
+			assembleChildren(*nodeItr);
 			nodeItr++;
 		}
 
-		m_minPoint = glm::vec3(0);
-		m_maxPoint = glm::vec3(0);
-
+		// Set values in nodes
 		for (std::vector<std::shared_ptr<ModelNode>>::iterator itr = m_allNodes.begin();
 			itr != m_allNodes.end(); itr++)
 		{
+			// Check node is part of model
 			if (*itr)
 			{
+				// Get node to initialise
 				currentModelNode = *itr;
 				currentNode = &m_parseNodes->at((*itr)->m_id);
 				{
+					// If node is translated, transfer values
 					if (currentNode->m_translation.size() == 3)
 					{
 						vec3Ptr = new glm::vec3();
@@ -1877,6 +1923,7 @@ namespace glwrap
 						vec3Ptr->z = currentNode->m_translation.at(2);
 						currentModelNode->m_translation.m_translate = vec3Ptr;
 					}
+					// If node is scaled, transfer values
 					if (currentNode->m_scale.size() == 3)
 					{
 						vec3Ptr = new glm::vec3();
@@ -1885,6 +1932,7 @@ namespace glwrap
 						vec3Ptr->z = currentNode->m_scale.at(2);
 						currentModelNode->m_translation.m_scale = vec3Ptr;
 					}
+					// If node is rotated, transfer values
 					if (currentNode->m_rotation.size() == 4)
 					{
 						quatPtr = new glm::quat();
@@ -1894,6 +1942,7 @@ namespace glwrap
 						quatPtr->w = -currentNode->m_rotation.at(3);
 						currentModelNode->m_translation.m_quat = quatPtr;
 					}
+					// If node is transformed, transfer values
 					if (currentNode->m_matrix.size() == 16)
 					{
 						mat4Ptr = new glm::mat4();
@@ -1908,6 +1957,7 @@ namespace glwrap
 					}
 				}
 
+				// Check for model skin to initialise
 				id = currentNode->m_skin;
 				if (id > -1)
 				{
@@ -1915,10 +1965,14 @@ namespace glwrap
 					currentModelSkin = &m_skins.back();
 					currentSkin = &_skins.at(id);
 
+					// Retrieve inverse bind matrix data
 					floatList = &_data.at(currentSkin->m_invBindMat).m_float;
 
+					// Prepare data vectors
 					currentModelSkin->m_invBindMats.resize(currentSkin->m_joints.size());
 					currentModelSkin->m_nodeIds.resize(currentSkin->m_joints.size());
+
+					// Iterate through joints and save corresponding inverse bind matrices
 					for (int i = 0; i < currentSkin->m_joints.size(); i++)
 					{
 						currentModelSkin->m_nodeIds.at(i) = currentSkin->m_joints.at(i);
@@ -1934,11 +1988,14 @@ namespace glwrap
 					}
 				}
 
+				// Check for model mesh to initialise
 				id = currentNode->m_mesh;
 				if (id > -1)
 				{
+					// Retrieve mesh values
 					currentMesh = &_meshes.at(id);
 					currentPart = getMesh(currentMesh->m_name);
+					// Initialise part if required
 					if (!currentPart)
 					{
 						currentPart = m_context.lock()->createModelMesh(m_self.lock(), currentMesh->m_name);
@@ -1951,6 +2008,7 @@ namespace glwrap
 			}
 		}
 
+		// Once complete, parse values are no longer needed
 		m_parseNodes = nullptr;
 	}
 
@@ -2354,7 +2412,7 @@ namespace glwrap
 		}
 	}
 
-	void GltfModel::updateAnimationValues(std::vector<glm::vec4>& _translations, 
+	void GltfModel::updateAnimationValues(std::vector<glm::vec4>& _translations,
 		std::vector<glm::vec4>& _rotations)
 	{
 		if (m_skins.size() > 0)

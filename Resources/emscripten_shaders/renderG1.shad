@@ -1,32 +1,54 @@
+#version 300 es
 #ifdef VERTEX
 
-attribute vec3 in_Position;
-attribute vec4 in_Color;
-attribute vec2 in_TexCoord;
+in vec3 in_Position;
+in vec4 in_Color;
+in vec2 in_TexCoord;
+in vec3 in_Normal;
 
-uniform highp mat4 in_Projection;
-uniform highp mat4 in_View;
-uniform highp mat4 in_Model;
+uniform mat4 in_Projection;
+uniform mat4 in_View;
+uniform mat4 in_Model;
 
-varying highp vec2 ex_TexCoord;
+out highp vec4 ex_Color;
+out highp vec2 ex_TexCoord;
+out highp vec3 ex_FragPos;
+out highp vec3 ex_Normal;
 
 void main()
 {
 	gl_Position = in_Projection * in_View * in_Model * vec4(in_Position, 1.0);
-	ex_TexCoord = vec2(in_TexCoord.x, in_TexCoord.y);
+	ex_Color = in_Color;
+	ex_TexCoord = in_TexCoord;
+
+	ex_Normal = mat3(in_Model) * in_Normal;
+	ex_FragPos = vec3(in_Model * vec4(in_Position, 1.0));
 }
 
 #endif
 
 #ifdef FRAGMENT
 
+layout (location = 0) out highp vec3 g_Position;
+layout (location = 1) out highp vec3 g_Normal;
+layout (location = 2) out highp vec4 g_AlbedoSpec;
+
 uniform sampler2D in_Texture;
-varying highp vec2 ex_TexCoord;
+
+in highp vec4 ex_Color;
+in highp vec2 ex_TexCoord;
+in highp vec3 ex_FragPos;
+in highp vec3 ex_Normal;
+
 void main()
 {
-	highp vec4 tex = texture2D(in_Texture, ex_TexCoord);
-	if (tex.a <= 0.0)	discard;	
-	gl_FragColor = tex;
+	g_AlbedoSpec.rgb = ex_FragPos;
+
+	g_Normal = normalize(ex_Normal);
+
+	g_Position = texture(in_Texture, ex_TexCoord).rgb;
+
+	g_AlbedoSpec.a = 0.0;
 }
 
 #endif

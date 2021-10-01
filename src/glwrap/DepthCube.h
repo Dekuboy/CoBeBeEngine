@@ -23,5 +23,12 @@ namespace glwrap
 		* \brief Clear the DepthCube of previously generated values
 		*/
 		void clear();
+
+	private:
+
+#if defined(__EMSCRIPTEN__)
+		GLuint m_unusedTex; // Unused Tex to assign in WebGL
+#endif
+
 	};
 }

@@ -57,7 +57,7 @@ namespace glwrap
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	glm::vec2 Texture::getSize()
+	glm::ivec2 Texture::getSize()
 	{
 		return m_size;
 	}

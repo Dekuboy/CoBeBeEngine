@@ -237,6 +237,7 @@ namespace cobebe
 		m_depthMap = std::make_shared<glwrap::DepthBuffer>(m_depthMapSize, m_depthMapSize);
 #if defined(__EMSCRIPTEN__)
 		m_depthShader = m_core.lock()->loadAsset<Shader>("emscripten_shaders\\shadowAni.shad");
+		m_cubeShader = m_core.lock()->loadAsset<Shader>("emscripten_shaders\\shadowAniCube.shad");
 #else
 		m_depthShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAni.shad");
 		m_cubeShader = m_core.lock()->loadAsset<Shader>("shadows\\shadowAniCube.shad");
@@ -262,9 +263,6 @@ namespace cobebe
 		// Matrix for pass by reference
 		glm::mat4 matRef(1);
 		// Draws to global directional light depth map
-#if defined(__EMSCRIPTEN__)
-		m_depthShader->setLightSpace(m_globalLightSpace);
-#endif
 		for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
 			it != m_shadowModels.end(); it++)
 		{
@@ -283,34 +281,14 @@ namespace cobebe
 		for (std::list<std::shared_ptr<PointLight> >::iterator pointIt = m_pointLights.begin();
 			pointIt != m_pointLights.end(); pointIt++)
 		{
-#if defined(__EMSCRIPTEN__)
-			m_pointLightPositions.push_back((*pointIt)->m_position);
-			m_pointColours.push_back((*pointIt)->m_colour);
-
-			// Draws to PointLight depth map
-			for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
-				it != m_shadowModels.end(); it++)
-			{
-				m_depthShader->m_internal->setUniform("in_Model", (*it).m_model);
-				m_depthShader->m_internal->setUniform("in_Animate", matRef);
-				if ((*it).m_animation.lock())
-				{
-					(*it).m_animation.lock()->setToDraw();
-				}
-
-				for (int i = 0; i < 6; i++)
-				{
-					m_depthShader->setLightSpace((*pointIt)->m_lightSpaces.at(i));
-					(*pointIt)->m_depthCube->bindFrameBuffer(i);
-					m_depthShader->m_internal->draw((*pointIt)->m_depthCube, (*it).m_mesh.lock());
-				}
-		}
-#else
 			m_pointLightPositions.push_back((*pointIt)->m_position);
 			m_pointColours.push_back((*pointIt)->m_colour);
 			m_farPlanes.push_back((*pointIt)->m_radius);
 
+#if defined(__EMSCRIPTEN__)
+#else
 			m_cubeShader->setLightSpace((*pointIt)->m_lightSpaces);
+#endif
 			m_cubeShader->m_internal->setUniform("in_FarPlane", (*pointIt)->m_radius);
 			m_cubeShader->setLightPos((*pointIt)->m_position);
 
@@ -324,9 +302,18 @@ namespace cobebe
 				{
 					(*it).m_animation.lock()->setToDraw();
 				}
+
+#if defined(__EMSCRIPTEN__)
+				for (int i = 5; i > -1; i--)
+				{
+					m_cubeShader->setLightSpace((*pointIt)->m_lightSpaces.at(i));
+					(*pointIt)->m_depthCube->bindFrameBuffer(i);
+					m_cubeShader->m_internal->draw((*pointIt)->m_depthCube, (*it).m_mesh.lock());
+				}
+#else
 				m_cubeShader->m_internal->draw((*pointIt)->m_depthCube, (*it).m_mesh.lock());
-			}
 #endif
+			}
 		}
 
 		// Deletes models to prepare for next display

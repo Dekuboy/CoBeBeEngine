@@ -205,7 +205,7 @@ namespace glwrap
 		std::vector<std::shared_ptr<ModelAnimation> > m_animations; //!< List of animations attached to the model
 		std::weak_ptr<GltfModel> m_self; //!< Pointer to self to set in individual joints
 
-		std::vector<gltfparse::Node>* m_parseNodes; //!< Parse nodes required for recursive function
+		std::vector<gltfparse::Node>* m_parseNodes; //!< Parse nodes used instead of passing values
 
 		/**
 		* \brief Checks if character is white space
@@ -281,9 +281,9 @@ namespace glwrap
 			std::vector<std::shared_ptr<Material>>& _materials);
 
 		/**
-		* \brief Assemble a Node (Recursive function asssembles children)
+		* \brief Assemble all children from base Node
 		*/
-		void assembleChildren(std::shared_ptr<ModelNode> _parentModelNode);
+		void assembleChildren(int _parentModelNode);
 
 		/**
 		* /brief Assemble GL Model for drawing

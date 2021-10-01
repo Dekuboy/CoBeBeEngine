@@ -23,7 +23,7 @@ namespace glwrap
 		/**
 		* \brief Retrieve the width and height of the Texture
 		*/
-		glm::vec2 getSize();
+		glm::ivec2 getSize();
 		/**
 		* \brief Get the Texture Id
 		*/
@@ -33,7 +33,7 @@ namespace glwrap
 		friend class Context;
 
 		GLuint m_id; //!< GL Id of Texture
-		glm::vec2 m_size; //!< Width and height of Texture
+		glm::ivec2 m_size; //!< Width and height of Texture
 		std::weak_ptr<Context> m_context; //!< Pointer to glwrap context
 
 	};

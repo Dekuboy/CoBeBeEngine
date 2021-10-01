@@ -1,0 +1,42 @@
+#version 300 es
+#ifdef VERTEX
+
+in vec3 in_Position;
+
+uniform mat4 in_Model;
+uniform mat4 in_Animate;
+uniform mat4 in_GlobalLightSpace;
+
+out highp vec4 ex_FragPos;
+
+void main()
+{
+    ex_FragPos = in_Model * in_Animate * vec4(in_Position, 1.0);
+    gl_Position = in_GlobalLightSpace * ex_FragPos;
+}
+
+#endif
+
+#ifdef FRAGMENT
+
+layout (location = 0) out highp vec4 null_Position;
+
+uniform highp vec3 in_LightPos;
+uniform highp float in_FarPlane;
+
+in highp vec4 ex_FragPos;
+
+void main()
+{
+    // get distance between fragment and light source
+    highp float lightDistance = length(ex_FragPos.xyz - in_LightPos);
+    
+    // map to [0;1] range by dividing by far_plane
+    lightDistance = lightDistance / in_FarPlane;
+    
+    // write this as modified depth
+    gl_FragDepth = lightDistance;
+    null_Position = vec4(1.0);
+}  
+
+#endif
