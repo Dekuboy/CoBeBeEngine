@@ -293,6 +293,12 @@ namespace cobebe
 			m_cubeShader->setLightPos((*pointIt)->m_position);
 
 			// Draws to PointLight depth map
+
+#if defined(__EMSCRIPTEN__)
+			for (int i = 5; i > -1; i--)
+			{
+				(*pointIt)->m_depthCube->bindFrameBuffer(i);
+#endif
 			for (std::list<ShadowModel>::iterator it = m_shadowModels.begin();
 				it != m_shadowModels.end(); it++)
 			{
@@ -304,10 +310,7 @@ namespace cobebe
 				}
 
 #if defined(__EMSCRIPTEN__)
-				for (int i = 5; i > -1; i--)
-				{
 					m_cubeShader->setLightSpace((*pointIt)->m_lightSpaces.at(i));
-					(*pointIt)->m_depthCube->bindFrameBuffer(i);
 					m_cubeShader->m_internal->draw((*pointIt)->m_depthCube, (*it).m_mesh.lock());
 				}
 #else

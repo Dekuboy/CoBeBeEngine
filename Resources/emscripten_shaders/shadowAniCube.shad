@@ -19,7 +19,7 @@ void main()
 
 #ifdef FRAGMENT
 
-layout (location = 0) out highp vec4 null_Position;
+layout (location = 0) out highp vec4 null_Colour;
 
 uniform highp vec3 in_LightPos;
 uniform highp float in_FarPlane;
@@ -36,7 +36,7 @@ void main()
     
     // write this as modified depth
     gl_FragDepth = lightDistance;
-    null_Position = vec4(1.0);
+    null_Colour = vec4(lightDistance, 1.0, 1.0, 1.0);
 }  
 
 #endif
