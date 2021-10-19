@@ -105,6 +105,7 @@ namespace cobebe
 		}
 
 		temp->m_context = glwrap::Context::initialise();
+		glEnable(GL_CULL_FACE);
 
 		temp->m_keyboard = std::make_shared<Keyboard>();
 		temp->m_keyboard->onInit();
@@ -195,9 +196,9 @@ namespace cobebe
 
 	void Core::iterateCoreLoop()
 	{
-		std::shared_ptr<Shader> check = loadAsset<Shader>("emscripten_shaders\\shadowCubeCheck.shad");
-		check->getInternal()->setUniform("in_DepthMap", m_lighting->m_depthCubes.at(0));
-		check->getInternal()->setViewport(glm::vec4(0, 0, m_environment->m_width, m_environment->m_height));
+		//std::shared_ptr<Shader> check = loadAsset<Shader>("emscripten_shaders\\shadowCubeCheck.shad");
+		//check->getInternal()->setUniform("in_DepthMap", m_lighting->m_depthCubes.at(0));
+		//check->getInternal()->setViewport(glm::vec4(0, 0, m_environment->m_width, m_environment->m_height));
 
 		// Stop loop from being called within itself
 		if (!m_inLoop)
@@ -243,7 +244,7 @@ namespace cobebe
 			glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			m_currentCamera.lock()->m_texture->clear();
-			//m_currentCamera.lock()->m_gBuffer->clear();
+			m_currentCamera.lock()->m_gBuffer->clear();
 			m_currentCamera.lock()->setViewingFrustum();
 
 			// Clear Shadows
@@ -251,7 +252,6 @@ namespace cobebe
 
 			// PreDisplay each Entity
 			// Renders to DepthMaps in Lighting
-			glEnable(GL_CULL_FACE);
 			glCullFace(GL_FRONT);
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
@@ -269,8 +269,8 @@ namespace cobebe
 			glDisable(GL_DEPTH_TEST);
 
 			// Draw current Camera to screen
-			//drawToScreen();
-			check->getInternal()->draw();
+			drawToScreen();
+			//check->getInternal()->draw();
 
 			// PostDisplay each Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
@@ -491,7 +491,7 @@ namespace cobebe
 
 	void Core::drawToScreen()
 	{
-		//m_currentCamera.lock()->drawLighting(m_lightPassShader);
+		m_currentCamera.lock()->drawLighting(m_lightPassShader);
 
 		//std::shared_ptr<Shader> temp = loadAsset<Shader>("deferred_shaders\\test.shad");
 
