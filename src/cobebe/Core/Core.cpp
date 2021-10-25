@@ -196,9 +196,9 @@ namespace cobebe
 
 	void Core::iterateCoreLoop()
 	{
-		//std::shared_ptr<Shader> check = loadAsset<Shader>("emscripten_shaders\\shadowCubeCheck.shad");
-		//check->getInternal()->setUniform("in_DepthMap", m_lighting->m_depthCubes.at(0));
-		//check->getInternal()->setViewport(glm::vec4(0, 0, m_environment->m_width, m_environment->m_height));
+		std::shared_ptr<Shader> check = loadAsset<Shader>("emscripten_shaders\\shadowCubeCheck.shad");
+		check->getInternal()->setUniform("in_DepthMap", m_lighting->m_depthCubes.at(0));
+		check->getInternal()->setViewport(glm::vec4(0, 0, m_environment->m_width, m_environment->m_height));
 
 		// Stop loop from being called within itself
 		if (!m_inLoop)
@@ -269,8 +269,8 @@ namespace cobebe
 			glDisable(GL_DEPTH_TEST);
 
 			// Draw current Camera to screen
-			drawToScreen();
-			//check->getInternal()->draw();
+			//drawToScreen();
+			check->getInternal()->draw();
 
 			// PostDisplay each Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)

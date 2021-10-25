@@ -30,6 +30,7 @@ uniform highp vec3 in_GlobalLightCol;
 uniform highp int in_PointTotal;
 uniform highp vec3 in_LightPos[10];
 uniform highp vec3 in_LightCol[10];
+uniform highp float in_FarPlane[10];
 
 uniform highp vec3 in_ViewPos;
 uniform highp mat4 in_GlobalLightSpace;
@@ -86,6 +87,22 @@ highp vec3 lightCol(int _id)
 	else if(_id == 9) return in_LightCol[9];
 
 	return vec3(0);
+}
+
+highp float farPlane(int _id)
+{
+	if(_id == 0) return in_FarPlane[0];
+	else if(_id == 1) return in_FarPlane[1];
+	else if(_id == 2) return in_FarPlane[2];
+	else if(_id == 3) return in_FarPlane[3];
+	else if(_id == 4) return in_FarPlane[4];
+	else if(_id == 5) return in_FarPlane[5];
+	else if(_id == 6) return in_FarPlane[6];
+	else if(_id == 7) return in_FarPlane[7];
+	else if(_id == 8) return in_FarPlane[8];
+	else if(_id == 9) return in_FarPlane[9];
+
+	return 0.0;
 }
 
 // array of random offset direction for sampling 2D
@@ -208,16 +225,18 @@ highp vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
 
 highp float pcfPointShadow(float _viewDistance, vec3 _fragToLight, int _id)
 {
+	highp float farp = farPlane(_id);
 	highp float shadow = 0.0;
 	highp float bias = 0.15;
 
 	highp float currentDepth = length(_fragToLight);
 
-	highp float diskRadius = (1.0 + (_viewDistance / 5.0)) / 25.0;
+	highp float diskRadius = (1.0 + (_viewDistance / farp)) / 25.0;
 	highp float closestDepth;
 	for(int i = 0; i < 20; ++i)
 	{
 		closestDepth = depthMap(_id, _fragToLight + gridSample(i) * diskRadius);
+        	closestDepth *= farp;   // undo mapping [0;1]
 		if(currentDepth - bias > closestDepth) shadow += 1.0;
 	}
 	shadow /= 20.0;
@@ -260,7 +279,7 @@ void main()
 	highp float viewDistance = length(in_ViewPos.xyz - fragPos);
 	highp vec3 light = getGlobalLighting(norm, viewDir, viewDistance);
 
-	for (int i = 0; i < 10000; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		if(i == in_PointTotal) break;
 		light += getPointShadow(norm, viewDir, viewDistance, i);

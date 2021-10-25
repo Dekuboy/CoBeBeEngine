@@ -251,18 +251,18 @@ namespace cobebe
 				currentCam = getCore()->getCurrentCamera();
 				m_shader->setCam(currentCam);
 			}
-			if (m_cullByPart)
-			{
-				currentCam->cullAndDraw(shader,
-					m_transform.lock(), m_mesh->m_internal);
-			}
-			else
-			{
-				shader->setViewport(glm::vec4(0, 0,
-					getEnvironment()->getWidth(), getEnvironment()->getHeight()));
-				currentCam->draw(shader,
-					m_transform.lock(), m_mesh->m_internal);
-			}
+			//if (m_cullByPart)
+			//{
+			//	currentCam->cullAndDraw(shader,
+			//		m_transform.lock(), m_mesh->m_internal);
+			//}
+			//else
+			//{
+			//	shader->setViewport(glm::vec4(0, 0,
+			//		getEnvironment()->getWidth(), getEnvironment()->getHeight()));
+			//	currentCam->draw(shader,
+			//		m_transform.lock(), m_mesh->m_internal);
+			//}
 			if (m_animationController)
 			{
 				m_animationController->resetModel();

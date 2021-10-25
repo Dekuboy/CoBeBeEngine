@@ -295,7 +295,7 @@ namespace cobebe
 			// Draws to PointLight depth map
 
 #if defined(__EMSCRIPTEN__)
-			for (int i = 0; i < 6; i++)
+			for (int i = 5; i > -1; i--)
 			{
 				(*pointIt)->m_depthCube->bindFrameBuffer(i);
 #endif
