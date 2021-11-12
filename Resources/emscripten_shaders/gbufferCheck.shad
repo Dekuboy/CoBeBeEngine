@@ -1,0 +1,32 @@
+#ifdef VERTEX
+
+attribute vec3 in_Position;
+attribute vec4 in_Color;
+attribute vec2 in_TexCoord;
+
+varying highp vec2 ex_TexCoord;
+
+void main()
+{
+	gl_Position = vec4(in_Position, 1.0);
+	ex_TexCoord = in_TexCoord;
+}
+
+#endif
+
+#ifdef FRAGMENT
+
+uniform sampler2D in_GPosition;
+uniform sampler2D in_GNormal;
+uniform sampler2D in_GAlbedoSpec;
+
+varying highp vec2 ex_TexCoord;
+
+void main()
+{
+	highp vec3 colorValue = texture2D(in_GAlbedoSpec, ex_TexCoord).rgb + texture2D(in_GPosition, ex_TexCoord).rgb + texture2D(in_GNormal, ex_TexCoord).rgb;
+	colorValue -= (texture2D(in_GPosition, ex_TexCoord).rgb + texture2D(in_GNormal, ex_TexCoord).rgb);
+	gl_FragColor = vec4(colorValue, 1.0);
+}
+
+#endif

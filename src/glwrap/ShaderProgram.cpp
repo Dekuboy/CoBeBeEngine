@@ -637,7 +637,6 @@ namespace glwrap
 
 	void ShaderProgram::setSamplers()
 	{
-
 		gType check;
 
 		for (size_t i = 0; i < m_samplers.size(); i++)

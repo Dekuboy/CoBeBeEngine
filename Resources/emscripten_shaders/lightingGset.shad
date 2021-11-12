@@ -21,7 +21,7 @@ uniform sampler2D in_GNormal;
 uniform sampler2D in_GAlbedoSpec;
 
 uniform sampler2D in_DepthBuff;
-uniform samplerCube in_DepthMap;
+uniform samplerCube in_DepthMap[10];
 uniform mediump float in_DepthSize;
 
 uniform highp vec3 in_Ambient;
@@ -44,7 +44,17 @@ highp float gSpec;
 // Array functions
 highp float depthMap(int _id, vec3 _texCoord)
 {
-	if(_id == 0) return textureCube(in_DepthMap, _texCoord).r;
+	if(_id == 0) return textureCube(in_DepthMap[0], _texCoord).r;
+	else if(_id == 1) return textureCube(in_DepthMap[1], _texCoord).r;
+	else if(_id == 2) return textureCube(in_DepthMap[2], _texCoord).r;
+	else if(_id == 3) return textureCube(in_DepthMap[3], _texCoord).r;
+	else if(_id == 4) return textureCube(in_DepthMap[4], _texCoord).r;
+	else if(_id == 5) return textureCube(in_DepthMap[5], _texCoord).r;
+	else if(_id == 6) return textureCube(in_DepthMap[6], _texCoord).r;
+	else if(_id == 7) return textureCube(in_DepthMap[7], _texCoord).r;
+	else if(_id == 8) return textureCube(in_DepthMap[8], _texCoord).r;
+	else if(_id == 9) return textureCube(in_DepthMap[9], _texCoord).r;
+	return 1.0;
 }
 
 highp vec3 lightPos(int _id)
