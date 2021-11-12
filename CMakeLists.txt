@@ -172,18 +172,14 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	
 	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
-	add_executable(testCobebeEmscriptenExecutable1
-		src/dungeon/PlayerController.h
-		src/dungeon/PlayerController.cpp
-		src/dungeon/Bloom.h
-		src/dungeon/Bloom.cpp
-		src/dungeon/main.cpp
+	add_executable(testEms
+		src/plat/main.cpp
 	)
 
-	set_target_properties(testCobebeEmscriptenExecutable1 PROPERTIES LINK_FLAGS  
+	set_target_properties(testEms PROPERTIES LINK_FLAGS  
 	"--preload-file Resources -s MIN_WEBGL_VERSION=2 -s USE_SDL=2 -s USE_WEBGL2=1 -s DISABLE_EXCEPTION_CATCHING=0 -s ALLOW_MEMORY_GROWTH=1 --no-heap-copy")
 
-	target_link_libraries(testCobebeEmscriptenExecutable1
+	target_link_libraries(testEms
 		cobebe
 	)
 else()

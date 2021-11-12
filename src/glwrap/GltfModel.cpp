@@ -2223,6 +2223,7 @@ namespace glwrap
 		std::vector<Buffer> buffers;
 
 		std::list<std::string>::iterator itr = splitLine.begin();
+		printf("Moving on");
 
 		while (itr != splitLine.end())
 		{

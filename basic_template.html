@@ -7,7 +7,7 @@
         <title>Emscripten-Generated Code</title>
         <style>
 html,body {	width: 100%; height: 100%; }
-body { font-family: arial; margin: 0; padding: 0; background: #000; }
+body { font-family: arial; margin: 0; padding: 0; background: #FFF; }
 
 .emscripten { padding-right: 0; margin-left: auto; margin-right: auto; display: block; }
 div.emscripten_border { border: none; }
@@ -17,6 +17,7 @@ canvas.emscripten { border: 0px none; background-color: black; }
         </style>
     </head>
     <body>
+		<div>This is just a generic localhost html page where we draw to a canvas</div>
         <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
         <script type='text/javascript'>
 var Module = {
@@ -34,7 +35,8 @@ var Module = {
     })(),
 };
         </script>
-        <script async type="text/javascript" src="./{insertProjectNameHere}.js"></script>
+		<!-- Change the testEms.js text to the appropriate project .js file to run -->
+        <script async type="text/javascript" src="./testEms.js"></script>
         <script type="text/javascript">
 Module.canvas.addEventListener("resize", (e) => {
 
