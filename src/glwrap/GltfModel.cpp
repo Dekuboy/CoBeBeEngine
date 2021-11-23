@@ -1508,7 +1508,11 @@ namespace glwrap
 		glm::vec3 vertexPosition, normal;
 		glm::vec2 deltaUV1;
 		glm::vec4 colour;
+#if defined(__EMSCRIPTEN__)
+		glm::vec4 joints;
+#else
 		glm::ivec4 joints;
+#endif
 		float factor;
 
 		// Data and material information
@@ -2223,7 +2227,6 @@ namespace glwrap
 		std::vector<Buffer> buffers;
 
 		std::list<std::string>::iterator itr = splitLine.begin();
-		printf("Moving on");
 
 		while (itr != splitLine.end())
 		{
@@ -2293,7 +2296,11 @@ namespace glwrap
 			std::vector<char> readBin;
 			readBin.resize(buffers.at(0).m_byteLength);
 
+#if defined(__EMSCRIPTEN__)
+			int identifier = filePath.find_last_of("/");
+#else
 			int identifier = filePath.find_last_of("\\");
+#endif
 			filePath = filePath.substr(0, identifier + 1);
 			filePath += buffers.at(0).m_uri;
 

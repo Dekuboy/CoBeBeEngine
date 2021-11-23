@@ -57,16 +57,15 @@ int main()
 	{
 		std::shared_ptr<cobebe::Entity> entity = App->addEntity();
 		App->getLighting()->addPointLight(glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
-		App->getLighting()->setGlobalLightAmbient(glm::vec3(0.5f));
+		//App->getLighting()->setGlobalLightAmbient(glm::vec3(0.5f));
 
 		std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
-		renderer->setMesh("objs\\graveyard.obj");
-		renderer->setTexture("images\\graveyard.png");
+		//renderer->setMesh("objs\\graveyard.obj");
+		//renderer->setTexture("images\\graveyard.png");
 		//renderer->setWavefrontModel("speedhighway\\speed.obj");
-		//renderer->setGltfMesh("gltf\\speed.gltf");
+		renderer->setGltfMesh("gltf\\speed.gltf");
 		renderer->setShader("emscripten_shaders\\renderG.shad");
 		renderer->setCullByPart(true);
-		printf("Moving on");
 
 		entity->addComponent<cobebe::StaticModelCollider>();
 
@@ -83,17 +82,18 @@ int main()
 		entity->getTransform()->m_position = glm::vec3(0.0f, 0.0f, -5.0f);
 		entity->addComponent<CamController>();
 
-		//renderer = entity->addComponent<cobebe::Renderer>();
-		//renderer->setGltfMesh("gltf\\Character Running.gltf");
-		//renderer->setShader("deferred_shaders\\renderGSkin.shad");
-		//std::shared_ptr<cobebe::AnimationController> anm = renderer->addGltfAnimationController();
+		renderer = entity->addComponent<cobebe::Renderer>();
+		renderer->setGltfMesh("gltf\\Character Running.gltf");
+		renderer->setShader("emscripten_shaders\\renderGSkin.shad");
+		std::shared_ptr<cobebe::AnimationController> anm = renderer->addGltfAnimationController();
+
 		//renderer->setMesh("objs\\curuthers.obj");
 		//renderer->setTexture("images\\curuthers_diffuse.png");
 		//renderer->setShader("deferred_shaders\\renderGAni.shad");
 		//std::shared_ptr<cobebe::AnimationController> anm = renderer->addObjAnimationController();
 		//renderer->loadAnimation("animations\\run.anm");
 
-		//anm->playAnimation(0, true);
+		anm->playAnimation(0, true);
 
 		entity = App->addEntity();
 		entity->getTransform()->m_position = glm::vec3(0.15f, 0.90f, 0.1f);
@@ -228,14 +228,14 @@ void CamController::onTick()
 		m_camera.lock()->m_position += x;
 	}
 
-	//if (getKeyboard()->isKey(cobebeInput::eKey))
-	//{
-	//	getEntity()->getComponent<cobebe::AnimationController>()->setIncrementDeltaTime(true);
-	//}
-	//else
-	//{
-	//	getEntity()->getComponent<cobebe::AnimationController>()->setIncrementDeltaTime(false);
-	//}
+	if (getKeyboard()->isKey(cobebeInput::eKey))
+	{
+		getEntity()->getComponent<cobebe::AnimationController>()->setIncrementDeltaTime(true);
+	}
+	else
+	{
+		getEntity()->getComponent<cobebe::AnimationController>()->setIncrementDeltaTime(false);
+	}
 
 	//getEntity()->getComponent<cobebe::ObjAnimationController>()->incrementAnimations(6.0 * getEnvironment()->getDeltaTime());
 }

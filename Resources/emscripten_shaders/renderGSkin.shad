@@ -1,0 +1,112 @@
+#version 300 es
+#ifndef MAX_BONES
+#define MAX_BONES 20
+#endif
+#ifdef VERTEX
+
+in vec3 in_Position;
+in vec4 in_Color;
+in vec2 in_TexCoord;
+in vec3 in_Normal;
+in vec4 in_JointIDs;
+in vec4 in_Weights;
+
+uniform mat4 in_Projection;
+uniform mat4 in_View;
+uniform mat4 in_Model;
+uniform vec4 in_AniTranslate[MAX_BONES];
+uniform vec4 in_AniRotate[MAX_BONES];
+
+out highp vec4 ex_Color;
+out highp vec2 ex_TexCoord;
+out highp vec3 ex_FragPos;
+out highp vec3 ex_Normal;
+
+void computeJointMatrix(inout mat4 _matrix)
+{
+	highp int id;
+	if (in_Weights.x != 0.0){
+	id = int(in_JointIDs.x);
+	highp vec4 r = in_AniRotate[id] * in_Weights.x;
+	highp vec4 t = in_AniTranslate[id] * in_Weights.x;
+	if (in_Weights.y != 0.0){
+	id = int(in_JointIDs.y);
+	r += in_AniRotate[id] * in_Weights.y;
+	t += in_AniTranslate[id] * in_Weights.y;
+	}
+	if (in_Weights.z != 0.0){
+	id = int(in_JointIDs.z);
+	r += in_AniRotate[id] * in_Weights.z;
+	t += in_AniTranslate[id] * in_Weights.z;
+	}
+	if (in_Weights.w != 0.0){
+	id = int(in_JointIDs.w);
+	r += in_AniRotate[id] * in_Weights.w;
+	t += in_AniTranslate[id] * in_Weights.w;
+	}
+	highp float rotLength = length(r);
+	r /= rotLength;
+	t /= rotLength;
+
+	_matrix = mat4(
+		1.0 - 2.0 * (r.y * r.y + r.z * r.z),
+		2.0 * (r.x * r.y + r.w * r.z),
+		2.0 * (r.x * r.z - r.w * r.y),
+		0,
+		2.0 * (r.x * r.y - r.w * r.z),
+		1.0 - 2.0 * (r.x * r.x + r.z * r.z),
+		2.0 * (r.y * r.z + r.w * r.x),
+		0,
+		2.0 * (r.x * r.z + r.w * r.y),
+		2.0 * (r.y * r.z - r.w * r.x),
+		1.0 - 2.0 * (r.x * r.x + r.y * r.y),
+		0,
+		2.0 * (-t.w * r.x + t.x * r.w - t.y * r.z + t.z * r.y),
+		2.0 * (-t.w * r.y + t.x * r.z + t.y * r.w - t.z * r.x),
+		2.0 * (-t.w * r.z - t.x * r.y + t.y * r.x + t.z * r.w),
+		1);
+
+	}
+}
+
+void main()
+{
+	highp mat4 matrix;
+	computeJointMatrix(matrix);
+
+	matrix = in_Model * matrix;
+	gl_Position = in_Projection * in_View * matrix * vec4(in_Position, 1.0);
+	ex_Color = in_Color;
+	ex_TexCoord = in_TexCoord;
+
+	ex_Normal = mat3(matrix) * in_Normal;
+	ex_FragPos = vec3(matrix * vec4(in_Position, 1.0));
+}
+
+#endif
+
+#ifdef FRAGMENT
+
+layout (location = 0) out highp vec3 g_Position;
+layout (location = 1) out highp vec3 g_Normal;
+layout (location = 2) out highp vec4 g_AlbedoSpec;
+
+uniform sampler2D in_Texture;
+
+in highp vec4 ex_Color;
+in highp vec2 ex_TexCoord;
+in highp vec3 ex_FragPos;
+in highp vec3 ex_Normal;
+
+void main()
+{
+	g_Position = ex_FragPos;
+
+	g_Normal = normalize(ex_Normal);
+
+	g_AlbedoSpec.rgb = texture(in_Texture, ex_TexCoord).rgb;
+
+	g_AlbedoSpec.a = 0.0;
+}
+
+#endif

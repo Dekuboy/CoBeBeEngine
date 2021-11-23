@@ -443,7 +443,7 @@ namespace glwrap
 		glUniform1i(uniformId, m_samplers.size() - 1);
 		if (m_isDrawing)
 		{
-			glActiveTexture(m_samplers.size() - 1);
+			glActiveTexture(GL_TEXTURE0 + m_samplers.size() - 1);
 
 			glBindTexture(GL_TEXTURE_2D, s.m_texture->getId());
 		}
