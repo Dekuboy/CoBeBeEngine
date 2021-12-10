@@ -22,7 +22,7 @@ uniform sampler2D in_GAlbedoSpec;
 
 uniform sampler2D in_DepthBuff;
 uniform samplerCube in_DepthMap;
-uniform mediump float in_DepthSize;
+uniform mediump vec2 in_DepthSize;
 
 uniform highp vec3 in_Ambient;
 uniform highp vec3 in_LightDir;
@@ -157,12 +157,20 @@ highp float pcfGlobalShadow(vec3 _projCoords, float _bias)
 	highp float shadow = 0.0;
 	highp float objectDepth = _projCoords.z;
 	highp vec2 texelSize = vec2(1,1) / in_DepthSize;
+	highp vec2 texCoord;
 	for(int x = -1; x <= 1; ++x)
 	{
 		for(int y = -1; y <= 1; ++y)
 		{
-			highp float pcfDepth = texture2D(in_DepthBuff, _projCoords.xy + vec2(x, y) * texelSize).r; 
-			shadow += objectDepth - _bias > pcfDepth ? 1.0 : 0.0;        
+			highp vec2 texCoord = _projCoords.xy + vec2(x, y) * texelSize;
+			if (texCoord.x < 0.0 || texCoord.x > 1.0 ||
+				texCoord.y < 0.0 || texCoord.y > 1.0)
+			{  }
+			else
+			{
+				highp float pcfDepth = texture2D(in_DepthBuff, texCoord).r; 
+				shadow += objectDepth - _bias > pcfDepth ? 1.0 : 0.0;
+			}
 		}    
 	}
 	return shadow / 9.0;
@@ -201,15 +209,12 @@ highp vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
 	{
         	projCoords.z = 1.0;
 	}
-//	else
-//	{
-		
-		highp float bias = max(0.05 * (1.0 - dot(_norm, lightDir)), 0.005); 
-		bias = min(0.05 * tan(dot(_norm, lightDir)), bias);
-		
-		shadow = pcfGlobalShadow(projCoords, bias);
-//	}
-	if (shadow > 0.0) shadow = 0.0;
+
+	highp float bias = max(0.05 * (1.0 - dot(_norm, lightDir)), 0.005); 
+	bias = min(0.05 * tan(dot(_norm, lightDir)), bias);
+
+	shadow = pcfGlobalShadow(projCoords, bias);
+
 	return (1.0 - shadow) * (diffuse + specular);
 }
 

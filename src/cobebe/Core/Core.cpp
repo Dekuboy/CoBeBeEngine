@@ -173,7 +173,10 @@ namespace cobebe
 				if (m_environment->m_deltaTime < (1.0f / 60.0f))
 				{
 					waitTime = 1000 / 60 - currentTime + lastTime;
+#if defined(__EMSCRIPTEN__)
+#else
 					SDL_Delay(waitTime);
+#endif
 					m_environment->m_deltaTime = 1.0f / 60.0f;
 				}
 				lastTime = SDL_GetTicks();
@@ -254,6 +257,7 @@ namespace cobebe
 				(*it)->preDisplay();
 			}
 			glCullFace(GL_BACK);
+			glDisable(GL_CULL_FACE);
 			m_lighting->drawLighting();
 
 			// Display each Entity
@@ -273,7 +277,7 @@ namespace cobebe
 				(*it)->postDisplay();
 			}
 
-			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST | GL_DEPTH_TEST);
 
 			// GUI each Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)

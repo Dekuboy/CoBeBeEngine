@@ -231,7 +231,10 @@ namespace cobebe
 		m_globalLightRenderDistance = 25.0f;
 		m_globalLightScale = 10.0f;
 
-		m_depthMapSize = 512;
+		m_depthMapSize = 1024;
+#if defined(__EMSCRIPTEN__)
+		m_core.lock()->getLightPassShader()->setUniform("in_DepthSize", glm::vec2(m_depthMapSize));
+#endif
 
 		// Set depth map ready for rendering
 		m_depthMap = std::make_shared<glwrap::DepthBuffer>(m_depthMapSize, m_depthMapSize);

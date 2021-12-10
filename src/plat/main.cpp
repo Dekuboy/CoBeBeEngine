@@ -53,10 +53,10 @@ private:
 int main()
 {
 	App = cobebe::Core::initialise();
-	printf("Initialise\n");
+	printf("Initialise me\n");
 	{
 		std::shared_ptr<cobebe::Entity> entity = App->addEntity();
-		App->getLighting()->addPointLight(glm::vec3(-12, 2, -5), glm::vec3(0.5f), 25.0f);
+		App->getLighting()->addPointLight(glm::vec3(5, 2, -5), glm::vec3(1.0f), 25.0f);
 		//App->getLighting()->setGlobalLightAmbient(glm::vec3(0.5f));
 
 		std::shared_ptr<cobebe::Renderer> renderer = entity->addComponent<cobebe::Renderer>();
@@ -79,7 +79,7 @@ int main()
 		//pbRenderer->setShader("pbr_shaders\\renderG_PBR.shad");
 
 		entity = App->addEntity();
-		entity->getTransform()->m_position = glm::vec3(0.0f, 0.0f, -5.0f);
+		entity->getTransform()->m_position = glm::vec3(0.0f, -1.0f, -5.0f);
 		entity->addComponent<CamController>();
 
 		renderer = entity->addComponent<cobebe::Renderer>();
