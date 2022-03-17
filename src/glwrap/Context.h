@@ -128,8 +128,14 @@ namespace glwrap
 		*/
 		void setCurrentShader(std::shared_ptr<ShaderProgram> _shader);
 
+		/**
+		* \brief Gets the quad used for drawing to screen
+		*/
+		std::shared_ptr<VertexArray> getSimpleShape();
+
 	private:
 		std::weak_ptr<ShaderProgram> m_currentShader; //!< Stores ShaderProgram currently in use
+		std::shared_ptr<VertexArray> m_simpleShape; //!< Simple quad for drawing to screens entirety
 
 		std::weak_ptr<Context> m_self; //!< Pointer to self to be passed into created object
 

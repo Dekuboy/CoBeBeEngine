@@ -42,6 +42,10 @@ namespace glwrap
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 
+	GBuffer::~GBuffer()
+	{
+	}
+
 	GLuint GBuffer::getNId()
 	{
 		return m_nId;

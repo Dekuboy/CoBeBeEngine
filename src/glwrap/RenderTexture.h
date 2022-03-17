@@ -13,6 +13,7 @@ namespace glwrap
 		RenderTexture(int _width, int _height);
 		RenderTexture(int _width, int _height, int _multisamples);
 		RenderTexture(int _width, int _height, bool _base);
+		~RenderTexture();
 
 		/**
 		* \brief Retrieve the frame buffer Id

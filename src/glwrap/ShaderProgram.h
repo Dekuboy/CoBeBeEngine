@@ -219,7 +219,6 @@ namespace glwrap
 		glm::mat3 m_drawingRotation; //!< The base object rotation during cullAndDraw()
 		glm::vec4 m_viewport; //!< The dimensions of the texture/window being drawn to
 		std::shared_ptr<ViewingFrustum> m_viewingFrustum; //!< The frustum used to check if in view
-		std::shared_ptr<VertexArray> m_simpleShape; //!< Simple quad for drawing to screens entirety
 		std::weak_ptr<ShaderProgram> m_self; //!< Pointer to self
 		std::weak_ptr<Context> m_context; //!< Pointer to glwrap cpntext
 

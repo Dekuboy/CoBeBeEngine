@@ -14,6 +14,7 @@ namespace glwrap
 	{
 	public:
 		VertexBuffer();
+		~VertexBuffer();
 
 		/**
 		* \brief Adds value to buffer

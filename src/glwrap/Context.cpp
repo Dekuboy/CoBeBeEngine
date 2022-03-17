@@ -11,7 +11,27 @@ namespace glwrap
 			throw std::exception();
 		}
 
+		std::shared_ptr<VertexBuffer> positions = std::make_shared<VertexBuffer>();
+		positions->add(glm::vec2(-1.0f, 1.0f));
+		positions->add(glm::vec2(-1.0f, -1.0f));
+		positions->add(glm::vec2(1.0f, -1.0f));
+		positions->add(glm::vec2(1.0f, -1.0f));
+		positions->add(glm::vec2(1.0f, 1.0f));
+		positions->add(glm::vec2(-1.0f, 1.0f));
+
+		std::shared_ptr<VertexBuffer> texCoords = std::make_shared<VertexBuffer>();
+		texCoords->add(glm::vec2(0.0f, 0.0f));
+		texCoords->add(glm::vec2(0.0f, -1.0f));
+		texCoords->add(glm::vec2(1.0f, -1.0f));
+		texCoords->add(glm::vec2(1.0f, -1.0f));
+		texCoords->add(glm::vec2(1.0f, 0.0f));
+		texCoords->add(glm::vec2(0.0f, 0.0f));
+
 		rtn->m_self = rtn;
+
+		rtn->m_simpleShape = rtn->createMesh();
+		rtn->m_simpleShape->setBuffer("in_Position", positions);
+		rtn->m_simpleShape->setBuffer("in_TexCoord", texCoords);
 
 		return rtn;
 	}
@@ -182,5 +202,10 @@ namespace glwrap
 			glUseProgram(_shader->m_id);
 			m_currentShader = _shader;
 		}
+	}
+
+	std::shared_ptr<VertexArray> Context::getSimpleShape()
+	{
+		return m_simpleShape;
 	}
 }

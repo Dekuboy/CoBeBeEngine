@@ -52,7 +52,7 @@ namespace glwrap
 	private:
 		friend class Context;
 
-		std::shared_ptr<VertexArray> m_model; //!< Animation attached to Obj
+		std::weak_ptr<VertexArray> m_model; //!< Animation attached to Obj
 		std::vector<std::shared_ptr<ObjFrame> > m_frames; //!< Information on the frames of animation
 		std::shared_ptr<ObjFrame> m_mergeFrame; //!< Interpolated frame at current animation time
 		std::weak_ptr<ObjAnimation> m_self; //!< Pointer to self to place inside ObjFrame

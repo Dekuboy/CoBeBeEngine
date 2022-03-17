@@ -34,7 +34,7 @@ namespace glwrap
 			std::ifstream file(FileManager::returnPath(_path).c_str());
 			std::string line;
 			std::vector<std::string> parameters;
-			std::vector<std::shared_ptr<ObjPart> > parts = m_model->getParts();
+			std::vector<std::shared_ptr<ObjPart> > parts = m_model.lock()->getParts();
 			std::shared_ptr<ObjPart> cp;
 			glm::vec3 v, rotation;
 			bool found = false;

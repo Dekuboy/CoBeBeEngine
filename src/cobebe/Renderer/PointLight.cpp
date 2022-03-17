@@ -9,7 +9,7 @@ namespace cobebe
 		m_position = glm::vec3(0.0f);
 		m_colour = glm::vec3(0.1f);
 
-		int size = 1024;
+		int size = 512;
 		float aspect = (float)size / (float)size;
 		float near = 1.0f;
 		m_radius = 25.0f;

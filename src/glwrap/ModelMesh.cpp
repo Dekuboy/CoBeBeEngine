@@ -24,7 +24,7 @@ namespace glwrap
 
 	ModelMesh::~ModelMesh()
 	{
-
+		glDeleteVertexArrays(m_idList.size(), &m_idList.at(0));
 	}
 
 	std::string ModelMesh::getName()

@@ -44,6 +44,10 @@ namespace glwrap
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
+	DepthBuffer::~DepthBuffer()
+	{
+	}
+
 	void DepthBuffer::clear()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);

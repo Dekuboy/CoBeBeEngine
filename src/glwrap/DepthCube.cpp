@@ -67,6 +67,10 @@ namespace glwrap
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 	}
 
+	DepthCube::~DepthCube()
+	{
+	}
+
 #if defined(__EMSCRIPTEN__)
 	void DepthCube::bindFrameBuffer(int _face)
 	{

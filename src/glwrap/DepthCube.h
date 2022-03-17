@@ -11,6 +11,7 @@ namespace glwrap
 	{
 	public:
 		DepthCube(int width, int height);
+		~DepthCube();
 
 #if defined(__EMSCRIPTEN__)
 		/**

@@ -11,6 +11,7 @@ namespace glwrap
 	{
 	public:
 		DepthBuffer(int _width, int _height);
+		~DepthBuffer();
 
 		/**
 		* \brief Clear the DepthBuffer of previously generated values

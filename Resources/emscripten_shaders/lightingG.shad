@@ -22,7 +22,7 @@ uniform sampler2D in_GAlbedoSpec;
 
 uniform sampler2D in_DepthBuff;
 uniform samplerCube in_DepthMap;
-uniform mediump vec2 in_DepthSize;
+uniform highp vec2 in_DepthSize;
 
 uniform highp vec3 in_Ambient;
 uniform highp vec3 in_LightDir;
@@ -42,7 +42,7 @@ highp vec3 fragPos;
 highp float gSpec;
 
 // Array functions
-highp float depthMap(int _id, vec3 _texCoord)
+highp float depthMap(int _id, highp vec3 _texCoord)
 {
 	if(_id == 0) return textureCube(in_DepthMap, _texCoord).r;
 }
@@ -146,13 +146,13 @@ highp vec3 gridSample(int _id)
 }
 
 // Returns a random number based on a vec3 and an int.
-highp float random(vec3 seed, int i){
+highp float random(highp vec3 seed, int i){
 	highp vec4 seed4 = vec4(seed,i);
 	highp float dot_product = dot(seed4, vec4(12.9898,78.233,45.164,94.673));
 	return fract(sin(dot_product) * 43758.5453);
 }
 
-highp float pcfGlobalShadow(vec3 _projCoords, float _bias)
+highp float pcfGlobalShadow(highp vec3 _projCoords, highp float _bias)
 {
 	highp float shadow = 0.0;
 	highp float objectDepth = _projCoords.z;
@@ -176,7 +176,7 @@ highp float pcfGlobalShadow(vec3 _projCoords, float _bias)
 	return shadow / 9.0;
 }
 
-/*highp float spsGlobalShadow(vec3 _projCoords, float _bias)
+/*highp float spsGlobalShadow(highp vec3 _projCoords, highp float _bias)
 {
 	highp float shadow = 0.0;
 	highp float objectDepth = _projCoords.z;		// Sample the shadow map 4 times
@@ -189,7 +189,7 @@ highp float pcfGlobalShadow(vec3 _projCoords, float _bias)
 	return shadow;
 }*/
 
-highp vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
+highp vec3 getGlobalLighting(highp vec3 _norm, highp vec3 _viewDir, highp float _viewDistance)
 {
 	highp vec3 lightDir = in_LightDir;
 
@@ -218,7 +218,7 @@ highp vec3 getGlobalLighting(vec3 _norm, vec3 _viewDir, float _viewDistance)
 	return (1.0 - shadow) * (diffuse + specular);
 }
 
-highp float pcfPointShadow(float _viewDistance, vec3 _fragToLight, int _id)
+highp float pcfPointShadow(highp float _viewDistance, highp vec3 _fragToLight, int _id)
 {
 	highp float farp = farPlane(_id);
 	highp float shadow = 0.0;
@@ -226,19 +226,19 @@ highp float pcfPointShadow(float _viewDistance, vec3 _fragToLight, int _id)
 
 	highp float currentDepth = length(_fragToLight);
 
-	highp float diskRadius = (1.0 + (_viewDistance / farp)) / 25.0;
+	highp float diskRadius = max(0.05, (1.0 + (_viewDistance / farp)) / 25.0);
 	highp float closestDepth;
 	for(int i = 0; i < 20; ++i)
 	{
 		closestDepth = depthMap(_id, _fragToLight + gridSample(i) * diskRadius);
         	closestDepth *= farp;   // undo mapping [0;1]
-		if(currentDepth - bias > closestDepth) shadow += 1.0;
+		if(currentDepth * 0.96 > closestDepth) shadow += 1.0;
 	}
 	shadow /= 20.0;
 	return shadow;
 }
 
-highp vec3 getPointShadow(vec3 _norm, vec3 _viewDir, float _viewDistance, int _id)
+highp vec3 getPointShadow(highp vec3 _norm, highp vec3 _viewDir, highp float _viewDistance, int _id)
 {
 	highp vec3 position = lightPos(_id);
 	highp vec3 lightDir = normalize(position - fragPos);

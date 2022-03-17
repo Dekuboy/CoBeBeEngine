@@ -45,12 +45,27 @@ namespace cobebe
 			return asset;
 		}
 
+		/**
+		* \brief Delete Asset of path if unused
+		*/
+		bool remove(std::string _path);
+
+		/**
+		* \brief Remove all Assets currently unused
+		*/
+		void empty();
+
 	private:
 		friend class Core;
 
 		std::list<std::shared_ptr<Asset> > m_resources; //!< List of currently loaded assets
 		std::weak_ptr<glwrap::Context> m_context; //!< Pointer to context for OpenGL assets
 		std::weak_ptr<Resources> m_self; //!< Pointer to self to store in Asset class
+
+		/**
+		* \brief Remove all Assets
+		*/
+		void hardEmpty();
 
 	};
 }

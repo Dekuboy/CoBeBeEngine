@@ -19,6 +19,7 @@ namespace glwrap
 		Texture();
 		Texture(int _width, int _height, bool _base);
 		Texture(std::string _path);
+		~Texture();
 
 		/**
 		* \brief Retrieve the width and height of the Texture

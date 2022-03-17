@@ -60,6 +60,10 @@ namespace glwrap
 		m_multisamples = 0;
 	}
 
+	RenderTexture::~RenderTexture()
+	{
+	}
+
 	GLuint RenderTexture::getFbId()
 	{
 		return m_fbo;

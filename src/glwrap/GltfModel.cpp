@@ -1826,7 +1826,7 @@ namespace glwrap
 		m_parts.push_back(_part);
 	}
 
-	void GltfModel::assembleChildren(int _parentModelNode)
+	void GltfModel::assembleChildren(std::vector<gltfparse::Node>& _nodes, int _parentModelNode)
 	{
 		// List of node Ids in hierarchy
 		std::vector<int> idList;
@@ -1839,7 +1839,7 @@ namespace glwrap
 		for (int idItr = 0; idItr < idList.size(); idItr++)
 		{
 			currentParent = m_allNodes.at(idList.at(idItr));
-			Node* parentNode = &m_parseNodes->at(idList.at(idItr));
+			Node* parentNode = &_nodes.at(idList.at(idItr));
 			currentParent->m_name = parentNode->m_name;
 
 			// Prepare child node and set values 
@@ -1861,7 +1861,7 @@ namespace glwrap
 		}
 	}
 
-	void GltfModel::assembleModelNodes(gltfparse::Scene& _scene,
+	void GltfModel::assembleModelNodes(gltfparse::Scene& _scene, std::vector<gltfparse::Node>& _nodes,
 		std::vector<gltfparse::Accessor>& _accessors, std::vector<gltfparse::AccessData>& _data,
 		std::vector<gltfparse::Mesh>& _meshes, std::vector<gltfparse::Skin>& _skins,
 		std::vector<std::shared_ptr<Material>>& _materials)
@@ -1886,7 +1886,7 @@ namespace glwrap
 		std::vector<int>::iterator nodeItr = _scene.m_nodes.begin();
 
 		// Resize nodes vector to prepare for assembly
-		m_allNodes.resize(m_parseNodes->size());
+		m_allNodes.resize(_nodes.size());
 
 		// Prepare nodes to initialised
 		while (nodeItr != _scene.m_nodes.end())
@@ -1903,7 +1903,7 @@ namespace glwrap
 			currentModelNode->m_id = *nodeItr;
 
 			// Assemble children of top level node
-			assembleChildren(*nodeItr);
+			assembleChildren(_nodes, *nodeItr);
 			nodeItr++;
 		}
 
@@ -1916,7 +1916,7 @@ namespace glwrap
 			{
 				// Get node to initialise
 				currentModelNode = *itr;
-				currentNode = &m_parseNodes->at((*itr)->m_id);
+				currentNode = &_nodes.at((*itr)->m_id);
 				{
 					// If node is translated, transfer values
 					if (currentNode->m_translation.size() == 3)
@@ -2011,9 +2011,6 @@ namespace glwrap
 				}
 			}
 		}
-
-		// Once complete, parse values are no longer needed
-		m_parseNodes = nullptr;
 	}
 
 	void GltfModel::checkMinMax(glm::vec3& _vertexPosition)
@@ -2386,8 +2383,7 @@ namespace glwrap
 		tempStr = _path.substr(0, _path.find_last_of('\\') + 1);
 
 		assembleModelMaterials(glMatList, tempStr, materials, textures, images);
-		m_parseNodes = &nodes;
-		assembleModelNodes(scenes.at(currentScene), accessors, data,
+		assembleModelNodes(scenes.at(currentScene), nodes, accessors, data,
 			meshes, skins, glMatList);
 
 		{

@@ -185,36 +185,16 @@ namespace glwrap
 			glDeleteShader(geometryShaderId);
 		}
 #endif
-
-		std::shared_ptr<VertexBuffer> positions = std::make_shared<VertexBuffer>();
-		positions->add(glm::vec2(-1.0f, 1.0f));
-		positions->add(glm::vec2(-1.0f, -1.0f));
-		positions->add(glm::vec2(1.0f, -1.0f));
-		positions->add(glm::vec2(1.0f, -1.0f));
-		positions->add(glm::vec2(1.0f, 1.0f));
-		positions->add(glm::vec2(-1.0f, 1.0f));
-
-		std::shared_ptr<VertexBuffer> texCoords = std::make_shared<VertexBuffer>();
-		texCoords->add(glm::vec2(0.0f, 0.0f));
-		texCoords->add(glm::vec2(0.0f, -1.0f));
-		texCoords->add(glm::vec2(1.0f, -1.0f));
-		texCoords->add(glm::vec2(1.0f, -1.0f));
-		texCoords->add(glm::vec2(1.0f, 0.0f));
-		texCoords->add(glm::vec2(0.0f, 0.0f));
-
-		m_simpleShape = m_context.lock()->createMesh();
-		m_simpleShape->setBuffer("in_Position", positions);
-		m_simpleShape->setBuffer("in_TexCoord", texCoords);
 	}
 
 	void ShaderProgram::draw()
 	{
-		draw(m_simpleShape);
+		draw(m_context.lock()->getSimpleShape());
 	}
 
 	void ShaderProgram::draw(std::shared_ptr<RenderTexture> _renderTexture)
 	{
-		draw(_renderTexture, m_simpleShape);
+		draw(_renderTexture, m_context.lock()->getSimpleShape());
 	}
 
 	void ShaderProgram::draw(std::shared_ptr<Model3D> _vertexArray)

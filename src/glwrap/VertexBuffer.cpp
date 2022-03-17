@@ -16,6 +16,11 @@ namespace glwrap
 		}
 	}
 
+	VertexBuffer::~VertexBuffer()
+	{
+		glDeleteBuffers(1, &m_id);
+	}
+
 	void VertexBuffer::add(glm::vec2 _value)
 	{
 		if (m_components != 2 && m_components != 0)

@@ -205,8 +205,6 @@ namespace glwrap
 		std::vector<std::shared_ptr<ModelAnimation> > m_animations; //!< List of animations attached to the model
 		std::weak_ptr<GltfModel> m_self; //!< Pointer to self to set in individual joints
 
-		std::vector<gltfparse::Node>* m_parseNodes; //!< Parse nodes used instead of passing values
-
 		/**
 		* \brief Checks if character is white space
 		*/
@@ -283,12 +281,12 @@ namespace glwrap
 		/**
 		* \brief Assemble all children from base Node
 		*/
-		void assembleChildren(int _parentModelNode);
+		void assembleChildren(std::vector<gltfparse::Node>& _nodes, int _parentModelNode);
 
 		/**
 		* /brief Assemble GL Model for drawing
 		*/
-		void assembleModelNodes(gltfparse::Scene& _scene,
+		void assembleModelNodes(gltfparse::Scene& _scene, std::vector<gltfparse::Node>& _nodes,
 			std::vector<gltfparse::Accessor>& _accessors, std::vector<gltfparse::AccessData>& _data,
 			std::vector<gltfparse::Mesh>& _meshes, std::vector<gltfparse::Skin>& _skins,
 			std::vector<std::shared_ptr<Material>>& _materials);

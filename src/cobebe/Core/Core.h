@@ -127,6 +127,10 @@ namespace cobebe
 		*/
 		std::shared_ptr<glwrap::Context> getGLContext();
 		/**
+		* \brief Returns the list of Assets loaded
+		*/
+		std::shared_ptr<Resources> getResources();
+		/**
 		* \brief Adds Camera to list using screen size for the RenderTexture
 		*/
 		std::shared_ptr<Camera> addCamera();

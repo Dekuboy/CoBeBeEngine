@@ -25,7 +25,7 @@ namespace glwrap
 
 	ObjPart::~ObjPart()
 	{
-
+		glDeleteVertexArrays(m_idList.size(), &m_idList.at(0));
 	}
 
 	std::string ObjPart::getName()

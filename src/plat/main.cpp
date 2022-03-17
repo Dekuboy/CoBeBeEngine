@@ -80,12 +80,12 @@ int main()
 
 		entity = App->addEntity();
 		entity->getTransform()->m_position = glm::vec3(0.0f, -1.0f, -5.0f);
-		entity->addComponent<CamController>();
 
 		renderer = entity->addComponent<cobebe::Renderer>();
 		renderer->setGltfMesh("gltf\\Character Running.gltf");
 		renderer->setShader("emscripten_shaders\\renderGSkin.shad");
 		std::shared_ptr<cobebe::AnimationController> anm = renderer->addGltfAnimationController();
+		entity->addComponent<CamController>();
 
 		//renderer->setMesh("objs\\curuthers.obj");
 		//renderer->setTexture("images\\curuthers_diffuse.png");

@@ -12,6 +12,7 @@ namespace glwrap
 	{
 	public:
 		GBuffer(int _width, int _height);
+		~GBuffer();
 
 		/**
 		* Get Normal Buffer Texture Id

@@ -196,9 +196,7 @@ namespace cobebe
 
 		m_globalLightSpace = lightProjection * lightView;
 
-#if !defined(__EMSCRIPTEN__)
 		m_depthShader->setLightSpace(m_globalLightSpace);
-#endif
 	}
 
 	void Lighting::clear()

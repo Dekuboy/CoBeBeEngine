@@ -316,6 +316,11 @@ namespace cobebe
 		return m_context;
 	}
 
+	std::shared_ptr<Resources> Core::getResources()
+	{
+		return m_resources;
+	}
+
 	std::shared_ptr<Camera> Core::addCamera()
 	{
 		// Initialise Camera before pushing to list
