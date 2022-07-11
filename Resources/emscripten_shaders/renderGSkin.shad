@@ -17,18 +17,18 @@ uniform mat4 in_Model;
 uniform vec4 in_AniTranslate[MAX_BONES];
 uniform vec4 in_AniRotate[MAX_BONES];
 
-out highp vec4 ex_Color;
-out highp vec2 ex_TexCoord;
-out highp vec3 ex_FragPos;
-out highp vec3 ex_Normal;
+out mediump vec4 ex_Color;
+out mediump vec2 ex_TexCoord;
+out mediump vec3 ex_FragPos;
+out mediump vec3 ex_Normal;
 
 void computeJointMatrix(inout mat4 _matrix)
 {
-	highp int id;
+	lowp int id;
 	if (in_Weights.x != 0.0){
 	id = int(in_JointIDs.x);
-	highp vec4 r = in_AniRotate[id] * in_Weights.x;
-	highp vec4 t = in_AniTranslate[id] * in_Weights.x;
+	mediump vec4 r = in_AniRotate[id] * in_Weights.x;
+	mediump vec4 t = in_AniTranslate[id] * in_Weights.x;
 	if (in_Weights.y != 0.0){
 	id = int(in_JointIDs.y);
 	r += in_AniRotate[id] * in_Weights.y;
@@ -44,7 +44,7 @@ void computeJointMatrix(inout mat4 _matrix)
 	r += in_AniRotate[id] * in_Weights.w;
 	t += in_AniTranslate[id] * in_Weights.w;
 	}
-	highp float rotLength = length(r);
+	mediump float rotLength = length(r);
 	r /= rotLength;
 	t /= rotLength;
 
@@ -71,7 +71,7 @@ void computeJointMatrix(inout mat4 _matrix)
 
 void main()
 {
-	highp mat4 matrix;
+	mediump mat4 matrix;
 	computeJointMatrix(matrix);
 
 	matrix = in_Model * matrix;
@@ -87,16 +87,16 @@ void main()
 
 #ifdef FRAGMENT
 
-layout (location = 0) out highp vec3 g_Position;
-layout (location = 1) out highp vec3 g_Normal;
-layout (location = 2) out highp vec4 g_AlbedoSpec;
+layout (location = 0) out mediump vec3 g_Position;
+layout (location = 1) out mediump vec3 g_Normal;
+layout (location = 2) out mediump vec4 g_AlbedoSpec;
 
 uniform sampler2D in_Texture;
 
-in highp vec4 ex_Color;
-in highp vec2 ex_TexCoord;
-in highp vec3 ex_FragPos;
-in highp vec3 ex_Normal;
+in mediump vec4 ex_Color;
+in mediump vec2 ex_TexCoord;
+in mediump vec3 ex_FragPos;
+in mediump vec3 ex_Normal;
 
 void main()
 {

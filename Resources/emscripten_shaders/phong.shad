@@ -9,10 +9,10 @@ uniform mat4 in_Projection;
 uniform mat4 in_View;
 uniform mat4 in_Model;
 
-varying highp vec4 ex_Color;
-varying highp vec2 ex_TexCoord;
-varying highp vec3 ex_FragPos;
-varying highp vec3 ex_Normal;
+varying mediump vec4 ex_Color;
+varying mediump vec2 ex_TexCoord;
+varying mediump vec3 ex_FragPos;
+varying mediump vec3 ex_Normal;
 
 void main()
 {
@@ -29,38 +29,38 @@ void main()
 #ifdef FRAGMENT
 
 uniform sampler2D in_Texture;
-uniform highp vec3 in_Emissive;
-uniform highp vec3 in_Ambient;
-uniform highp vec3 in_LightPos;
-uniform highp vec3 in_LightDir;
+uniform mediump vec3 in_Emissive;
+uniform mediump vec3 in_Ambient;
+uniform mediump vec3 in_LightPos;
+uniform mediump vec3 in_LightDir;
 
-uniform highp mat4 in_View;
+uniform mediump mat4 in_View;
 
-varying highp vec4 ex_Color;
-varying highp vec2 ex_TexCoord;
-varying highp vec3 ex_FragPos;
-varying highp vec3 ex_Normal;
+varying mediump vec4 ex_Color;
+varying mediump vec2 ex_TexCoord;
+varying mediump vec3 ex_FragPos;
+varying mediump vec3 ex_Normal;
 
 void main()
 {
 	gl_FragColor = ex_Color;
-	highp vec4 tex = texture2D(in_Texture, ex_TexCoord);
+	mediump vec4 tex = texture2D(in_Texture, ex_TexCoord);
 
-	highp vec3 norm = normalize(ex_Normal);
-	highp vec3 lightDir = in_LightDir;
+	mediump vec3 norm = normalize(ex_Normal);
+	mediump vec3 lightDir = in_LightDir;
 	lightDir += 0.0 * in_LightPos;
 
-	highp float diff = max(dot(norm, lightDir), 0.0);
-	highp vec3 diffuse = diff * vec3(0.5, 0.5, 0.5);
+	mediump float diff = max(dot(norm, lightDir), 0.0);
+	mediump vec3 diffuse = diff * vec3(0.5, 0.5, 0.5);
 
-	highp vec4 viewPos = in_View * vec4(0.0, 0.0, 0.0, 1.0);
-	highp vec3 viewDir = normalize(vec3(viewPos) - ex_FragPos);
-	highp vec3 reflectDir = reflect(-lightDir, norm);
-	highp float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0);
+	mediump vec4 viewPos = in_View * vec4(0.0, 0.0, 0.0, 1.0);
+	mediump vec3 viewDir = normalize(vec3(viewPos) - ex_FragPos);
+	mediump vec3 reflectDir = reflect(-lightDir, norm);
+	mediump float spec = pow(max(dot(viewDir, reflectDir), 0.0), 1.0);
 
-	highp vec3 specular = spec * vec3(0.5, 0.5, 0.5);
+	mediump vec3 specular = spec * vec3(0.5, 0.5, 0.5);
 
-	highp vec3 light = in_Emissive + in_Ambient + diffuse + specular;
+	mediump vec3 light = in_Emissive + in_Ambient + diffuse + specular;
 	gl_FragColor = tex * vec4(light, 1.0);
 }
 

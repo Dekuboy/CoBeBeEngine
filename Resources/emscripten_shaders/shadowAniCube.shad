@@ -7,7 +7,7 @@ uniform mat4 in_Model;
 uniform mat4 in_Animate;
 uniform mat4 in_GlobalLightSpace;
 
-out highp vec4 ex_FragPos;
+out mediump vec4 ex_FragPos;
 
 void main()
 {
@@ -19,17 +19,17 @@ void main()
 
 #ifdef FRAGMENT
 
-layout (location = 0) out highp vec4 null_Colour;
+layout (location = 0) out mediump vec4 null_Colour;
 
-uniform highp vec3 in_LightPos;
-uniform highp float in_FarPlane;
+uniform mediump vec3 in_LightPos;
+uniform mediump float in_FarPlane;
 
-in highp vec4 ex_FragPos;
+in mediump vec4 ex_FragPos;
 
 void main()
 {
     // get distance between fragment and light source
-    highp float lightDistance = length(ex_FragPos.xyz - in_LightPos);
+    mediump float lightDistance = length(ex_FragPos.xyz - in_LightPos);
     
     // map to [0;1] range by dividing by far_plane
     lightDistance = lightDistance / in_FarPlane;
