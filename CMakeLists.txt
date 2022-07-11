@@ -6,8 +6,7 @@ project(COBEBE)
 
 include_directories(
 	src
-	include
-	lib
+	include/common
 )
 
 add_library(glwrap
@@ -78,6 +77,9 @@ add_library(glwrap
 
 if(MSVC)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+	include_directories(
+		include/msvc
+	)
 	target_link_libraries(glwrap glew32 SDL2 opengl32 OpenAL32)
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
 	target_link_libraries(glwrap SDL2)
