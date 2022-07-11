@@ -14,6 +14,12 @@ GL
 
 ----------------------------------------
 
+BUILD WIN32 VERSION BY:
+
+cmake -A Win32 ..
+
+----------------------------------------
+
 BUILD WITH EMSCRIPTEN BY:
 
 IF ON WINDOWS OS: INSTALL MINGW FIRST

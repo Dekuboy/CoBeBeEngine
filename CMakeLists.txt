@@ -171,8 +171,6 @@ target_link_libraries(cobebe
 
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-	include_directories(lib)
-	
 	set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
 	add_executable(testEms
