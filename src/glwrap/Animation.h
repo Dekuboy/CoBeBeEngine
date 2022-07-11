@@ -2,6 +2,7 @@
 #define _GLWRAP_ANIMATION
 #include <vector>
 #include <string>
+#include <memory>
 
 namespace glwrap
 {

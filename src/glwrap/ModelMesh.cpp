@@ -242,9 +242,9 @@ namespace glwrap
 		std::shared_ptr<ShaderProgram> shader = m_context.lock()->
 			getCurrentShader();
 
-		std::string textureCheck[5];
+		std::string textureCheck[10];
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 10; i++)
 		{
 			shader->getUniforms()->getUniformName(i, textureCheck[i]);
 		}
@@ -260,6 +260,10 @@ namespace glwrap
 					if (textureCheck[0] != "")
 					{
 						shader->setUniform(textureCheck[0], (*itr)->m_colourMap.lock());
+					}
+					if (textureCheck[5] != "")
+					{
+						shader->setUniform(textureCheck[5], (*itr)->m_colourFactor);
 					}
 				}
 			}

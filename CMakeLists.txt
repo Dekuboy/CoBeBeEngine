@@ -7,6 +7,7 @@ project(COBEBE)
 include_directories(
 	src
 	include
+	lib
 )
 
 add_library(glwrap

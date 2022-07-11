@@ -29,17 +29,16 @@ namespace glwrap
 
 	PBRUniforms::PBRUniforms()
 	{
-		m_pbrTextureNames.resize(10);
-		m_pbrTextureNames.at(0) = "in_Texture";
-		m_pbrTextureNames.at(1) = "in_MetalMap";
-		m_pbrTextureNames.at(2) = "in_NormalMap";
-		m_pbrTextureNames.at(3) = "in_AoMap";
-		m_pbrTextureNames.at(4) = "in_EmissiveMap";
-		m_pbrTextureNames.at(5) = "in_ColourFactor";
-		m_pbrTextureNames.at(6) = "in_MetalFactor";
-		m_pbrTextureNames.at(7) = "in_NormalFactor";
-		m_pbrTextureNames.at(8) = "in_AoFactor";
-		m_pbrTextureNames.at(9) = "in_EmissiveFactor";
+		m_pbrTextureNames[0] = "in_Texture";
+		m_pbrTextureNames[1] = "in_MetalMap";
+		m_pbrTextureNames[2] = "in_NormalMap";
+		m_pbrTextureNames[3] = "in_AoMap";
+		m_pbrTextureNames[4] = "in_EmissiveMap";
+		m_pbrTextureNames[5] = "in_ColourFactor";
+		m_pbrTextureNames[6] = "in_MetalFactor";
+		m_pbrTextureNames[7] = "in_NormalFactor";
+		m_pbrTextureNames[8] = "in_AoFactor";
+		m_pbrTextureNames[9] = "in_EmissiveFactor";
 	}
 
 	void PBRUniforms::getUniformName(int _enumType, std::string& _target)
@@ -50,7 +49,7 @@ namespace glwrap
 		}
 		else
 		{
-			_target = m_pbrTextureNames.at(_enumType);
+			_target = m_pbrTextureNames[_enumType];
 		}
 	}
 
@@ -62,7 +61,7 @@ namespace glwrap
 		}
 		else
 		{
-			m_pbrTextureNames.at(_enumType) = _name;
+			m_pbrTextureNames[_enumType] = _name;
 			return true;
 		}
 	}

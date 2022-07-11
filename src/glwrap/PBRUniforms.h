@@ -36,7 +36,7 @@ namespace glwrap
 		bool setUniformName(int _enumType, std::string& _name);
 
 	private:
-		std::vector<std::string> m_pbrTextureNames;
+		std::string m_pbrTextureNames[10];
 
 	};
 }

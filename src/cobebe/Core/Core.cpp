@@ -251,13 +251,11 @@ namespace cobebe
 
 			// PreDisplay each Entity
 			// Renders to DepthMaps in Lighting
-			glCullFace(GL_FRONT);
+			glCullFace(GL_BACK);
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
 			{
 				(*it)->preDisplay();
 			}
-			glCullFace(GL_BACK);
-			glDisable(GL_CULL_FACE);
 			m_lighting->drawLighting();
 
 			// Display each Entity
@@ -267,6 +265,7 @@ namespace cobebe
 			}
 
 			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
 
 			// Draw current Camera to screen
 			drawToScreen();
@@ -277,7 +276,8 @@ namespace cobebe
 				(*it)->postDisplay();
 			}
 
-			glEnable(GL_DEPTH_TEST | GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
 
 			// GUI each Entity
 			for (std::list<std::shared_ptr<Entity> >::iterator it = m_entities.begin(); it != m_entities.end(); ++it)
